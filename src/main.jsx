@@ -11,6 +11,9 @@ import AdminDashboard from "./Components/Dashboard/AdminLayout/AdminDashboard";
 import UserDashboard from "./Components/Dashboard/UserLayout/UserDashboard";
 import AdminUser from "./Components/Dashboard/AdminLayout/AdminUser";
 import Purchase from "./Components/Dashboard/UserLayout/Purchase";
+import Warranty from "./Components/Dashboard/UserLayout/Warranty";
+import Reciepts from "./Components/Dashboard/UserLayout/Reciepts";
+import Replacement from "./Components/Dashboard/UserLayout/Replacement";
 const role = getRole();
 console.log(role, "check mainjsx role ");
 function DefaultDashboard() {
@@ -51,7 +54,7 @@ const router = createBrowserRouter([
       },
       {
         path: "warranties",
-        element: <Purchase></Purchase>,
+        element: <Warranty></Warranty>,
       },
       {
         path: "reminders",
@@ -59,13 +62,12 @@ const router = createBrowserRouter([
       },
       {
         path: "receipts",
-        element: <Purchase></Purchase>,
+        element: <Reciepts></Reciepts>,
       },
-         {
+      {
         path: "replacement",
-        element: <Purchase></Purchase>,
+        element: <Replacement></Replacement>,
       },
-
     ],
   },
 ]);

@@ -1,22 +1,15 @@
 import { FaSignOutAlt } from "react-icons/fa";
-import { MdDashboard } from "react-icons/md";
+
 import { NavLink, useNavigate } from "react-router-dom";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
-import { FiUserPlus } from "react-icons/fi";
-import { MdElectricBolt } from "react-icons/md";
-import { IoSettingsOutline } from "react-icons/io5";
+import { FaRegHeart } from "react-icons/fa6";
 import { useEffect, useRef, useState } from "react";
-import { PiChefHatBold } from "react-icons/pi";
-import { PiCookingPotFill } from "react-icons/pi";
-import { FaUsers } from "react-icons/fa";
-import { RiMoneyDollarCircleLine } from "react-icons/ri";
-import { FiSettings } from "react-icons/fi";
-import { SlHome } from "react-icons/sl";
+import { FaRegClock } from "react-icons/fa";
+import { FaRegClipboard } from "react-icons/fa";
+import { PiClockCountdownLight } from "react-icons/pi";
 import logo from "../../../assets/logo.png";
-import { AiFillHome } from "react-icons/ai";
-import { FaUser } from "react-icons/fa";
-import { PiChefHatFill } from "react-icons/pi";
-import { HiDocumentText } from "react-icons/hi2";
+import { BiPurchaseTag } from "react-icons/bi";
+import { TbMessages } from "react-icons/tb";
+import { TbReplaceFilled } from "react-icons/tb";
 const UserSidebar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSeetingsDropdownOpen, setSeetingsDropdownOpen] = useState(false);
@@ -25,13 +18,15 @@ const UserSidebar = () => {
   const dropdownRef = useRef(null);
 
   const isActiveDashboard = location.pathname === "/dashboard";
-  const isActiveSubscription = location.pathname === "/subscription";
-  const isActiveRecipe = location.pathname === "/recipe";
-  const isActiveChef = location.pathname === "/chef";
-  const isActiveSettings =
-    location.pathname.startsWith("/terms") ||
-    location.pathname.startsWith("/privacy");
-  const isActiveUser = location.pathname.startsWith("/user");
+  const isActivePurchase = location.pathname === "/dashboard/purchase";
+  const isActiveWarranties = location.pathname === "/dashboard/warranties";
+  const isActiveReminders = location.pathname === "/dashboard/reminders";
+  const isActiveReceipts = location.pathname === "/dashboard/receipts";
+  const isActiveReplacement = location.pathname === "/dashboard/replacement";
+  // const isActiveSettings =
+  //   location.pathname.startsWith("/terms") ||
+  //   location.pathname.startsWith("/privacy");
+  // const isActiveUser = location.pathname.startsWith("/user");
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -73,14 +68,12 @@ const UserSidebar = () => {
                 className={`flex items-center space-x-2 justify-start gap-2 w-[250px] h-[50px]  p-5 text-centfer
                   ${
                     isActiveDashboard
-                      ? "bg-[#012241] text-white rounded-full"
-                      : "text-[#B1B1B1]"
+                      ? "bg-[#1F762C] text-[#FFFFFF] rounded-xl"
+                      : "text-[#4B5563]"
                   }`}
               >
-                <AiFillHome className="w-[18px] h-[18px] font-semibold   " />{" "}
-                <h1 className="montserrat font-semibold   text-base">
-                  Dashboard
-                </h1>
+                <FaRegClock className="w-[18px] h-[18px] font-semibold   " />{" "}
+                <h1 className="poppins font-semibold   text-base">Dashboard</h1>
               </div>
             </div>
           </NavLink>
@@ -95,15 +88,13 @@ const UserSidebar = () => {
               <div
                 className={`flex items-center space-x-2 justify-start gap-2 w-[250px] h-[50px]  p-5 text-centfer
                   ${
-                    isActiveUser
-                      ? "bg-[#012241] text-white rounded-full"
-                      : "text-[#B1B1B1]"
+                    isActivePurchase
+                      ? "bg-[#1F762C] text-[#FFFFFF] rounded-xl"
+                      : "text-[#4B5563]"
                   }`}
               >
-                <FaUser className="w-[18px] h-[18px] font-semibold   " />{" "}
-                <h1 className="montserrat font-semibold   text-base">
-                  Purchase
-                </h1>
+                <BiPurchaseTag className="w-[18px] h-[18px] font-semibold   " />{" "}
+                <h1 className="poppins font-semibold   text-base">Purchase</h1>
               </div>
             </div>
           </NavLink>
@@ -115,13 +106,13 @@ const UserSidebar = () => {
               <div
                 className={`flex items-center space-x-2 justify-start gap-2 w-[250px] h-[50px]  p-5 text-centfer
                   ${
-                    isActiveRecipe
-                      ? "bg-[#012241] text-white rounded-full"
-                      : "text-[#B1B1B1]"
+                    isActiveWarranties
+                      ? "bg-[#1F762C] text-[#FFFFFF] rounded-xl"
+                      : "text-[#4B5563]"
                   }`}
               >
-                <PiCookingPotFill className="w-[18px] h-[18px] font-semibold   " />{" "}
-                <h1 className="montserrat font-semibold   text-base">
+                <FaRegHeart className="w-[18px] h-[18px] font-semibold   " />{" "}
+                <h1 className="poppins font-semibold   text-base">
                   Warranties
                 </h1>
               </div>
@@ -138,15 +129,13 @@ const UserSidebar = () => {
               <div
                 className={`flex items-center space-x-2 justify-start gap-2 w-[250px] h-[50px]  p-5 text-centfer
                   ${
-                    isActiveChef
-                      ? "bg-[#012241] text-white rounded-full"
-                      : "text-[#B1B1B1]"
+                    isActiveReminders
+                      ? "bg-[#1F762C] text-[#FFFFFF] rounded-xl"
+                      : "text-[#4B5563]"
                   }`}
               >
-                <PiChefHatBold className="w-[18px] h-[18px] font-semibold   " />{" "}
-                <h1 className="montserrat font-semibold   text-base">
-                  Reminders
-                </h1>
+                <TbMessages className="w-[18px] h-[18px] font-semibold   " />{" "}
+                <h1 className="poppins font-semibold   text-base">Reminders</h1>
               </div>
             </div>
           </NavLink>
@@ -161,15 +150,13 @@ const UserSidebar = () => {
               <div
                 className={`flex items-center space-x-2 justify-start gap-2 w-[250px] h-[50px]  p-5 text-centfer
                   ${
-                    isActiveChef
-                      ? "bg-[#012241] text-white rounded-full"
-                      : "text-[#B1B1B1]"
+                    isActiveReceipts
+                      ? "bg-[#1F762C] text-[#FFFFFF] rounded-xl"
+                      : "text-[#4B5563]"
                   }`}
               >
-                <PiChefHatBold className="w-[18px] h-[18px] font-semibold   " />{" "}
-                <h1 className="montserrat font-semibold   text-base">
-                  Receipts
-                </h1>
+                <FaRegClipboard className="w-[18px] h-[18px] font-semibold   " />{" "}
+                <h1 className="poppins  font-semibold   text-base">Receipts</h1>
               </div>
             </div>
           </NavLink>
@@ -184,13 +171,13 @@ const UserSidebar = () => {
               <div
                 className={`flex items-center space-x-2 justify-start gap-2 w-[250px] h-[50px]  p-5 text-centfer
                   ${
-                    isActiveChef
-                      ? "bg-[#012241] text-white rounded-full"
-                      : "text-[#B1B1B1]"
+                    isActiveReplacement
+                      ? "bg-[#1F762C] text-[#FFFFFF] rounded-xl"
+                      : "text-[#4B5563]"
                   }`}
               >
-                <PiChefHatBold className="w-[18px] h-[18px] font-semibold   " />{" "}
-                <h1 className="montserrat font-semibold   text-base">
+                <TbReplaceFilled className="w-[18px] h-[18px] font-semibold   " />{" "}
+                <h1 className="poppins  font-semibold   text-base">
                   Replacement
                 </h1>
               </div>
