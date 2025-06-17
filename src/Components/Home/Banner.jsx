@@ -26,7 +26,7 @@ const Banner = () => {
               reminders for maintenance and renewals. Take control of your
               product lifecycle
             </p>
-            <NavLink to="/Signup">
+            <NavLink to="/login">
               <div className="mt-9">
                 <button className="py-4 px-6 bg-gradient-to-r from-[#1F762C] to-[#16A34A] text-white poppins  rounded-2xl font-bold">
                   Get Started

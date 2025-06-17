@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import image from "../../assets/ketonregister.png";
 import logo from "../../assets/logo.png";
 import google from "../../assets/google.png";
-
+import Swal from "sweetalert2";
 export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -12,19 +12,20 @@ export default function SignUpPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Determine role
-    const role = email === "admin@gmail.com" ? "admin" : "user";
-
-    // Save user info in localStorage
     const userData = {
-      email,
-      password, // ⚠️ For production, never store plain passwords!
-      role,
+      email: "user@gmail.com", // Dummy email
+      role: "user",
     };
+
     localStorage.setItem("user", JSON.stringify(userData));
 
-    alert(`Sign in successful as ${role}`);
-    navigate("/dashboard"); // redirect to homepage or dashboard
+    Swal.fire({
+      icon: "success",
+      title: "Sign in Successful",
+      text: "Signed in as user",
+    }).then(() => {
+      navigate("/dashboard");
+    });
   };
 
   return (
@@ -58,13 +59,16 @@ export default function SignUpPage() {
             <img src={logo} alt="Logo" />
           </div>
           <p className="text-[#1C6A28] text-2xl font-semibold poppins">
-            Create an account
+            Create your account
           </p>
         </div>
 
         {/* Social Button */}
         <div className="space-y-4 mb-6">
-          <button className="w-full flex items-center justify-center gap-4 border border-gray-300 px-5 py-2 rounded-md bg-white hover:bg-gray-50">
+          <button
+            onClick={handleSubmit}
+            className="w-full flex items-center justify-center gap-4 border border-gray-300 px-5 py-2 rounded-md bg-white hover:bg-gray-50"
+          >
             <span className="text-[#979797] text-base poppins">
               Create account with Google
             </span>
@@ -73,50 +77,6 @@ export default function SignUpPage() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Email Input */}
-          <div>
-            <label htmlFor="email" className="block text-sm text-gray-700 mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="Enter your email"
-            />
-          </div>
-
-          {/* Password Input */}
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm text-gray-700 mb-1"
-            >
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="Enter your password"
-            />
-          </div>
-
-          {/* Sign Up Button */}
-          <button
-            type="submit"
-            className="mt-4 w-full bg-[#1F762C] text-white py-3 rounded-lg text-base poppins hover:bg-green-800 transition"
-          >
-            Sign Up
-          </button>
-        </form>
       </div>
 
       {/* Right Image Section */}

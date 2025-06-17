@@ -24,7 +24,7 @@ const UserSidebar = () => {
   // console.log(user);
   const dropdownRef = useRef(null);
 
-  const isActiveDashboard = location.pathname === "/";
+  const isActiveDashboard = location.pathname === "/dashboard";
   const isActiveSubscription = location.pathname === "/subscription";
   const isActiveRecipe = location.pathname === "/recipe";
   const isActiveChef = location.pathname === "/chef";
@@ -62,7 +62,7 @@ const UserSidebar = () => {
         {/* Menu Items */}
         <nav className="flex flex-col  text-[#364636] mt-9">
           <NavLink
-            to="/"
+            to="/dashboard"
             className="flex items-center justify-between w-[280px]"
           >
             <div className="flex items-center justify-between w-[280px] font-semibold  p-2 ">
@@ -85,7 +85,7 @@ const UserSidebar = () => {
             </div>
           </NavLink>
           <NavLink
-            to="/user"
+            to="/dashboard/purchase"
             className="flex items-center justify-between w-[280px]"
           >
             <div className="flex items-center justify-between w-[280px] font-semibold  p-2">
@@ -101,12 +101,14 @@ const UserSidebar = () => {
                   }`}
               >
                 <FaUser className="w-[18px] h-[18px] font-semibold   " />{" "}
-                <h1 className="montserrat font-semibold   text-base">User</h1>
+                <h1 className="montserrat font-semibold   text-base">
+                  Purchase
+                </h1>
               </div>
             </div>
           </NavLink>
           <NavLink
-            to="/recipe"
+            to="/dashboard/warranties"
             className="flex items-center justify-between w-[280px]"
           >
             <div className="flex items-center justify-between w-[280px] font-semibold  p-2 ">
@@ -120,13 +122,13 @@ const UserSidebar = () => {
               >
                 <PiCookingPotFill className="w-[18px] h-[18px] font-semibold   " />{" "}
                 <h1 className="montserrat font-semibold   text-base">
-                  Recipes
+                  Warranties
                 </h1>
               </div>
             </div>
           </NavLink>
           <NavLink
-            to="/chef"
+            to="/dashboard/reminders"
             className="flex items-center justify-between w-[280px]"
           >
             <div className="flex items-center justify-between w-[280px] font-semibold  p-2">
@@ -142,12 +144,14 @@ const UserSidebar = () => {
                   }`}
               >
                 <PiChefHatBold className="w-[18px] h-[18px] font-semibold   " />{" "}
-                <h1 className="montserrat font-semibold   text-base">Chef</h1>
+                <h1 className="montserrat font-semibold   text-base">
+                  Reminders
+                </h1>
               </div>
             </div>
           </NavLink>
           <NavLink
-            to="/subscription"
+            to="/dashboard/receipts"
             className="flex items-center justify-between w-[280px]"
           >
             <div className="flex items-center justify-between w-[280px] font-semibold  p-2">
@@ -157,14 +161,37 @@ const UserSidebar = () => {
               <div
                 className={`flex items-center space-x-2 justify-start gap-2 w-[250px] h-[50px]  p-5 text-centfer
                   ${
-                    isActiveSubscription
+                    isActiveChef
                       ? "bg-[#012241] text-white rounded-full"
                       : "text-[#B1B1B1]"
                   }`}
               >
-                <HiDocumentText className="w-[18px] h-[18px] font-semibold   " />{" "}
+                <PiChefHatBold className="w-[18px] h-[18px] font-semibold   " />{" "}
                 <h1 className="montserrat font-semibold   text-base">
-                  Subscription
+                  Receipts
+                </h1>
+              </div>
+            </div>
+          </NavLink>
+          <NavLink
+            to="/dashboard/replacement"
+            className="flex items-center justify-between w-[280px]"
+          >
+            <div className="flex items-center justify-between w-[280px] font-semibold  p-2">
+              {/* Left Indicator Bar */}
+
+              {/* Main Button Area */}
+              <div
+                className={`flex items-center space-x-2 justify-start gap-2 w-[250px] h-[50px]  p-5 text-centfer
+                  ${
+                    isActiveChef
+                      ? "bg-[#012241] text-white rounded-full"
+                      : "text-[#B1B1B1]"
+                  }`}
+              >
+                <PiChefHatBold className="w-[18px] h-[18px] font-semibold   " />{" "}
+                <h1 className="montserrat font-semibold   text-base">
+                  Replacement
                 </h1>
               </div>
             </div>

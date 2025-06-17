@@ -10,6 +10,7 @@ import Root from "./Components/Dashboard/Root";
 import AdminDashboard from "./Components/Dashboard/AdminLayout/AdminDashboard";
 import UserDashboard from "./Components/Dashboard/UserLayout/UserDashboard";
 import AdminUser from "./Components/Dashboard/AdminLayout/AdminUser";
+import Purchase from "./Components/Dashboard/UserLayout/Purchase";
 const role = getRole();
 console.log(role, "check mainjsx role ");
 function DefaultDashboard() {
@@ -29,7 +30,7 @@ const router = createBrowserRouter([
     element: <Home></Home>,
   },
   {
-    path: "/register",
+    path: "/login",
     element: <SignUpPage></SignUpPage>,
   },
   {
@@ -40,14 +41,31 @@ const router = createBrowserRouter([
         index: true,
         element: <DefaultDashboard />,
       },
-       {
+      {
         path: "adminuser",
-        element: (
-      
-            <AdminUser/>
-      
-        ),
+        element: <AdminUser />,
       },
+      {
+        path: "purchase",
+        element: <Purchase></Purchase>,
+      },
+      {
+        path: "warranties",
+        element: <Purchase></Purchase>,
+      },
+      {
+        path: "reminders",
+        element: <Purchase></Purchase>,
+      },
+      {
+        path: "receipts",
+        element: <Purchase></Purchase>,
+      },
+         {
+        path: "replacement",
+        element: <Purchase></Purchase>,
+      },
+
     ],
   },
 ]);
