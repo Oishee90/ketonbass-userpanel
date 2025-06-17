@@ -1,6 +1,36 @@
 import React from "react";
 import { FaPlus, FaSync, FaUpload } from "react-icons/fa";
 import { recentPurchases, upcomingReminders } from "../../../fakeData";
+const statsData = [
+  {
+    title: "Total Purchases",
+    value: "$89,000",
+    description: "+12% from last month",
+    valueColor: "text-green-700",
+    descColor: "text-green-500",
+  },
+  {
+    title: "Active Warranties",
+    value: "9",
+    description: "3 expiring soon",
+    valueColor: "text-green-700",
+    descColor: "text-orange-500",
+  },
+  {
+    title: "Upcoming Reminders",
+    value: "7",
+    description: "Next in 2 days",
+    valueColor: "text-green-700",
+    descColor: "text-blue-500",
+  },
+  {
+    title: "Total Value",
+    value: "$89,000",
+    description: "Protected by warranty",
+    valueColor: "text-green-700",
+    descColor: "text-gray-500",
+  },
+];
 
 const UserDashboard = () => {
   return (
@@ -8,82 +38,81 @@ const UserDashboard = () => {
       {/* Header */}
       <div className="flex justify-between items-start mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-green-800 mb-1">
+          <h1 className="text-2xl font-bold  main-color poppins mb-1">
             Dashboard Overview
           </h1>
-          <p className="text-gray-600 text-sm">
+          <p className="poppins text-base font-normal tittle-color">
             Track your purchases, warranties, and upcoming reminders
           </p>
         </div>
-        <button className="bg-green-800 text-white px-4 py-2 rounded-lg shadow">
-          Add Manual Purchase
-        </button>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white p-4 rounded-lg shadow">
-          <p className="text-sm text-gray-600">Total Purchases</p>
-          <h2 className="text-2xl font-bold text-green-700">$89,000</h2>
-          <p className="text-xs text-green-500 mt-1">+12% from last month</p>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow">
-          <p className="text-sm text-gray-600">Active Warranties</p>
-          <h2 className="text-2xl font-bold text-green-700">9</h2>
-          <p className="text-xs text-orange-500 mt-1">3 expiring soon</p>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow">
-          <p className="text-sm text-gray-600">Upcoming Reminders</p>
-          <h2 className="text-2xl font-bold text-green-700">7</h2>
-          <p className="text-xs text-blue-500 mt-1">Next in 2 days</p>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow">
-          <p className="text-sm text-gray-600">Total Value</p>
-          <h2 className="text-2xl font-bold text-green-700">$89,000</h2>
-          <p className="text-xs text-gray-500 mt-1">Protected by warranty</p>
-        </div>
+        {statsData.map((item, index) => (
+          <div key={index} className="bg-white p-4 rounded-lg shadow">
+            <p className="text-sbase tittle-color font-medium mb-1 ">
+              {item.title}
+            </p>
+            <h2
+              className={`text-2xl font-bold tittle-color mb-1 ${item.valueColor}`}
+            >
+              {item.value}
+            </h2>
+          </div>
+        ))}
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <button className="flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-3 rounded-lg">
+      <div className="!mt-12 !mb-10">
+        <h1 className="text-xl font-semibold  main-color poppins mb-1">
+          Quick Actions
+        </h1>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 !mb-10">
+        <button className="flex items-center gap-2 bg-blue-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium">
           <FaPlus /> Add New Purchase
         </button>
-        <button className="flex items-center gap-2 bg-orange-100 text-orange-700 px-4 py-3 rounded-lg">
-          <FaSync /> Sync Email
+        <button className="flex items-center gap-2 bg-orange-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium">
+          <FaSync className="text-[#EA580C]" /> Sync Email
         </button>
-        <button className="flex items-center gap-2 bg-green-100 text-green-700 px-4 py-3 rounded-lg">
-          <FaUpload /> Upload Receipt
+        <button className="flex items-center gap-2 bg-green-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium">
+          <FaUpload className="text-[#16A34A]" /> Upload Receipt
         </button>
       </div>
 
       {/* Recent Purchases & Reminders */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2  gap-6">
         {/* Recent Purchases */}
-        <div className="md:col-span-2 bg-white p-4 rounded-lg shadow">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-green-800">
+        <div className="md:col-span-2 bg-white  rounded-lg shadow border border-[#E5E7EB] ">
+          <div className="flex md:flex-row flex-col justify-between items-center mb-4  border border-b-[#E5E7EB] p-4">
+            <h2 className="text-lg font-semibold main-color poppins ">
               Recent Purchases
             </h2>
-            <a href="#" className="text-sm text-blue-600 hover:underline">
+            <a
+              href="#"
+              className="text-base font-semibold hover:underline main-color poppins "
+            >
               View All
             </a>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-4 p-6 ">
             {recentPurchases.map((purchase) => (
               <div
                 key={purchase.id}
-                className="flex justify-between items-center"
+                className="flex md:flex-row flex-col justify-between items-start md:items-center p-3 rounded-lg shadow bg-[#F9FAFB] border border-[#E5E7EB]"
               >
                 <div>
-                  <p className="font-medium text-gray-800">{purchase.name}</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="font-medium text-[#111827] poppins text-base ">
+                    {purchase.name}
+                  </p>
+                  <p className="text-sm text-[#6B7280] font-normal poppins ">
                     {purchase.store} • {purchase.date}
                   </p>
                 </div>
-                <div className="text-right">
-                  <p className="text-gray-800 font-semibold">
+                <div className="md:text-right">
+                  <p className="text-gray-800 font-bold poppins">
                     {purchase.price}
                   </p>
                   <span
@@ -98,8 +127,8 @@ const UserDashboard = () => {
         </div>
 
         {/* Upcoming Reminders */}
-        <div className="bg-white p-4 rounded-lg shadow">
-          <h2 className="text-lg font-semibold text-green-800 mb-4">
+        <div className="bg-white p-4 rounded-lg shadow poppins w-full">
+          <h2 className="lg:text-lg font-semibold main-color mb-4">
             Upcoming Reminders
           </h2>
 
@@ -107,9 +136,11 @@ const UserDashboard = () => {
             {upcomingReminders.map((reminder) => (
               <div
                 key={reminder.id}
-                className={`p-3 bg-${reminder.color}-100 border-l-4 border-${reminder.color}-500 rounded`}
+                className={`p-3  bg-${reminder.color}-100 border-l-4 border-${reminder.color}-500 rounded`}
               >
-                <p className={`font-medium text-${reminder.color}-800`}>
+                <p
+                  className={`font-medium text-base text-${reminder.color}-800`}
+                >
                   {reminder.title}
                 </p>
                 <p className={`text-sm text-${reminder.color}-600`}>
