@@ -85,7 +85,7 @@ const UserDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2  gap-6">
         {/* Recent Purchases */}
         <div className="md:col-span-2 bg-white  rounded-lg shadow border border-[#E5E7EB] ">
-          <div className="flex md:flex-row flex-col justify-between items-center mb-4  border border-b-[#E5E7EB] p-4">
+          <div className="flex  justify-between md:items-center mb-4  border border-b-[#E5E7EB] p-4">
             <h2 className="text-lg font-semibold main-color poppins ">
               Recent Purchases
             </h2>
