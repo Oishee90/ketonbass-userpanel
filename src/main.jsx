@@ -15,14 +15,14 @@ import Warranty from "./Components/Dashboard/UserLayout/Warranty";
 import Reciepts from "./Components/Dashboard/UserLayout/Reciepts";
 import Replacement from "./Components/Dashboard/UserLayout/Replacement";
 import CalendarDashboard from "./Components/Dashboard/UserLayout/CalendarDashboard";
-const role = getRole();
-console.log(role, "check mainjsx role ");
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { clientId } from "./constants";
+const verify_email = getRole();
+console.log(verify_email, "check mainjsx role ");
 function DefaultDashboard() {
-  const role = getRole();
+  const verify_email = getRole();
 
-  if (role === "admin") {
-    return <AdminDashboard />;
-  } else if (role === "user") {
+  if (verify_email === true) {
     return <UserDashboard />;
   } else {
     return <div>Unauthorized Access</div>;
@@ -73,8 +73,12 @@ const router = createBrowserRouter([
   },
 ]);
 
+const client_id = clientId;
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <GoogleOAuthProvider clientId={client_id}>
+      <RouterProvider router={router} />
+    </GoogleOAuthProvider>
   </StrictMode>
 );

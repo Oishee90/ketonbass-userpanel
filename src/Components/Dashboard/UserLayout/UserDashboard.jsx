@@ -36,7 +36,7 @@ const statsData = [
 
 const UserDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   return (
     <div className="bg-[#f9f9f9] min-h-screen p-6 font-sans">
@@ -84,7 +84,10 @@ const UserDashboard = () => {
         <button className="flex items-center gap-2 bg-orange-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium">
           <FaSync className="text-[#EA580C]" /> Sync Email
         </button>
-        <button onClick={() => setIsEditModalOpen(true)} className="flex items-center gap-2 bg-green-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium">
+        <button
+          onClick={() => setIsEditModalOpen(true)}
+          className="flex items-center gap-2 bg-green-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium"
+        >
           <FaUpload className="text-[#16A34A]" /> Upload Receipt
         </button>
       </div>
@@ -163,7 +166,7 @@ const UserDashboard = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
-        <EditPurchaseModal
+      <EditPurchaseModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
       />

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import getRole from "../../utils/role";
 
 const Header = () => {
-  const role = getRole();
+  const verify_email = getRole();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSchoolModalOpen, setIsSchoolModalOpen] = useState(false);
 
@@ -14,18 +14,8 @@ const Header = () => {
 
       {/* Profile Section based on role */}
       <div className="flex justify-around items-center gap-4">
-        {role === "admin" && (
-          <div className="curosr-pointer" onClick={() => setIsModalOpen(true)}>
-            <img
-              src={
-                "https://res.cloudinary.com/dwycwft99/image/upload/v1746606936/Profile_Image_Placeholder_2_1_znuysa.png"
-              }
-              alt="Admin Profile"
-              className="w-10 h-10 rounded-full cursor-pointer"
-            />
-          </div>
-        )}
-        {role === "user" && (
+   
+        {verify_email === true && (
           <div
             className="curosr-pointer"
             onClick={() => setIsSchoolModalOpen(true)}

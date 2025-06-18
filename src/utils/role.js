@@ -3,7 +3,9 @@ const getRole = () => {
   if (!userData) return null;
 
   // Direct role inside user object
-  if (userData.role) return userData.role;
+  if (userData.
+verified_email) return userData.
+verified_email;
 
   return null;
 };

@@ -10,15 +10,15 @@ import Header from "./Header";
 const Root = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const role = getRole();
+  const verify_email = getRole();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // Redirect to login if no role is found
   useEffect(() => {
-    if (!role) {
+    if (!verify_email) {
       navigate("/login");
     }
-  }, [role, navigate]);
+  }, [verify_email, navigate]);
 
   // Collapse sidebar on smaller screens
   useEffect(() => {
@@ -32,7 +32,7 @@ const Root = () => {
 
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
-  if (role === null) {
+  if (verify_email === null) {
     return (
       <div className="flex justify-center items-center h-screen">
         Loading...
@@ -41,10 +41,9 @@ const Root = () => {
   }
 
   const renderDefaultDashboard = () => {
-    switch (role) {
-      case "admin":
-        return <AdminDashboard />;
-      case "user":
+    switch (verify_email) {
+    
+      case true:
         return <UserDashboard />;
       default:
         return <div>Unauthorized or invalid role</div>;
@@ -61,8 +60,8 @@ const Root = () => {
           isSidebarOpen ? "w-64" : "w-16"
         } fixed left-0 top-0 h-screen transition-all duration-300`}
       >
-        {role === "admin" && <AdminSidebar />}
-        {role === "user" && (
+     
+        {verify_email === true && (
           <UserSidebar
             isSidebarOpen={isSidebarOpen}
             toggleSidebar={toggleSidebar}
