@@ -14,6 +14,7 @@ import Purchase from "./Components/Dashboard/UserLayout/Purchase";
 import Warranty from "./Components/Dashboard/UserLayout/Warranty";
 import Reciepts from "./Components/Dashboard/UserLayout/Reciepts";
 import Replacement from "./Components/Dashboard/UserLayout/Replacement";
+import CalendarDashboard from "./Components/Dashboard/UserLayout/CalendarDashboard";
 const role = getRole();
 console.log(role, "check mainjsx role ");
 function DefaultDashboard() {
@@ -58,7 +59,7 @@ const router = createBrowserRouter([
       },
       {
         path: "reminders",
-        element: <Purchase></Purchase>,
+        element: <CalendarDashboard></CalendarDashboard>,
       },
       {
         path: "receipts",

@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+
 const purchaseData = [
   {
     original: "Dyson V7 Vacuum",
@@ -57,9 +58,97 @@ const purchaseData = [
       },
     ],
   },
+
+  // New 4 fake purchases:
+  {
+    original: "Sony WH-1000XM4 Headphones",
+    replacements: [
+      {
+        part: "Ear Pads",
+        timeline: "12 months",
+        link: "Sony Store",
+        price: "$29.99",
+      },
+      {
+        part: "Battery",
+        timeline: "24 months",
+        link: "Sony Store",
+        price: "$79.99",
+      },
+    ],
+  },
+  {
+    original: "KitchenAid Mixer",
+    replacements: [
+      {
+        part: "Beater Attachment",
+        timeline: "18 months",
+        link: "KitchenAid Parts",
+        price: "$19.99",
+      },
+      {
+        part: "Motor",
+        timeline: "36 months",
+        link: "KitchenAid Parts",
+        price: "$199.99",
+      },
+    ],
+  },
+  {
+    original: "Fitbit Charge 5",
+    replacements: [
+      {
+        part: "Charging Cable",
+        timeline: "12 months",
+        link: "Fitbit Store",
+        price: "$14.99",
+      },
+      {
+        part: "Strap",
+        timeline: "6 months",
+        link: "Fitbit Store",
+        price: "$24.99",
+      },
+    ],
+  },
+  {
+    original: "Canon EOS M50 Camera",
+    replacements: [
+      {
+        part: "Battery",
+        timeline: "12 months",
+        link: "Canon Parts",
+        price: "$59.99",
+      },
+      {
+        part: "Lens Cap",
+        timeline: "18 months",
+        link: "Canon Parts",
+        price: "$9.99",
+      },
+    ],
+  },
 ];
 
+const ITEMS_PER_PAGE = 3;
+
 const Replacement = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.ceil(purchaseData.length / ITEMS_PER_PAGE);
+
+  // Get current page data slice
+  const currentData = purchaseData.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  const goToPage = (pageNum) => {
+    if (pageNum >= 1 && pageNum <= totalPages) {
+      setCurrentPage(pageNum);
+    }
+  };
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <h1 className="text-xl sm:text-2xl font-bold main-color poppins mb-1">
@@ -95,18 +184,21 @@ const Replacement = () => {
               </tr>
             </thead>
             <tbody>
-              {purchaseData.map((purchase, index) =>
+              {currentData.map((purchase, index) =>
                 purchase.replacements.map((item, idx) => (
-                  <tr key={idx} className="border-t border-gray-200">
+                  <tr
+                    key={`${index}-${idx}`}
+                    className="border-t border-gray-200"
+                  >
                     {idx === 0 && (
                       <td
                         rowSpan={purchase.replacements.length}
-                        className="py-4 px-4 align-top font-medium text-gray-700 border-r border-b border-gray-300  border-gray-300"
+                        className="py-4 px-4 align-top font-medium text-gray-700 border-r border-b border-gray-300"
                       >
                         {purchase.original}
                       </td>
                     )}
-                    <td className="py-4 px-4 text-gray-700 border-b border-gray-300  poppins">
+                    <td className="py-4 px-4 text-gray-700 border-b border-gray-300 poppins">
                       {item.part}
                     </td>
                     <td className="py-4 px-4 text-gray-700 border-b border-gray-300 poppins ">
@@ -126,22 +218,44 @@ const Replacement = () => {
         </div>
       </div>
 
+      {/* Pagination Controls */}
       <div className="mt-6 flex justify-center items-center space-x-2">
-        <button className="p-2 rounded text-gray-500 hover:bg-gray-200">
+        <button
+          onClick={() => goToPage(currentPage - 1)}
+          disabled={currentPage === 1}
+          className={`p-2 rounded ${
+            currentPage === 1
+              ? "text-gray-300 cursor-not-allowed"
+              : "text-gray-500 hover:bg-gray-200"
+          }`}
+        >
           &lt;
         </button>
-        <button className="p-2 rounded bg-green-600 text-white">1</button>
-        <button className="p-2 rounded text-gray-700 hover:bg-gray-200">
-          2
-        </button>
-        <button className="p-2 rounded text-gray-700 hover:bg-gray-200">
-          3
-        </button>
-        <span className="text-gray-400">...</span>
-        <button className="p-2 rounded text-gray-700 hover:bg-gray-200">
-          12
-        </button>
-        <button className="p-2 rounded text-gray-500 hover:bg-gray-200">
+
+        {/* Show page numbers */}
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+          <button
+            key={pageNum}
+            onClick={() => goToPage(pageNum)}
+            className={`p-2 rounded ${
+              currentPage === pageNum
+                ? "bg-green-600 text-white"
+                : "text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            {pageNum}
+          </button>
+        ))}
+
+        <button
+          onClick={() => goToPage(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className={`p-2 rounded ${
+            currentPage === totalPages
+              ? "text-gray-300 cursor-not-allowed"
+              : "text-gray-500 hover:bg-gray-200"
+          }`}
+        >
           &gt;
         </button>
       </div>
