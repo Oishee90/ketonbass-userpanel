@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaPlus, FaSync, FaUpload } from "react-icons/fa";
 import { recentPurchases, upcomingReminders } from "../../../fakeData";
+import AddPurchaseModal from "./AddPurchaseModal";
+import EditPurchaseModal from "./EditPurchaseModal";
 const statsData = [
   {
     title: "Total Purchases",
@@ -33,6 +35,9 @@ const statsData = [
 ];
 
 const UserDashboard = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   return (
     <div className="bg-[#f9f9f9] min-h-screen p-6 font-sans">
       {/* Header */}
@@ -70,13 +75,16 @@ const UserDashboard = () => {
         </h1>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 !mb-10">
-        <button className="flex items-center gap-2 bg-blue-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="flex items-center gap-2 bg-blue-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium"
+        >
           <FaPlus /> Add New Purchase
         </button>
         <button className="flex items-center gap-2 bg-orange-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium">
           <FaSync className="text-[#EA580C]" /> Sync Email
         </button>
-        <button className="flex items-center gap-2 bg-green-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium">
+        <button onClick={() => setIsEditModalOpen(true)} className="flex items-center gap-2 bg-green-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium">
           <FaUpload className="text-[#16A34A]" /> Upload Receipt
         </button>
       </div>
@@ -151,6 +159,14 @@ const UserDashboard = () => {
           </div>
         </div>
       </div>
+      <AddPurchaseModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+        <EditPurchaseModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+      />
     </div>
   );
 };
