@@ -55,10 +55,10 @@ const receipts = [
 const Reciepts = () => {
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-2xl font-bold text-green-700 mb-1">
-        Welcome Susan !
+    <h1 className="text-xl sm:text-2xl font-bold text-green-800 poppins mb-1">
+        Welcome Oishe!
       </h1>
-      <p className="text-gray-500 mb-6">Track your Receipts Collection</p>
+       <p className="text-gray-600 text-xs sm:text-sm mb-4 sm:mb-6 poppins">Track your Receipts Collection</p>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="bg-white shadow rounded-lg p-4 flex items-center justify-between">

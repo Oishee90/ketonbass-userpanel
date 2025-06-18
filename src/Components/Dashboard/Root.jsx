@@ -1,6 +1,5 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import getRole from "../../utils/role";
 import AdminDashboard from "./AdminLayout/AdminDashboard";
 import UserDashboard from "./UserLayout/UserDashboard";
@@ -8,18 +7,30 @@ import AdminSidebar from "./Sidebar/AdminSidebar";
 import UserSidebar from "./Sidebar/UserSidebar";
 import Header from "./Header";
 
-
 const Root = () => {
   const navigate = useNavigate();
-  const location = useLocation(); // To check the current pathname
+  const location = useLocation();
   const role = getRole();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  // Redirect to login if no role is found (user not logged in)
+  // Redirect to login if no role is found
   useEffect(() => {
     if (!role) {
       navigate("/login");
     }
   }, [role, navigate]);
+
+  // Collapse sidebar on smaller screens
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSidebarOpen(window.innerWidth >= 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
   if (role === null) {
     return (
@@ -29,37 +40,48 @@ const Root = () => {
     );
   }
 
-  // Function to render default dashboard content based on role
   const renderDefaultDashboard = () => {
     switch (role) {
       case "admin":
-        return <AdminDashboard></AdminDashboard>;
+        return <AdminDashboard />;
       case "user":
-        return <UserDashboard></UserDashboard>;
-
+        return <UserDashboard />;
       default:
         return <div>Unauthorized or invalid role</div>;
     }
   };
 
-  // Check if we're on the root /dashboard path (no child route active)
   const isDashboardRoot = location.pathname === "/dashboard";
 
   return (
-    <div className="flex h-screen bg-white dark:bg-white">
-      {/* Sidebar - Fixed Position */}
-      <div className="w-[280px] fixed left-0 top-0 h-screen">
+    <div className="flex h-screen overflow-hidden bg-white dark:bg-white">
+      {/* Sidebar */}
+      <div
+        className={`${
+          isSidebarOpen ? "w-64" : "w-16"
+        } fixed left-0 top-0 h-screen transition-all duration-300`}
+      >
         {role === "admin" && <AdminSidebar />}
-        {role === "user" && <UserSidebar></UserSidebar>}
+        {role === "user" && (
+          <UserSidebar
+            isSidebarOpen={isSidebarOpen}
+            toggleSidebar={toggleSidebar}
+          />
+        )}
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col ml-[280px]">
+      {/* Main Content Area */}
+      <div
+        className={`flex-1 flex flex-col h-screen transition-all duration-300 ${
+          isSidebarOpen ? "ml-64" : "ml-16"
+        }`}
+      >
         {/* Header */}
         <Header />
 
-        {/* Render Child Routes or Default Dashboard */}
-        <main className="flex-1 bg-[#F9FAFC] dark:bg-white p-4 overflow-y-auto">
+        {/* Main Scrollable Area */}
+<main className="flex-1 overflow-y-auto bg-white dark:bg-white h-[calc(100vh-64px)]">
+
           {isDashboardRoot ? renderDefaultDashboard() : <Outlet />}
         </main>
       </div>

@@ -62,26 +62,36 @@ const purchaseData = [
 const Replacement = () => {
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-2xl font-bold text-green-700 mb-1">
+      <h1 className="text-xl sm:text-2xl font-bold main-color poppins mb-1">
         Welcome Oishe !
       </h1>
-      <p className="text-gray-500 mb-6">Track your purchases and all details</p>
+      <p className="text-gray-600 text-xs sm:text-sm mb-4 sm:mb-6 poppins">
+        Track your purchases and all details
+      </p>
 
-      <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-xl font-bold text-green-700 mb-4">
+      <div className="bg-white p-4 sm:p-6 rounded-lg shadow ">
+        <h2 className="text-lg sm:text-xl font-semibold main-color poppins mb-4 sm:mb-6">
           Purchases Details
         </h2>
         <div className="overflow-auto">
           <table className="w-full table-auto border-separate border-spacing-y-2">
             <thead className="bg-gray-100 text-left">
               <tr>
-                <th className="py-3 px-4 font-semibold">Original Purchase</th>
-                <th className="py-3 px-4 font-semibold">Replacement parts</th>
-                <th className="py-3 px-4 font-semibold">Timeline</th>
-                <th className="py-3 px-4 font-semibold">
+                <th className="py-2 px-2 sm:px-4 font-bold text-gray-800 sticky top-0 bg-gray-200 text-lg poppins">
+                  Original Purchase
+                </th>
+                <th className="py-3 px-4 font-semibold bg-gray-200 text-lg poppins">
+                  Replacement parts
+                </th>
+                <th className="py-3 px-4 font-semibold bg-gray-200 text-lg poppins">
+                  Timeline
+                </th>
+                <th className="py-3 px-4 font-semibold bg-gray-200 text-lg poppins">
                   Link to replacement parts
                 </th>
-                <th className="py-3 px-4 font-semibold">Price</th>
+                <th className="py-3 px-4 font-semibold bg-gray-200 text-lg poppins">
+                  Price
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -96,16 +106,16 @@ const Replacement = () => {
                         {purchase.original}
                       </td>
                     )}
-                    <td className="py-4 px-4 text-gray-700 border-b border-gray-300 ">
+                    <td className="py-4 px-4 text-gray-700 border-b border-gray-300  poppins">
                       {item.part}
                     </td>
-                    <td className="py-4 px-4 text-gray-700 border-b border-gray-300 ">
+                    <td className="py-4 px-4 text-gray-700 border-b border-gray-300 poppins ">
                       {item.timeline}
                     </td>
-                    <td className="py-4 px-4 text-blue-600 underline cursor-pointer border-b border-gray-300 ">
+                    <td className="py-4 px-4 text-blue-600 underline cursor-pointer border-b border-gray-300 poppins">
                       {item.link}
                     </td>
-                    <td className="py-4 px-4 text-gray-700 border-b border-gray-300">
+                    <td className="py-4 px-4 text-gray-700 border-b border-gray-300 poppins">
                       {item.price}
                     </td>
                   </tr>
