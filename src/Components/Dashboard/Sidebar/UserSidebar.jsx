@@ -44,9 +44,7 @@ const UserSidebar = ({ isSidebarOpen, toggleSidebar }) => {
       {/* Top Section: Logo and Toggle */}
       <div className="flex flex-col py-4">
         <div className="flex items-center justify-between px-4 pb-4 mt-9 gap-3">
-          {isSidebarOpen && (
-            <img src={logo} alt="Logo" className="w-[200px] h-[44px]" />
-          )}
+          {isSidebarOpen && <img src={logo} alt="Logo" className=" " />}
           <div onClick={toggleSidebar} className="cursor-pointer">
             {isSidebarOpen ? (
               <BiArrowToLeft className="w-[24px] h-[24px]" />
