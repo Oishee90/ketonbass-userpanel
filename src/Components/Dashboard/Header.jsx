@@ -14,10 +14,9 @@ const Header = () => {
 
       {/* Profile Section based on role */}
       <div className="flex justify-around items-center gap-4">
-   
         {verify_email === true && (
           <div
-            className="curosr-pointer"
+            className="cursor-pointer flex items-center gap-2"
             onClick={() => setIsSchoolModalOpen(true)}
           >
             <img
@@ -27,6 +26,9 @@ const Header = () => {
               alt="Student Profile"
               className="w-10 h-10 rounded-full"
             />
+            <div className=" font-medium poppins flex flex-col text-base ">
+              Oishee Khan <span className="text-sm text-[#565656] font-normal">user</span>
+            </div>
           </div>
         )}
       </div>
