@@ -3,6 +3,7 @@ import { FaPlus, FaSync, FaUpload } from "react-icons/fa";
 import { recentPurchases, upcomingReminders } from "../../../fakeData";
 import AddPurchaseModal from "./AddPurchaseModal";
 import EditPurchaseModal from "./EditPurchaseModal";
+import { NavLink } from "react-router-dom";
 const statsData = [
   {
     title: "Total Purchases",
@@ -81,9 +82,15 @@ const UserDashboard = () => {
         >
           <FaPlus /> Add New Purchase
         </button>
-        <button className="flex items-center gap-2 bg-orange-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium">
-          <FaSync className="text-[#EA580C]" /> Sync Email
-        </button>
+        <NavLink
+          to="/dashboard/purchase"
+          className=" bg-orange-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium"
+        >
+          {" "}
+          <button className="flex items-center gap-2">
+            <FaSync className="text-[#EA580C]" /> Sync Email
+          </button>{" "}
+        </NavLink>
         <button
           onClick={() => setIsEditModalOpen(true)}
           className="flex items-center gap-2 bg-green-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium"
@@ -100,12 +107,12 @@ const UserDashboard = () => {
             <h2 className="text-lg font-semibold main-color poppins ">
               Recent Purchases
             </h2>
-            <a
-              href="#"
+            <NavLink
+              to="/dashboard/purchase"
               className="text-base font-semibold hover:underline main-color poppins "
             >
               View All
-            </a>
+            </NavLink>
           </div>
 
           <div className="space-y-4 p-6 ">

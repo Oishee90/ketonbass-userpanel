@@ -126,7 +126,7 @@ const Warranty = () => {
                   </td>
                   <td className="py-3 px-4">
                     <span
-                      className={`px-3 py-1 text-xs font-medium rounded-full ${
+                      className={`px-3 py-1 text-base font-medium rounded-full ${
                         item.status === "Active"
                           ? "bg-green-100 text-green-700"
                           : item.status === "Expired"

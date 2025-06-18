@@ -68,7 +68,7 @@ const EditPurchaseModal = ({ isOpen, onClose }) => {
         </button>
 
         {/* Title */}
-        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center poppins">
+        <h2 className="text-2xl font-semibold main-color mb-6 text-center poppins">
           📄 Upload PDF Receipt
         </h2>
 
