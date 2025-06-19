@@ -39,14 +39,6 @@ const Footer = () => {
         </div>
 
         {/* Connect */}
-        <div>
-          <h3 className="rubik text-2xl mb-2 ">Connect</h3>
-          <div className="flex space-x-3 space-y-1 font-normal ">
-            <a href="#" aria-label="Twitter">
-              <FaTwitter className="text-xl" />
-            </a>
-          </div>
-        </div>
       </div>
     </footer>
   );

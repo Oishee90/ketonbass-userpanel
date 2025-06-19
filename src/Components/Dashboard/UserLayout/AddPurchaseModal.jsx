@@ -77,7 +77,7 @@ const AddPurchaseModal = ({ isOpen, onClose }) => {
             value={formData.storeName}
             onChange={handleChange}
             className="w-full border border-gray-300 rounded-xl px-3 py-2"
-            placeholder="Store name*"
+            placeholder="Store name"
           />
           <input
             type="text"
@@ -93,7 +93,7 @@ const AddPurchaseModal = ({ isOpen, onClose }) => {
             value={formData.amount}
             onChange={handleChange}
             className="w-full border border-gray-300 rounded-xl px-3 py-2"
-            placeholder="Amount*"
+            placeholder="Amount"
           />
           <input
             type="text"
@@ -101,7 +101,7 @@ const AddPurchaseModal = ({ isOpen, onClose }) => {
             value={formData.warranty}
             onChange={handleChange}
             className="w-full border border-gray-300 rounded-xl px-3 py-2"
-            placeholder="Warranty*"
+            placeholder="Warranty"
           />
 
           <div>

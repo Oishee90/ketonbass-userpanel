@@ -19,15 +19,9 @@ const Header = () => {
             className="cursor-pointer flex items-center gap-2"
             onClick={() => setIsSchoolModalOpen(true)}
           >
-            <img
-              src={
-                "https://res.cloudinary.com/dwycwft99/image/upload/v1746606936/Profile_Image_Placeholder_2_1_znuysa.png"
-              }
-              alt="Student Profile"
-              className="w-10 h-10 rounded-full"
-            />
             <div className=" font-medium poppins flex flex-col text-base ">
-              Oishee Khan <span className="text-sm text-[#565656] font-normal">user</span>
+              Oishee Khan{" "}
+              <span className="text-sm text-[#565656] font-normal">user</span>
             </div>
           </div>
         )}
