@@ -4,9 +4,11 @@ import {
   FaCalendarAlt,
   FaClipboardList,
   FaTags,
+  FaUpload,
 } from "react-icons/fa";
 import Swal from "sweetalert2";
 import ReceiptModal from "./ReceiptModal";
+import EditPurchaseModal from "./EditPurchaseModal";
 
 const receiptsData = [
   {
@@ -83,6 +85,7 @@ const Reciepts = () => {
   const [selectedReceipt, setSelectedReceipt] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const receiptsPerPage = 6;
 
   const indexOfLastReceipt = currentPage * receiptsPerPage;
@@ -122,13 +125,25 @@ const Reciepts = () => {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-2xl font-bold text-green-800 poppins mb-2">
-        Welcome Oishe!
-      </h1>
-      <p className="text-gray-600 text-sm mb-6 poppins">
-        Track your Receipts Collection
-      </p>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-green-800 poppins mb-2">
+            Welcome Oishe!
+          </h1>
+          <p className="text-gray-600 text-sm  poppins">
+            Track your Receipts Collection
+          </p>
+        </div>
 
+        <div>
+          <button
+            onClick={() => setIsEditModalOpen(true)}
+            className="flex items-center gap-2 bg-green-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium"
+          >
+            <FaUpload className="text-[#16A34A]" /> Upload Receipt
+          </button>
+        </div>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         {fakeStatsData.map((item, index) => (
           <div
@@ -226,6 +241,10 @@ const Reciepts = () => {
         isOpen={modalOpen}
         onClose={handleCloseModal}
         receipt={selectedReceipt}
+      />
+      <EditPurchaseModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
       />
     </div>
   );
