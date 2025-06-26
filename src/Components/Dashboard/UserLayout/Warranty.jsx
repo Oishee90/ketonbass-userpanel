@@ -73,13 +73,16 @@ const Warranty = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 6;
 
-  const totalPages = Math.ceil(warrantyData.length / ITEMS_PER_PAGE);
+  const sortedWarrantyData = [...warrantyData].sort((a, b) => {
+    return new Date(a.purchaseDate) - new Date(b.purchaseDate);
+  });
+
+  const totalPages = Math.ceil(sortedWarrantyData.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentItems = warrantyData.slice(
+  const currentItems = sortedWarrantyData.slice(
     startIndex,
     startIndex + ITEMS_PER_PAGE
   );
-
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
@@ -88,7 +91,7 @@ const Warranty = () => {
 
   return (
     <div className="bg-[#f9f9f9] min-h-screen p-6 font-sans">
-      <h1 className="text-2xl font-bold text-green-800 mb-1">Welcome Susan!</h1>
+      <h1 className="text-2xl font-bold text-green-800 mb-1">Welcome Oishe!</h1>
       <p className="text-gray-600 text-sm mb-6">
         Track your warranties and all details
       </p>
