@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import AddPurchaseModal from "./AddPurchaseModal";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaSync } from "react-icons/fa";
+import { NavLink } from "react-router-dom";
 const purchaseData = [
   {
     id: 1,
@@ -82,7 +83,15 @@ const Purchase = () => {
       setCurrentPage(pageNum);
     }
   };
+  const [spinning, setSpinning] = useState(false);
 
+  const handleClick = () => {
+    setSpinning(true);
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 300);
+  };
   return (
     <div className="p-4 sm:p-6 font-sans">
       <div className="flex justify-between items-center mb-4 sm:mb-6">
@@ -94,7 +103,16 @@ const Purchase = () => {
             Track your purchases and all details
           </p>{" "}
         </div>
-        <div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleClick}
+            className="bg-orange-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium flex items-center gap-2"
+          >
+            <FaSync
+              className={`text-[#EA580C] ${spinning ? "animate-spin" : ""}`}
+            />
+            Refresh Email
+          </button>
           <button
             onClick={() => setIsModalOpen(true)}
             className="flex items-center gap-2 bg-blue-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium"

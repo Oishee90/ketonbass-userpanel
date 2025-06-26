@@ -88,7 +88,7 @@ const UserDashboard = () => {
         >
           {" "}
           <button className="flex items-center gap-2">
-            <FaSync className="text-[#EA580C]" /> Sync Email
+            <FaSync className="text-[#EA580C]" /> Refresh Email
           </button>{" "}
         </NavLink>
         <button
