@@ -9,36 +9,45 @@ const AddPurchaseModal = ({ isOpen, onClose }) => {
     amount: "",
     warranty: "",
   });
-
-  if (!isOpen) return null;
-
+  const [pdfFile, setPdfFile] = useState(null);
+  const [errors, setErrors] = useState({
+    productName: "",
+    date: "",
+  });
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+  if (!isOpen) return null;
+  const handleFileChange = (e) => {
+    setPdfFile(e.target.files[0]);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const { productName, date } = formData;
 
-    const { productName, storeName, date, amount, warranty } = formData;
+    let newErrors = {};
+    if (!productName.trim()) {
+      newErrors.productName = "Product name must be requiered";
+    }
+    if (!date.trim()) {
+      newErrors.date = "Date must be requiered";
+    }
 
-    if (!productName || !storeName || !date || !amount || !warranty) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Please fill in all required fields!",
-      });
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
 
-    // Submit logic here (API call, state update, etc.)
+    setErrors({ productName: "", date: "" });
+
     Swal.fire({
       icon: "success",
       title: "Success!",
       text: "Purchase added successfully!",
     });
 
-    // Reset form and close modal
     setFormData({
       productName: "",
       storeName: "",
@@ -46,6 +55,7 @@ const AddPurchaseModal = ({ isOpen, onClose }) => {
       amount: "",
       warranty: "",
     });
+    setPdfFile(null);
     onClose();
   };
 
@@ -62,47 +72,93 @@ const AddPurchaseModal = ({ isOpen, onClose }) => {
           Manual Purchase
         </h2>
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            name="productName"
-            value={formData.productName}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded-xl px-3 py-2"
-            placeholder="Product name*"
-          />
-          <input
-            type="text"
-            name="storeName"
-            value={formData.storeName}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded-xl px-3 py-2"
-            placeholder="Store name"
-          />
-          <input
-            type="text"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded-xl px-3 py-2"
-            placeholder="Date*"
-          />
-          <input
-            type="text"
-            name="amount"
-            value={formData.amount}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded-xl px-3 py-2"
-            placeholder="Amount"
-          />
-          <input
-            type="text"
-            name="warranty"
-            value={formData.warranty}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded-xl px-3 py-2"
-            placeholder="Warranty"
-          />
+        <form className="" onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <input
+              type="text"
+              name="productName"
+              value={formData.productName}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-xl px-3 py-2"
+              placeholder="Product name*"
+            />
+            {errors.productName && (
+              <p className="text-red-600 text-sm mt-1 ">{errors.productName}</p>
+            )}
+          </div>
+          <div className="mb-4">
+            <input
+              type="text"
+              name="storeName"
+              value={formData.storeName}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-xl px-3 py-2"
+              placeholder="Store name"
+            />
+          </div>
+          <div className="mb-4">
+            <input
+              type="text"
+              name="date"
+              value={formData.date}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-xl px-3 py-2"
+              placeholder="Date*"
+            />
+            {errors.date && (
+              <p className="text-red-600 text-sm mt-1 ">{errors.date}</p>
+            )}
+          </div>
+          <div className="mb-4">
+            <input
+              type="text"
+              name="amount"
+              value={formData.amount}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-xl px-3 py-2"
+              placeholder="Amount"
+            />
+          </div>
+          <div className="mb-4">
+            <input
+              type="text"
+              name="warranty"
+              value={formData.warranty}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-xl px-3 py-2"
+              placeholder="Warranty"
+            />
+          </div>
+          <div className="mt-4 mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              Upload PDF (optional)
+            </label>
+
+            <div className="flex items-center gap-3 ">
+              <label className="cursor-pointer inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                Browse File
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+              </label>
+              {pdfFile && (
+                <div className=" flex items-center justify-between bg-gray-100 px-4 py-2 rounded">
+                  <span className="text-sm text-gray-700">{pdfFile.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => setPdfFile(null)}
+                    className="text-red-500 hover:text-red-700 text-lg font-bold"
+                    title="Remove file"
+                  >
+                    &times;
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
 
           <div>
             <button
