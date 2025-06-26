@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-
+import AddPurchaseModal from "./AddPurchaseModal";
+import { FaPlus } from "react-icons/fa";
 const purchaseData = [
   {
     id: 1,
@@ -69,7 +70,7 @@ const purchaseData = [
 const Purchase = () => {
   const itemsPerPage = 6;
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
   // Pagination calculations
   const totalItems = purchaseData.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -84,12 +85,24 @@ const Purchase = () => {
 
   return (
     <div className="p-4 sm:p-6 font-sans">
-      <h1 className="text-xl sm:text-2xl font-bold text-green-800 poppins mb-1">
-        Welcome Oishe!
-      </h1>
-      <p className="text-gray-600 text-xs sm:text-sm mb-4 sm:mb-6 poppins">
-        Track your purchases and all details
-      </p>
+      <div className="flex justify-between items-center mb-4 sm:mb-6">
+        <div className="">
+          <h1 className="text-xl sm:text-2xl font-bold text-green-800 poppins mb-1">
+            Welcome Oishe!
+          </h1>
+          <p className="text-gray-600 text-xs sm:text-sm  poppins">
+            Track your purchases and all details
+          </p>{" "}
+        </div>
+        <div>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center gap-2 bg-blue-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium"
+          >
+            <FaPlus /> Add New Purchase
+          </button>
+        </div>
+      </div>
 
       <div className="bg-white p-4 sm:p-6 rounded-lg shadow ">
         <h2 className="text-lg sm:text-xl font-semibold text-green-800 poppins mb-4 sm:mb-6">
@@ -198,6 +211,10 @@ const Purchase = () => {
           </ul>
         </div>
       </div>
+      <AddPurchaseModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 };

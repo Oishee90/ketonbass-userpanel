@@ -1,13 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Swal from "sweetalert2";
 
-const AddPurchaseModal = ({ isOpen, onClose }) => {
+const SetReminders = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
     productName: "",
-    storeName: "",
+
     date: "",
-    amount: "",
-    warranty: "",
   });
   const [pdfFile, setPdfFile] = useState(null);
   const [errors, setErrors] = useState({
@@ -50,15 +48,12 @@ const AddPurchaseModal = ({ isOpen, onClose }) => {
 
     setFormData({
       productName: "",
-      storeName: "",
+
       date: "",
-      amount: "",
-      warranty: "",
     });
     setPdfFile(null);
     onClose();
   };
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-lg relative">
@@ -69,7 +64,7 @@ const AddPurchaseModal = ({ isOpen, onClose }) => {
           &times;
         </button>
         <h2 className="text-2xl font-semibold mb-6 main-color text-center poppins">
-          Manual Purchase
+          Set Reminders
         </h2>
 
         <form className="" onSubmit={handleSubmit}>
@@ -86,16 +81,7 @@ const AddPurchaseModal = ({ isOpen, onClose }) => {
               <p className="text-red-600 text-sm mt-1 ">{errors.productName}</p>
             )}
           </div>
-          <div className="mb-4">
-            <input
-              type="text"
-              name="storeName"
-              value={formData.storeName}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-xl px-3 py-2"
-              placeholder="Store name"
-            />
-          </div>
+
           <div className="mb-4">
             <input
               type="text"
@@ -109,61 +95,11 @@ const AddPurchaseModal = ({ isOpen, onClose }) => {
               <p className="text-red-600 text-sm mt-1 ">{errors.date}</p>
             )}
           </div>
-          <div className="mb-4">
-            <input
-              type="text"
-              name="amount"
-              value={formData.amount}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-xl px-3 py-2"
-              placeholder="Amount"
-            />
-          </div>
-          <div className="mb-4">
-            <input
-              type="text"
-              name="warranty"
-              value={formData.warranty}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-xl px-3 py-2"
-              placeholder="Warranty"
-            />
-          </div>
-          <div className="mt-4 mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              Upload PDF (optional)
-            </label>
 
-            <div className="flex items-center gap-3  border border-gray-300  bg-gray-100 rounded-lg">
-              <label className="cursor-pointer inline-block bg-green-600 p-2 text-white rounded-l-md">
-                Browse File
-                <input
-                  type="file"
-                  accept="application/pdf"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-              </label>
-              {pdfFile && (
-                <div className=" flex items-center justify-between bg-gray-100 px-4  rounded">
-                  <span className="text-sm text-gray-700">{pdfFile.name}</span>
-                  <button
-                    type="button"
-                    onClick={() => setPdfFile(null)}
-                    className="text-red-500 hover:text-red-700 text-lg font-bold"
-                    title="Remove file"
-                  >
-                    &times;
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="w-1/2 mx-auto justify-center mt-6">
+          <div className="w-1/2  justify-center mx-auto mb-4">
             <button
               type="submit"
-              className="bg-green-600 text-white px-4 py-2 rounded-2xl w-full hover:bg-green-700"
+              className="bg-green-600 text-white  py-2 rounded-2xl w-full hover:bg-green-700"
             >
               Add
             </button>
@@ -174,4 +110,4 @@ const AddPurchaseModal = ({ isOpen, onClose }) => {
   );
 };
 
-export default AddPurchaseModal;
+export default SetReminders;

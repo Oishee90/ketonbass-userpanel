@@ -8,10 +8,11 @@ import {
   FaCalendarPlus,
 } from "react-icons/fa";
 import "tailwindcss/tailwind.css";
+import SetReminders from "./SetReminders";
 
 const CalendarDashboard = () => {
   const [date, setDate] = useState(new Date());
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const events = [
     { date: new Date(2025, 5, 10), label: "Filter Change", type: "extend" },
     { date: new Date(2025, 5, 27), label: "TV warranty", type: "warranty" },
@@ -98,7 +99,10 @@ const CalendarDashboard = () => {
             Track your warranties and all details
           </p>
         </div>
-        <button className="flex items-center gap-2 bg-green-100 text-green-700 border border-green-300 px-3 py-1 rounded shadow">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="flex items-center gap-2 bg-green-100 text-green-700 border border-green-300 px-3 py-1 rounded shadow"
+        >
           <FaCalendarPlus /> Set Reminder
         </button>
       </div>
@@ -166,6 +170,10 @@ const CalendarDashboard = () => {
           </button>
         </div>
       </div> */}
+      <SetReminders
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 };
