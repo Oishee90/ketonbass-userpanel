@@ -13,12 +13,16 @@ import SetReminders from "./SetReminders";
 const CalendarDashboard = () => {
   const [date, setDate] = useState(new Date());
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isYearDropdownOpen, setIsYearDropdownOpen] = useState(false);
+  const [isMonthDropdownOpen, setIsMonthDropdownOpen] = useState(false);
+
+  // Sample events
   const events = [
     { date: new Date(2025, 5, 10), label: "Filter Change", type: "extend" },
     { date: new Date(2025, 5, 27), label: "TV warranty", type: "warranty" },
   ];
 
-  // 🔥 Raw reminder data with dueDate
+  // Raw reminder data with dueDate
   const rawReminders = [
     {
       title: "TV Warranty Expires",
@@ -28,16 +32,16 @@ const CalendarDashboard = () => {
     {
       title: "Car Maintenance",
       description: "Oil Change Due",
-      dueDate: new Date("2025-06-25"), // 1 week
+      dueDate: new Date("2025-06-25"),
     },
     {
       title: "Filter Replacement",
       description: "Water Filter System",
-      dueDate: new Date("2025-07-02"), // more than 1 week
+      dueDate: new Date("2025-07-02"),
     },
   ];
 
-  //  Calculate time difference and decorate
+  // Calculate time difference and decorate reminders
   const now = new Date();
   const decoratedReminders = rawReminders
     .map((reminder) => {
@@ -78,7 +82,7 @@ const CalendarDashboard = () => {
       );
       return event ? (
         <div
-          className={`mt-1 text-xs rounded-full px-1 py-1 text-white mt-3cla ${
+          className={`mt-1 text-xs rounded-full px-1 py-1 text-white ${
             event.type === "extend" ? "bg-red-500" : "bg-green-500"
           }`}
         >
@@ -89,39 +93,131 @@ const CalendarDashboard = () => {
     return null;
   };
 
+  // Generate a range of years for the dropdown (±5 years from current year)
+  const currentYear = new Date().getFullYear();
+  const yearRange = Array.from({ length: 11 }, (_, i) => currentYear - 5 + i);
+
+  // List of months
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  // Handle year selection
+  const handleYearSelect = (year) => {
+    setDate(new Date(year, date.getMonth(), 1)); // Preserve current month
+    setIsYearDropdownOpen(false); // Close year dropdown
+  };
+
+  // Handle month selection
+  const handleMonthSelect = (monthIndex) => {
+    setDate(new Date(date.getFullYear(), monthIndex, 1)); // Set to first day of selected month
+    setIsMonthDropdownOpen(false); // Close month dropdown
+  };
+
   return (
     <div className="p-6 font-sans text-gray-800">
       {/* Header */}
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex items-center justify-between mb-4">
         <div>
           <h1 className="text-2xl font-bold text-green-700">Welcome Oishe !</h1>
-          <p className="text-gray-600 text-xs sm:text-sm mb-4 sm:mb-6 poppins">
+          <p className="mb-4 text-xs text-gray-600 sm:text-sm sm:mb-6 poppins">
             Track your warranties and all details
           </p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 bg-green-100 text-green-700 border border-green-300 px-3 py-1 rounded shadow"
+          className="flex items-center gap-2 px-3 py-1 text-green-700 bg-green-100 border border-green-300 rounded shadow"
         >
           <FaCalendarPlus /> Set Reminder
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {/* Calendar */}
-        <div className="md:col-span-2 border rounded-lg shadow calender">
+        <div className="border rounded-lg shadow md:col-span-2 calender">
+          {/* Custom Header with Select Year and Month Buttons */}
+          <div className="flex items-center justify-between p-2 bg-white ">
+            <div></div>
+            <div className="text-2xl font-bold text-green-700">
+              {months[date.getMonth()]} {date.getFullYear()}
+            </div>
+            <div className="relative flex gap-2">
+              {/* Select Year Button */}
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    setIsYearDropdownOpen(!isYearDropdownOpen);
+                    setIsMonthDropdownOpen(false); // Close month dropdown if open
+                  }}
+                  className="flex items-center gap-2 px-3 py-1 text-green-700 transition bg-green-100 border border-green-300 rounded shadow hover:bg-green-200"
+                >
+                  Select Year ▼
+                </button>
+                {isYearDropdownOpen && (
+                  <div className="absolute right-0 z-10 w-32 overflow-y-auto bg-white border border-gray-300 rounded shadow-lg top-10 max-h-60">
+                    {yearRange.map((year) => (
+                      <button
+                        key={year}
+                        onClick={() => handleYearSelect(year)}
+                        className="block w-full px-4 py-2 text-left text-gray-800 hover:bg-green-100"
+                      >
+                        {year}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {/* Select Month Button */}
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    setIsMonthDropdownOpen(!isMonthDropdownOpen);
+                    setIsYearDropdownOpen(false); // Close year dropdown if open
+                  }}
+                  className="flex items-center gap-2 px-3 py-1 text-green-700 transition bg-green-100 border border-green-300 rounded shadow hover:bg-green-200"
+                >
+                  Select Month ▼
+                </button>
+                {isMonthDropdownOpen && (
+                  <div className="absolute right-0 z-10 w-40 overflow-y-auto bg-white border border-gray-300 rounded shadow-lg top-10 max-h-60">
+                    {months.map((month, index) => (
+                      <button
+                        key={month}
+                        onClick={() => handleMonthSelect(index)}
+                        className="block w-full px-4 py-2 text-left text-gray-800 hover:bg-green-100"
+                      >
+                        {month}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
           <Calendar
             className="w-full"
             onChange={setDate}
             value={date}
             tileContent={tileContent}
+            showNavigation={false} // Disable default navigation
           />
         </div>
 
         {/* Reminders */}
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">Upcoming Reminders</h3>
-          <div className="max-h-82 overflow-y-auto space-y-4 pr-2">
+          <div className="pr-2 space-y-4 overflow-y-auto max-h-82">
             {decoratedReminders.map((reminder, index) => (
               <div
                 key={index}
@@ -142,34 +238,6 @@ const CalendarDashboard = () => {
         </div>
       </div>
 
-      {/* Upcoming Events */}
-      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-        <div className="bg-red-50 border border-red-200 p-4 rounded shadow">
-          <h4 className="text-md font-bold">
-            Samsung QLED TV Warranty Expiration
-          </h4>
-          <p className="text-sm mt-1">
-            Your Samsung QLED 65" 4K TV warranty is expiring in 13 days.
-            Consider extending the warranty or purchasing a protection plan.
-          </p>
-          <button className="mt-2 text-sm text-white bg-red-500 px-3 py-1 rounded">
-            Extend Warranty
-          </button>
-        </div>
-
-        <div className="bg-blue-50 border border-blue-200 p-4 rounded shadow">
-          <h4 className="text-md font-bold">
-            Water Filter Purchase Anniversary
-          </h4>
-          <p className="text-sm mt-1">
-            Your Samsung QLED 65" 4K TV warranty is expiring in 13 days.
-            Consider extending the warranty or purchasing a protection plan.
-          </p>
-          <button className="mt-2 text-sm text-white bg-blue-500 px-3 py-1 rounded">
-            Extend Warranty
-          </button>
-        </div>
-      </div> */}
       <SetReminders
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
