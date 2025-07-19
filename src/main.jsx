@@ -17,17 +17,10 @@ import Replacement from "./Components/Dashboard/UserLayout/Replacement";
 import CalendarDashboard from "./Components/Dashboard/UserLayout/CalendarDashboard";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { clientId } from "./constants";
-const verify_email = getRole();
-console.log(verify_email, "check mainjsx role ");
-function DefaultDashboard() {
-  const verify_email = getRole();
+import { Provider } from "react-redux";
+import { store } from "./Redux/store";
+import GoogleCallback from "./Components/Pages/GoogleCallback";
 
-  if (verify_email === true) {
-    return <UserDashboard />;
-  } else {
-    return <div>Unauthorized Access</div>;
-  }
-}
 const router = createBrowserRouter([
   {
     path: "/",
@@ -38,12 +31,16 @@ const router = createBrowserRouter([
     element: <SignUpPage></SignUpPage>,
   },
   {
+    path: "/google/callback",
+    element: <GoogleCallback></GoogleCallback>,
+  },
+  {
     path: "/dashboard",
     element: <Root />,
     children: [
       {
         index: true,
-        element: <DefaultDashboard />,
+        element: <UserDashboard/>,
       },
       {
         path: "adminuser",
@@ -77,8 +74,10 @@ const client_id = clientId;
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <GoogleOAuthProvider clientId={client_id}>
-      <RouterProvider router={router} />
-    </GoogleOAuthProvider>
+    <Provider store={store}>
+      <GoogleOAuthProvider clientId={client_id}>
+        <RouterProvider router={router} />
+      </GoogleOAuthProvider>
+    </Provider>
   </StrictMode>
 );

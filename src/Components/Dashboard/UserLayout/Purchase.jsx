@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import AddPurchaseModal from "./AddPurchaseModal";
 import { FaPlus, FaSync } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
+import EditPurchaseModal from "./EditPurchaseModal";
+import { FaEdit, FaTrashAlt } from "react-icons/fa";
+import Swal from "sweetalert2";
+import EditPurchase from "./EditPurchase";
 const purchaseData = [
   {
     id: 1,
@@ -72,6 +76,8 @@ const Purchase = () => {
   const itemsPerPage = 6;
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editData, setEditData] = useState(null);
   // Pagination calculations
   const totalItems = purchaseData.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -92,14 +98,39 @@ const Purchase = () => {
       window.location.reload();
     }, 300);
   };
+
+  const handleEditClick = (item) => {
+    setEditData(item);
+    setEditModalOpen(true);
+  };
+
+  const handleDelete = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire("Deleted!", "Your purchase has been deleted.", "success");
+
+        // const newData = purchaseData.filter(item => item.id !== id);
+        // setPurchaseData(newData);
+      }
+    });
+  };
+
   return (
-    <div className="p-4 sm:p-6 font-sans">
-      <div className="flex justify-between items-center mb-4 sm:mb-6">
+    <div className="p-4 font-sans sm:p-6">
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
         <div className="">
-          <h1 className="text-xl sm:text-2xl font-bold text-green-800 poppins mb-1">
+          <h1 className="mb-1 text-xl font-bold text-green-800 sm:text-2xl poppins">
             Welcome Oishe!
           </h1>
-          <p className="text-gray-600 text-xs sm:text-sm  poppins">
+          <p className="text-xs text-gray-600 sm:text-sm poppins">
             Track your purchases and all details
           </p>{" "}
         </div>
@@ -111,7 +142,7 @@ const Purchase = () => {
             <FaSync
               className={`text-[#EA580C] ${spinning ? "animate-spin" : ""}`}
             />
-            Refresh Email
+            Refresh Purchases
           </button>
           <button
             onClick={() => setIsModalOpen(true)}
@@ -122,32 +153,32 @@ const Purchase = () => {
         </div>
       </div>
 
-      <div className="bg-white p-4 sm:p-6 rounded-lg shadow ">
-        <h2 className="text-lg sm:text-xl font-semibold text-green-800 poppins mb-4 sm:mb-6">
+      <div className="p-4 bg-white rounded-lg shadow sm:p-6 ">
+        <h2 className="mb-4 text-lg font-semibold text-green-800 sm:text-xl poppins sm:mb-6">
           Purchases Details
         </h2>
 
         <div className="overflow-x-auto">
-          <table className="text-left border-collapse min-w-full">
+          <table className="min-w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-200 text-gray-600 text-2xl sm:text-sm rounded-xl">
-                <th className="py-2 px-2 sm:px-4 font-bold text-gray-800 sticky top-0 bg-gray-200 text-lg">
+              <tr className="text-2xl text-gray-600 bg-gray-200 sm:text-sm rounded-xl">
+                <th className="sticky top-0 px-2 py-2 text-lg font-bold text-gray-800 bg-gray-200 sm:px-4">
                   Product Name
                 </th>
-                <th className="py-2 px-2 sm:px-4 font-bold text-gray-800 sticky top-0 bg-gray-200 text-lg">
+                <th className="sticky top-0 px-2 py-2 text-lg font-bold text-gray-800 bg-gray-200 sm:px-4">
                   Store Name
                 </th>
-                <th className="py-2 px-2 sm:px-4 font-bold text-gray-800 sticky top-0 bg-gray-200 hidden sm:table-cell text-lg">
+                <th className="sticky top-0 hidden px-2 py-2 text-lg font-bold text-gray-800 bg-gray-200 sm:px-4 sm:table-cell">
                   Date - Time
                 </th>
-                <th className="py-2 px-2 sm:px-4 font-bold text-gray-800 sticky top-0 bg-gray-200 text-lg">
+                <th className="sticky top-0 px-2 py-2 text-lg font-bold text-gray-800 bg-gray-200 sm:px-4">
                   Quantity
                 </th>
-                <th className="py-2 px-2 sm:px-4 font-bold text-gray-800 sticky top-0 bg-gray-200 text-lg">
+                <th className="sticky top-0 px-2 py-2 text-lg font-bold text-gray-800 bg-gray-200 sm:px-4">
                   Amount
                 </th>
-                <th className="py-2 px-2 sm:px-4 font-bold text-gray-800 sticky top-0 bg-gray-200 text-lg">
-                  Status
+                <th className="px-2 py-2 text-lg font-bold text-gray-800 sm:px-4">
+                  Actions
                 </th>
               </tr>
             </thead>
@@ -155,33 +186,39 @@ const Purchase = () => {
               {currentData.map((item) => (
                 <tr
                   key={item.id}
-                  className="border-b hover:bg-gray-50 text-gray-800"
+                  className="text-gray-800 border-b hover:bg-gray-50"
                 >
-                  <td className="py-3 px-2 sm:px-4 text-base sm:text-sm whitespace-nowrap">
+                  <td className="px-2 py-3 text-base sm:px-4 sm:text-sm whitespace-nowrap">
                     {item.productName}
                   </td>
-                  <td className="py-3 px-2 sm:px-4 text-base sm:text-sm whitespace-nowrap">
+                  <td className="px-2 py-3 text-base sm:px-4 sm:text-sm whitespace-nowrap">
                     {item.storeName}
                   </td>
-                  <td className="py-3 px-2 sm:px-4 text-base sm:text-sm whitespace-nowrap hidden sm:table-cell">
+                  <td className="hidden px-2 py-3 text-base sm:px-4 sm:text-sm whitespace-nowrap sm:table-cell">
                     {item.dateTime}
                   </td>
-                  <td className="py-3 px-2 sm:px-4 text-base sm:text-sm whitespace-nowrap">
+                  <td className="px-2 py-3 text-base sm:px-4 sm:text-sm whitespace-nowrap">
                     {item.quantity}
                   </td>
-                  <td className="py-3 px-2 sm:px-4 text-base sm:text-sm whitespace-nowrap">
+                  <td className="px-2 py-3 text-base sm:px-4 sm:text-sm whitespace-nowrap">
                     {item.amount}
                   </td>
-                  <td className="py-3 px-2 sm:px-4">
-                    <span
-                      className={`px-2 sm:px-3 py-1 text-base font-medium rounded-full ${
-                        item.status === "Delivered"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
+                  <td className="flex items-center gap-4 px-2 py-3 sm:px-4">
+                    <button
+                      onClick={() => handleEditClick(item)}
+                      className="flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-800"
+                      title="Edit"
                     >
-                      {item.status}
-                    </span>
+                      <FaEdit className="text-xl" />
+                    </button>
+
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      className="text-xl text-red-600 hover:text-red-800"
+                      title="Delete"
+                    >
+                      <FaTrashAlt />
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -191,11 +228,11 @@ const Purchase = () => {
 
         {/* Pagination */}
         <div className="flex justify-end mt-4 sm:mt-6">
-          <ul className="flex space-x-1 sm:space-x-2 text-xs sm:text-sm">
+          <ul className="flex space-x-1 text-xs sm:space-x-2 sm:text-sm">
             <li>
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
-                className="px-2 py-1 sm:px-3 sm:py-2 rounded hover:bg-gray-200 text-lg"
+                className="px-2 py-1 text-lg rounded sm:px-3 sm:py-2 hover:bg-gray-200"
                 disabled={currentPage === 1}
               >
                 &lt;
@@ -220,7 +257,7 @@ const Purchase = () => {
             <li>
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
-                className="px-2 py-1 sm:px-3 sm:py-2 rounded hover:bg-gray-200 text-lg"
+                className="px-2 py-1 text-lg rounded sm:px-3 sm:py-2 hover:bg-gray-200"
                 disabled={currentPage === totalPages}
               >
                 &gt;
@@ -233,6 +270,14 @@ const Purchase = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
+      {editModalOpen && (
+      <EditPurchase
+  isOpen={editModalOpen}
+  onClose={() => setEditModalOpen(false)}
+  data={editData}
+/>
+
+      )}
     </div>
   );
 };

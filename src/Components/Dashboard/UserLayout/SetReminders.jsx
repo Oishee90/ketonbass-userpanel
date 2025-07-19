@@ -10,7 +10,15 @@ const SetReminders = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
     productName: "",
     date: "",
+    title: "", // <-- Custom title
   });
+  const productOptions = [
+    "Apple Watch",
+    "MacBook Pro",
+    "iPhone 14",
+    "AirPods Pro",
+    "iPad Air",
+  ];
 
   const [pdfFile, setPdfFile] = useState(null);
   const [errors, setErrors] = useState({});
@@ -74,16 +82,19 @@ const SetReminders = ({ isOpen, onClose }) => {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      toast.error("Please fill in all required fields");
+
       return;
     }
 
     setErrors({});
     setFormData({ productName: "", date: "" });
     setPdfFile(null);
-    onClose();
-    console.log(formData, "submitted");
+
     toast.success("Reminder added successfully!");
+    setTimeout(() => {
+      onClose();
+    }, 1000);
+    console.log(formData, "submitted");
   };
 
   return (
@@ -111,7 +122,45 @@ const SetReminders = ({ isOpen, onClose }) => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-xl"
                 placeholder="Product name*"
               />
+              {errors.productName && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.productName}
+                </p>
+              )}
             </div>
+            {/* <div className="relative mb-4">
+              <div
+                onClick={() => setDropdownOpen((prev) => !prev)}
+                className={`w-full px-4 py-2 bg-white border ${
+                  errors.productName ? "border-red-500" : "border-gray-300"
+                } rounded-xl text-gray-800 cursor-pointer flex justify-between items-center`}
+              >
+                <span className={formData.productName ? "" : "text-gray-400"}>
+                  {formData.productName || "-- Choose a product --"}
+                </span>
+                <FaChevronDown className="ml-2 text-gray-500" />
+              </div>
+
+              {dropdownOpen && (
+                <ul className="absolute z-10 w-full mt-1 overflow-y-auto bg-white border border-gray-300 shadow rounded-xl max-h-52">
+                  {productOptions.map((product) => (
+                    <li
+                      key={product}
+                      onClick={() => handleSelect(product)}
+                      className="px-4 py-2 text-sm text-gray-800 cursor-pointer hover:bg-green-100"
+                    >
+                      {product}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {errors.productName && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.productName}
+                </p>
+              )}
+            </div> */}
 
             {/* Date Input */}
             <div className="relative mb-4">
@@ -124,6 +173,9 @@ const SetReminders = ({ isOpen, onClose }) => {
                 placeholder="Date*"
                 readOnly
               />
+              {errors.date && (
+                <p className="mt-1 text-sm text-red-500">{errors.date}</p>
+              )}
 
               {/* Calendar Popup */}
               <div>
@@ -157,7 +209,7 @@ const SetReminders = ({ isOpen, onClose }) => {
             </div>
           </form>
         </div>
-        <ToastContainer position="top-right" autoClose={3000} />
+        <ToastContainer position="top-center" autoClose={3000} />
       </div>
     )
   );

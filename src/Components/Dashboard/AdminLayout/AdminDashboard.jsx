@@ -32,7 +32,7 @@ const dashboardCards = [
     icon: <MdErrorOutline className="text-xl" />,
     changeColor: "text-red-500",
   },
-  // চাইলে আরও যুক্ত করো...
+ 
 ];
 
 const userActivityData = [
@@ -117,11 +117,11 @@ const AdminDashboard = () => {
       </h1>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 md:grid-cols-4">
         {dashboardCards.map((card, index) => (
           <div
             key={index}
-            className="flex justify-between items-center bg-white rounded-2xl p-5 shadow-sm border border-gray-200"
+            className="flex items-center justify-between p-5 bg-white border border-gray-200 shadow-sm rounded-2xl"
           >
             <div>
               <p className="text-[#4B5563] text-sm poppins">{card.title}</p>
@@ -142,14 +142,14 @@ const AdminDashboard = () => {
       </div>
 
       {/* Charts and Activity */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 gap-6 mb-6 md:grid-cols-2">
         {/* User Map */}
-        <div className="bg-white rounded-xl shadow-md p-5">
-          <div className="flex justify-between items-center mb-4">
+        <div className="p-5 bg-white shadow-md rounded-xl">
+          <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-bold text-[#464255] poppins">
               User Map
             </h3>
-            <select className="text-sm border rounded px-2 py-1">
+            <select className="px-2 py-1 text-sm border rounded">
               <option>Yearly</option>
               <option>Monthly</option>
             </select>
@@ -171,7 +171,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Recent User Activity */}
-        <div className="bg-white rounded-xl shadow-md p-5">
+        <div className="p-5 bg-white shadow-md rounded-xl">
           <h3 className="text-lg font-bold mb-4 text-[#464255]  poppins">
             Recent User Activity
           </h3>
@@ -179,7 +179,7 @@ const AdminDashboard = () => {
             {userActivityData.map((item, index) => (
               <li
                 key={index}
-                className="flex justify-between items-center border-b pb-2"
+                className="flex items-center justify-between pb-2 border-b"
               >
                 <div>
                   <p className="font-medium text-[#111827] poppins">
@@ -203,9 +203,9 @@ const AdminDashboard = () => {
       </div>
 
       {/* System Alerts */}
-      <div className="bg-white rounded-xl shadow-md p-5">
-        <h3 className="text-lg font-semibold mb-4">System Alerts</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="p-5 bg-white shadow-md rounded-xl">
+        <h3 className="mb-4 text-lg font-semibold">System Alerts</h3>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {systemAlerts.map((alert, idx) => (
             <div key={idx} className={`${alert.bg} p-4 rounded-lg`}>
               <div className="flex flex-row items-start gap-2">

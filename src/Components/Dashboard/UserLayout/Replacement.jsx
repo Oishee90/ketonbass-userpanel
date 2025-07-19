@@ -150,35 +150,35 @@ const Replacement = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-xl sm:text-2xl font-bold main-color poppins mb-1">
-        Welcome Oishe !
+    <div className="min-h-screen p-6 bg-gray-50">
+      <h1 className="mb-1 text-xl font-bold sm:text-2xl main-color poppins">
+        Oishee Khan’s Replacement Parts
       </h1>
-      <p className="text-gray-600 text-xs sm:text-sm mb-4 sm:mb-6 poppins">
-        Track your purchases and all details
+      <p className="mb-4 text-xs text-gray-600 sm:text-sm sm:mb-6 poppins">
+        Track replacement parts for all of your purchases
       </p>
 
-      <div className="bg-white p-4 sm:p-6 rounded-lg shadow ">
-        <h2 className="text-lg sm:text-xl font-semibold main-color poppins mb-4 sm:mb-6">
+      <div className="p-4 bg-white rounded-lg shadow sm:p-6 ">
+        <h2 className="mb-4 text-lg font-semibold sm:text-xl main-color poppins sm:mb-6">
           Purchases Details
         </h2>
         <div className="overflow-auto">
-          <table className="w-full table-auto border-separate border-spacing-y-2">
-            <thead className="bg-gray-100 text-left">
+          <table className="w-full border-separate table-auto border-spacing-y-2">
+            <thead className="text-left bg-gray-100">
               <tr>
-                <th className="py-2 px-2 sm:px-4 font-bold text-gray-800 sticky top-0 bg-gray-200 text-lg poppins">
+                <th className="sticky top-0 px-2 py-2 text-lg font-bold text-gray-800 bg-gray-200 sm:px-4 poppins">
                   Original Purchase
                 </th>
-                <th className="py-3 px-4 font-semibold bg-gray-200 text-lg poppins">
+                <th className="px-4 py-3 text-lg font-semibold bg-gray-200 poppins">
                   Replacement parts
                 </th>
-                <th className="py-3 px-4 font-semibold bg-gray-200 text-lg poppins">
+                <th className="px-4 py-3 text-lg font-semibold bg-gray-200 poppins">
                   Timeline
                 </th>
-                <th className="py-3 px-4 font-semibold bg-gray-200 text-lg poppins">
+                <th className="px-4 py-3 text-lg font-semibold bg-gray-200 poppins">
                   Link to replacement parts
                 </th>
-                <th className="py-3 px-4 font-semibold bg-gray-200 text-lg poppins">
+                <th className="px-4 py-3 text-lg font-semibold bg-gray-200 poppins">
                   Price
                 </th>
               </tr>
@@ -193,21 +193,21 @@ const Replacement = () => {
                     {idx === 0 && (
                       <td
                         rowSpan={purchase.replacements.length}
-                        className="py-4 px-4 align-top font-medium text-gray-700 border-r border-b border-gray-300"
+                        className="px-4 py-4 font-medium text-gray-700 align-top border-b border-r border-gray-300"
                       >
                         {purchase.original}
                       </td>
                     )}
-                    <td className="py-4 px-4 text-gray-700 border-b border-gray-300 poppins">
+                    <td className="px-4 py-4 text-gray-700 border-b border-gray-300 poppins">
                       {item.part}
                     </td>
-                    <td className="py-4 px-4 text-gray-700 border-b border-gray-300 poppins ">
+                    <td className="px-4 py-4 text-gray-700 border-b border-gray-300 poppins ">
                       {item.timeline}
                     </td>
-                    <td className="py-4 px-4 text-blue-600 underline cursor-pointer border-b border-gray-300 poppins">
+                    <td className="px-4 py-4 text-blue-600 underline border-b border-gray-300 cursor-pointer poppins">
                       {item.link}
                     </td>
-                    <td className="py-4 px-4 text-gray-700 border-b border-gray-300 poppins">
+                    <td className="px-4 py-4 text-gray-700 border-b border-gray-300 poppins">
                       {item.price}
                     </td>
                   </tr>
@@ -219,7 +219,7 @@ const Replacement = () => {
       </div>
 
       {/* Pagination Controls */}
-      <div className="mt-6 flex justify-center items-center space-x-2">
+      <div className="flex items-center justify-center mt-6 space-x-2">
         <button
           onClick={() => goToPage(currentPage - 1)}
           disabled={currentPage === 1}

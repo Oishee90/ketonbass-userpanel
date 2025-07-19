@@ -1,24 +1,19 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import getRole from "../../utils/role";
-import AdminDashboard from "./AdminLayout/AdminDashboard";
+import { useSelector } from "react-redux"; // Import useSelector
+import AdminDashboard from "./AdminLayout/AdminDashboard"; // Example, can be removed if only one dashboard exists
 import UserDashboard from "./UserLayout/UserDashboard";
-import AdminSidebar from "./Sidebar/AdminSidebar";
+import AdminSidebar from "./Sidebar/AdminSidebar"; // Example, can be removed if only one sidebar exists
 import UserSidebar from "./Sidebar/UserSidebar";
 import Header from "./Header";
 
 const Root = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const verify_email = getRole();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  // Redirect to login if no role is found
-  useEffect(() => {
-    if (!verify_email) {
-      navigate("/login");
-    }
-  }, [verify_email, navigate]);
+  // Retrieve user info from Redux persist
+  const user = useSelector((state) => state.auth.user);
 
   // Collapse sidebar on smaller screens
   useEffect(() => {
@@ -32,23 +27,12 @@ const Root = () => {
 
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
-  if (verify_email === null) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        Loading...
-      </div>
-    );
-  }
-
-  const renderDefaultDashboard = () => {
-    switch (verify_email) {
-    
-      case true:
-        return <UserDashboard />;
-      default:
-        return <div>Unauthorized or invalid role</div>;
+  // Redirect to login if no user is found
+  useEffect(() => {
+    if (!user) {
+      navigate("/login"); // Navigate to login if no user is found
     }
-  };
+  }, [user, navigate]);
 
   const isDashboardRoot = location.pathname === "/dashboard";
 
@@ -60,8 +44,7 @@ const Root = () => {
           isSidebarOpen ? "w-64" : "w-16"
         } fixed left-0 top-0 h-screen transition-all duration-300`}
       >
-     
-        {verify_email === true && (
+        {user && (
           <UserSidebar
             isSidebarOpen={isSidebarOpen}
             toggleSidebar={toggleSidebar}
@@ -79,9 +62,16 @@ const Root = () => {
         <Header />
 
         {/* Main Scrollable Area */}
-<main className="flex-1 overflow-y-auto bg-white dark:bg-white h-[calc(100vh-64px)]">
-
-          {isDashboardRoot ? renderDefaultDashboard() : <Outlet />}
+        <main className="flex-1 overflow-y-auto bg-white dark:bg-white h-[calc(100vh-64px)]">
+          {isDashboardRoot ? (
+            user ? (
+              <UserDashboard />
+            ) : (
+              <div>Unauthorized or invalid role</div> // If no user data, show error
+            )
+          ) : (
+            <Outlet />
+          )}
         </main>
       </div>
     </div>

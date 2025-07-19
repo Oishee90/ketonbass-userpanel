@@ -1,88 +1,63 @@
-import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
-import image from "../../assets/ketonregister.png";
+import { Navigate, NavLink } from "react-router-dom";
 import logo from "../../assets/logo.png";
 import google from "../../assets/google.png";
-import Swal from "sweetalert2";
-import { useGoogleLogin } from "@react-oauth/google";
+import image from "../../assets/ketonregister.png";
+import { useEffect } from "react";
+import { userLoggedIn } from "../../Redux/feature/auth/authSlice";
+import { useDispatch } from "react-redux";
+
 export default function SignUpPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.data?.type === "GOOGLE_AUTH_SUCCESS") {
+        const data = event.data.payload;
+        dispatch(
+          userLoggedIn({
+            user: {
+              name: data.name,
+              email: data.email,
+              profile_picture: data.profile_picture,
+            },
+            accessToken: data.access_token,
+            refreshToken: data.refresh_token,
+          })
+        );
 
-  // Reza's Code:
-
-  // const login = useGoogleLogin({
-  //   flow: "auth-code", // use authorization code flow
-  //   onSuccess: async (codeResponse) => {
-  //     try {
-  //       const res = await fetch(
-  //         "http://192.168.10.40:13000/api/google-login/",
-  //         {
-  //           method: "POST",
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //           },
-  //           body: JSON.stringify({ code: codeResponse.code }),
-  //         }
-  //       );
-
-  //       const data = await res.json();
-
-  //       if (res.ok) {
-  //         // Save user to localStorage
-  //         localStorage.setItem("user", JSON.stringify(data.google_data));
-
-  //         // Show success message, then redirect using full page reload
-  //         Swal.fire({
-  //           icon: "success",
-  //           title: "Google Sign-In Successful",
-  //           text: `Welcome ${data.google_data.email}`,
-  //           timer: 1500,
-  //           showConfirmButton: false,
-  //         }).then(() => {
-  //           // Use full page reload to reinitialize app with user data
-  //           window.location.href = "/dashboard";
-  //         });
-  //       } else {
-  //         Swal.fire("Error", data.message || "Google login failed", "error");
-  //       }
-  //     } catch (error) {
-  //       console.error("Login Error:", error);
-  //       Swal.fire("Error", "Something went wrong", "error");
-  //     }
-  //   },
-
-  //   onError: (errorResponse) => {
-  //     console.error("Google Login Error", errorResponse);
-  //     Swal.fire("Error", "Google login failed", "error");
-  //   },
-  //   ux_mode: "popup", // popup is ideal for SPAs
-  //   redirect_uri: "http://localhost:5173", // Match with OAuth client settings in Google Console
-  // });
-  //
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const userData = {
-      email: "user@gmail.com", // Dummy email
-      verified_email: true,
+        Navigate("/dashboard");
+      }
     };
 
-    localStorage.setItem("user", JSON.stringify(userData));
+    window.addEventListener("message", handleMessage);
 
-    Swal.fire({
-      icon: "success",
-      title: "Sign in Successful",
-      text: "Signed in as user",
-    }).then(() => {
-      navigate("/dashboard");
-    });
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
+  const handleGoogleLogin = () => {
+    const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    const REDIRECT_URI =
+      "https://3ed269d4afe9.ngrok-free.app/google-auth/google/callback/";
+    const scope = [
+      "openid",
+      "email",
+      "profile",
+      "https://www.googleapis.com/auth/gmail.readonly",
+      "https://www.googleapis.com/auth/calendar",
+    ].join(" ");
+
+    const authUrl =
+      `https://accounts.google.com/o/oauth2/v2/auth?` +
+      `client_id=${GOOGLE_CLIENT_ID}` +
+      `&redirect_uri=${REDIRECT_URI}` +
+      `&response_type=code` +
+      `&scope=${encodeURIComponent(scope)}` +
+      `&prompt=consent&access_type=offline`;
+
+    window.open(authUrl, "googleLoginPopup", "width=500,height=600");
   };
 
   return (
-    <div className="flex 2xl:flex-row flex-col justify-between items-center h-full 2xl:h-screen">
+    <div className="flex flex-col items-center justify-between h-full 2xl:flex-row 2xl:h-screen">
       {/* Back Button */}
       <NavLink
         to="/"
@@ -107,8 +82,8 @@ export default function SignUpPage() {
       {/* Left Form Section */}
       <div className="w-full max-w-3xl bg-gradient-to-b from-[#F5FFF9] to-[#E3FFED] rounded-lg p-[6rem] mx-auto">
         {/* Logo and Title */}
-        <div className="text-center mb-8">
-          <div className="flex justify-center items-center gap-2 mb-2">
+        <div className="mb-8 text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
             <img src={logo} alt="Logo" />
           </div>
           <p className="text-[#1C6A28] text-2xl font-semibold poppins">
@@ -116,21 +91,18 @@ export default function SignUpPage() {
           </p>
         </div>
 
-        {/* Social Button */}
-        <div className="space-y-4 mb-6">
+        {/* Google Login Button */}
+        <div className="mb-6 space-y-4">
           <button
-            onClick={handleSubmit}
-            // onClick={() => login()}
-            className="w-full flex items-center justify-center gap-4 border border-gray-300 px-5 py-2 rounded-md bg-white hover:bg-gray-50"
+            onClick={handleGoogleLogin}
+            className="flex items-center justify-center w-full gap-4 px-5 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
           >
             <span className="text-[#979797] text-base poppins">
-              Create account with Google
+              Login with Google
             </span>
             <img src={google} alt="Google" />
           </button>
         </div>
-
-        {/* Form */}
       </div>
 
       {/* Right Image Section */}
@@ -138,7 +110,7 @@ export default function SignUpPage() {
         <img
           src={image}
           alt="Signup visual"
-          className="w-full h-full object-cover"
+          className="object-cover w-full h-full"
         />
       </div>
     </div>

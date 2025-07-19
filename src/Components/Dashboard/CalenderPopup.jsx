@@ -34,7 +34,7 @@ const CalenderPopup = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-20">
       <div
         ref={popupRef}
-        className="relative w-full max-w-xs p-4 bg-white rounded-lg shadow-lg top-[25%] left-[16%]"
+        className="relative w-full max-w-xs p-4 bg-white rounded-lg shadow-lg top-[25%] left-[0%]"
       >
         {/* Header */}
         <div className="flex items-center justify-between p-2">
@@ -48,6 +48,7 @@ const CalenderPopup = ({
           {/* Year */}
           <div className="relative">
             <button
+              type="button"
               onClick={() => {
                 setIsYearDropdownOpen(!isYearDropdownOpen);
                 setIsMonthDropdownOpen(false);
@@ -60,6 +61,7 @@ const CalenderPopup = ({
               <div className="absolute z-10 w-32 mt-2 overflow-y-auto bg-white border border-gray-300 rounded shadow max-h-60">
                 {yearRange.map((year) => (
                   <button
+                    type="button"
                     key={year}
                     onClick={() => handleYearSelect(year)}
                     className="w-full px-4 py-2 text-left text-gray-800 hover:bg-green-100"
@@ -74,6 +76,7 @@ const CalenderPopup = ({
           {/* Month */}
           <div className="relative">
             <button
+              type="button"
               onClick={() => {
                 setIsMonthDropdownOpen(!isMonthDropdownOpen);
                 setIsYearDropdownOpen(false);
@@ -86,6 +89,7 @@ const CalenderPopup = ({
               <div className="absolute z-10 w-40 mt-2 overflow-y-auto bg-white border border-gray-300 rounded shadow max-h-60">
                 {months.map((month, index) => (
                   <button
+                    type="button"
                     key={month}
                     onClick={() => handleMonthSelect(index)}
                     className="w-full px-4 py-2 text-left text-gray-800 hover:bg-green-100"

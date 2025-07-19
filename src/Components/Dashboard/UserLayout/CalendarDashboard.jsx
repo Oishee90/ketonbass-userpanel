@@ -74,19 +74,19 @@ const CalendarDashboard = () => {
 
   const tileContent = ({ date, view }) => {
     if (view === "month") {
-      const event = events.find(
-        (e) =>
-          e.date.getFullYear() === date.getFullYear() &&
-          e.date.getMonth() === date.getMonth() &&
-          e.date.getDate() === date.getDate()
-      );
-      return event ? (
+      const formattedDate = date.toISOString().split("T")[0]; // 'YYYY-MM-DD'
+      const hasEvent = events.find((e) => {
+        const eventDate = e.date.toISOString().split("T")[0];
+        return eventDate === formattedDate;
+      });
+
+      return hasEvent ? (
         <div
-          className={`mt-1 text-xs rounded-full px-1 py-1 text-white ${
-            event.type === "extend" ? "bg-red-500" : "bg-green-500"
+          className={`mt-1 text-[10px] rounded-full text-center text-white px-1 py-0.5 ${
+            hasEvent.type === "extend" ? "bg-red-500" : "bg-green-500"
           }`}
         >
-          {event.label}
+          {hasEvent.label}
         </div>
       ) : null;
     }

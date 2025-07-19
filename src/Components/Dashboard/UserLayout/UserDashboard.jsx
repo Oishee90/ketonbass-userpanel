@@ -42,22 +42,22 @@ const UserDashboard = () => {
   return (
     <div className="bg-[#f9f9f9] min-h-screen p-6 font-sans">
       {/* Header */}
-      <div className="flex justify-between items-start mb-8">
+      <div className="flex items-start justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold  main-color poppins mb-1">
+          <h1 className="mb-1 text-2xl font-bold main-color poppins">
             Dashboard Overview
           </h1>
-          <p className="poppins text-base font-normal tittle-color">
+          <p className="text-base font-normal poppins tittle-color">
             Track your purchases, warranties, and upcoming reminders
           </p>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 gap-4 mb-6 md:grid-cols-4">
         {statsData.map((item, index) => (
-          <div key={index} className="bg-white p-4 rounded-lg shadow">
-            <p className="text-sbase tittle-color font-medium mb-1 ">
+          <div key={index} className="p-4 bg-white rounded-lg shadow">
+            <p className="mb-1 font-medium text-sbase tittle-color ">
               {item.title}
             </p>
             <h2
@@ -71,7 +71,7 @@ const UserDashboard = () => {
 
       {/* Quick Actions */}
       <div className="!mt-12 !mb-10">
-        <h1 className="text-xl font-semibold  main-color poppins mb-1">
+        <h1 className="mb-1 text-xl font-semibold main-color poppins">
           Quick Actions
         </h1>
       </div>
@@ -88,7 +88,7 @@ const UserDashboard = () => {
         >
           {" "}
           <button className="flex items-center gap-2">
-            <FaSync className="text-[#EA580C]" /> Refresh Email
+            <FaSync className="text-[#EA580C]" /> Refresh Purchases
           </button>{" "}
         </NavLink>
         <button
@@ -100,7 +100,7 @@ const UserDashboard = () => {
       </div>
 
       {/* Recent Purchases & Reminders */}
-      <div className="grid grid-cols-1 lg:grid-cols-2  gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Recent Purchases */}
         <div className="md:col-span-2 bg-white  rounded-lg shadow border border-[#E5E7EB] ">
           <div className="flex  justify-between md:items-center mb-4  border border-b-[#E5E7EB] p-4">
@@ -115,7 +115,7 @@ const UserDashboard = () => {
             </NavLink>
           </div>
 
-          <div className="space-y-4 p-6 ">
+          <div className="p-6 space-y-4 ">
             {recentPurchases.map((purchase) => (
               <div
                 key={purchase.id}
@@ -130,7 +130,7 @@ const UserDashboard = () => {
                   </p>
                 </div>
                 <div className="md:text-right">
-                  <p className="text-gray-800 font-bold poppins">
+                  <p className="font-bold text-gray-800 poppins">
                     {purchase.price}
                   </p>
                   <span
@@ -145,8 +145,8 @@ const UserDashboard = () => {
         </div>
 
         {/* Upcoming Reminders */}
-        <div className="bg-white p-4 rounded-lg shadow poppins w-full">
-          <h2 className="lg:text-lg font-semibold main-color mb-4">
+        <div className="w-full p-4 bg-white rounded-lg shadow poppins">
+          <h2 className="mb-4 font-semibold lg:text-lg main-color">
             Upcoming Reminders
           </h2>
 

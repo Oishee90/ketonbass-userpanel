@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FaRegFileAlt } from "react-icons/fa";
+import { format, parse } from "date-fns";
 
-// Dummy warranty data (you can extend this as needed)
 const warrantyData = [
   {
     id: 1,
@@ -9,7 +9,6 @@ const warrantyData = [
     purchaseDate: "1 June, 2025",
     warrantyDate: "1 June, 2027",
     documents: 2,
-    status: "Active",
   },
   {
     id: 2,
@@ -17,7 +16,6 @@ const warrantyData = [
     purchaseDate: "1 June, 2025",
     warrantyDate: "1 June, 2027",
     documents: 1,
-    status: "Expired",
   },
   {
     id: 3,
@@ -25,7 +23,6 @@ const warrantyData = [
     purchaseDate: "2 June, 2025",
     warrantyDate: "2 June, 2027",
     documents: 1,
-    status: "Soon",
   },
   {
     id: 4,
@@ -33,7 +30,6 @@ const warrantyData = [
     purchaseDate: "3 June, 2025",
     warrantyDate: "3 June, 2027",
     documents: 2,
-    status: "Active",
   },
   {
     id: 5,
@@ -41,7 +37,6 @@ const warrantyData = [
     purchaseDate: "4 June, 2025",
     warrantyDate: "4 June, 2026",
     documents: 1,
-    status: "Soon",
   },
   {
     id: 6,
@@ -49,7 +44,6 @@ const warrantyData = [
     purchaseDate: "5 June, 2025",
     warrantyDate: "5 June, 2026",
     documents: 1,
-    status: "Expired",
   },
   {
     id: 7,
@@ -57,7 +51,6 @@ const warrantyData = [
     purchaseDate: "6 June, 2025",
     warrantyDate: "6 June, 2026",
     documents: 2,
-    status: "Active",
   },
   {
     id: 8,
@@ -65,7 +58,6 @@ const warrantyData = [
     purchaseDate: "7 June, 2025",
     warrantyDate: "7 June, 2027",
     documents: 2,
-    status: "Soon",
   },
 ];
 
@@ -73,9 +65,27 @@ const Warranty = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 6;
 
-  const sortedWarrantyData = [...warrantyData].sort((a, b) => {
-    return new Date(a.purchaseDate) - new Date(b.purchaseDate);
-  });
+  const today = new Date();
+
+  const getStatus = (warrantyDateStr) => {
+    const warrantyDate = new Date(warrantyDateStr);
+    const twoWeeksBefore = new Date(warrantyDate);
+    twoWeeksBefore.setDate(warrantyDate.getDate() - 14);
+
+    if (today > warrantyDate) return "Expired";
+    if (today >= twoWeeksBefore) return "Expires Soon";
+    return "Active";
+  };
+
+  const sortedWarrantyData = [...warrantyData]
+    .map((item) => ({
+      ...item,
+      status: getStatus(item.warrantyDate),
+    }))
+    .sort(
+      (a, b) =>
+        new Date(a.purchaseDate).getTime() - new Date(b.purchaseDate).getTime()
+    );
 
   const totalPages = Math.ceil(sortedWarrantyData.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -83,37 +93,49 @@ const Warranty = () => {
     startIndex,
     startIndex + ITEMS_PER_PAGE
   );
+
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
     }
   };
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return format(date, "MM/dd/yyyy");
+  };
+
   return (
     <div className="bg-[#f9f9f9] min-h-screen p-6 font-sans">
-      <h1 className="text-2xl font-bold text-green-800 mb-1">Welcome Oishe!</h1>
-      <p className="text-gray-600 text-sm mb-6">
+      <h1 className="mb-1 text-2xl font-bold text-green-800">
+        Oishee Khan’s Warranties
+      </h1>
+      <p className="mb-6 text-sm text-gray-600">
         Track your warranties and all details
       </p>
 
-      <div className="bg-white p-6 rounded-lg shadow">
+      <div className="p-6 bg-white rounded-lg shadow">
+        <h2 className="mb-4 text-lg font-semibold text-green-800 sm:text-xl poppins sm:mb-6">
+          Warranties Details
+        </h2>
+
         <div className="overflow-x-auto">
           <table className="min-w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-200 text-gray-600 text-2xl sm:text-sm rounded-xl">
-                <th className="py-2 px-4 font-bold text-gray-800 text-lg">
+              <tr className="text-2xl text-gray-600 bg-gray-200 sm:text-sm rounded-xl">
+                <th className="px-4 py-2 text-lg font-bold text-gray-800">
                   Product Name
                 </th>
-                <th className="py-2 px-4 font-bold text-gray-800 text-lg">
+                <th className="px-4 py-2 text-lg font-bold text-gray-800">
                   Purchase Date
                 </th>
-                <th className="py-2 px-4 font-bold text-gray-800 text-lg">
+                <th className="px-4 py-2 text-lg font-bold text-gray-800">
                   Warranty Date
                 </th>
-                <th className="py-2 px-4 font-bold text-gray-800 text-lg">
+                <th className="px-4 py-2 text-lg font-bold text-center text-gray-800">
                   Documents
                 </th>
-                <th className="py-2 px-4 font-bold text-gray-800 text-lg">
+                <th className="px-4 py-2 text-lg font-bold text-gray-800">
                   Status
                 </th>
               </tr>
@@ -121,13 +143,16 @@ const Warranty = () => {
             <tbody>
               {currentItems.map((item) => (
                 <tr key={item.id} className="border-b hover:bg-gray-50">
-                  <td className="py-3 px-4">{item.productName}</td>
-                  <td className="py-3 px-4">{item.purchaseDate}</td>
-                  <td className="py-3 px-4">{item.warrantyDate}</td>
-                  <td className="py-3 px-4 flex items-center gap-2">
-                    <FaRegFileAlt className="text-gray-600" /> {item.documents}
+                  <td className="px-4 py-3">{item.productName}</td>
+                  <td className="px-4 py-3">{formatDate(item.purchaseDate)}</td>
+                  <td className="px-4 py-3">{formatDate(item.warrantyDate)}</td>
+                  <td className="px-4 py-3 text-center">
+                    <div className="flex items-center justify-center gap-2">
+                      <FaRegFileAlt className="text-gray-600" />{" "}
+                      {item.documents}
+                    </div>
                   </td>
-                  <td className="py-3 px-4">
+                  <td className="px-4 py-3">
                     <span
                       className={`px-3 py-1 text-base font-medium rounded-full ${
                         item.status === "Active"
