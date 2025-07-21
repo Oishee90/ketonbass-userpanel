@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaPlus, FaSync, FaUpload } from "react-icons/fa";
 import { recentPurchases, upcomingReminders } from "../../../fakeData";
 import AddPurchaseModal from "./AddPurchaseModal";
 import EditPurchaseModal from "./EditPurchaseModal";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { userLoggedIn } from "../../../Redux/feature/auth/authSlice";
+import { useDispatch } from "react-redux";
 const statsData = [
   {
     title: "Total Purchases",
@@ -39,6 +41,48 @@ const UserDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Extract query params from the URL
+    const queryParams = new URLSearchParams(location.search);
+
+    const accessToken = queryParams.get("access_token");
+    const refreshToken = queryParams.get("refresh_token");
+    const email = queryParams.get("email");
+    const name = queryParams.get("name");
+    const picture = queryParams.get("picture");
+
+    if (accessToken && refreshToken) {
+      console.log("✅ Tokens from URL:", { accessToken, refreshToken });
+      console.log("✅ User info:", { email, name, picture });
+
+      // Save tokens and user info in localStorage
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+      localStorage.setItem("user", JSON.stringify({ email, name, picture }));
+
+      // Dispatch to Redux to save user and tokens
+      dispatch(
+        userLoggedIn({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+          email: email,
+          name: name,
+          profile_picture: picture,
+        })
+      );
+
+      // Optionally clean URL (remove tokens from query)
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+
+      // Optionally navigate to the dashboard (if it's not already there)
+      navigate("/dashboard");
+    }
+  }, [location, dispatch, navigate]);
   return (
     <div className="bg-[#f9f9f9] min-h-screen p-6 font-sans">
       {/* Header */}

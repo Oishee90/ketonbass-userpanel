@@ -12,9 +12,6 @@ const Root = () => {
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  // Retrieve user info from Redux persist
-  const user = useSelector((state) => state.auth.user);
-
   // Collapse sidebar on smaller screens
   useEffect(() => {
     const handleResize = () => {
@@ -27,13 +24,6 @@ const Root = () => {
 
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
-  // Redirect to login if no user is found
-  useEffect(() => {
-    if (!user) {
-      navigate("/login"); // Navigate to login if no user is found
-    }
-  }, [user, navigate]);
-
   const isDashboardRoot = location.pathname === "/dashboard";
 
   return (
@@ -44,12 +34,10 @@ const Root = () => {
           isSidebarOpen ? "w-64" : "w-16"
         } fixed left-0 top-0 h-screen transition-all duration-300`}
       >
-        {user && (
-          <UserSidebar
-            isSidebarOpen={isSidebarOpen}
-            toggleSidebar={toggleSidebar}
-          />
-        )}
+        <UserSidebar
+          isSidebarOpen={isSidebarOpen}
+          toggleSidebar={toggleSidebar}
+        />
       </div>
 
       {/* Main Content Area */}
@@ -63,15 +51,7 @@ const Root = () => {
 
         {/* Main Scrollable Area */}
         <main className="flex-1 overflow-y-auto bg-white dark:bg-white h-[calc(100vh-64px)]">
-          {isDashboardRoot ? (
-            user ? (
-              <UserDashboard />
-            ) : (
-              <div>Unauthorized or invalid role</div> // If no user data, show error
-            )
-          ) : (
-            <Outlet />
-          )}
+          {isDashboardRoot ? <UserDashboard /> : <Outlet />}
         </main>
       </div>
     </div>

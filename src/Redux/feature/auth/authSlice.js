@@ -1,35 +1,58 @@
+// src/Redux/feature/auth/authSlice.js
+
 import { createSlice } from "@reduxjs/toolkit";
+
+const initialState = {
+  user: null,
+  accessToken: null,
+  refreshToken: null,
+  googleAccessToken: null,
+  googleRefreshToken: null,
+  googleTokenExpiry: null,
+};
 
 const authSlice = createSlice({
   name: "auth",
-  initialState: {
-    user: null,
-    accessToken: null,
-    refreshToken: null,
-  },
+  initialState,
   reducers: {
     userLoggedIn: (state, action) => {
-      state.user = action.payload.user;
-      state.accessToken = action.payload.accessToken;
-      state.refreshToken = action.payload.refreshToken;
+      const {
+        user,
+        name,
+        email,
+        profile_picture,
+        access_token,
+        refresh_token,
+        google_access_token,
+        google_refresh_token,
+        google_token_expiry,
+      } = action.payload;
+ console.lo
+      // If `user` not sent, use fallback
+      state.user = user || {
+        name: name || "",
+        email: email || "",
+        profile_picture: profile_picture || "",
+      };
+
+      state.accessToken = access_token || null;
+      state.refreshToken = refresh_token || null;
+      state.googleAccessToken = google_access_token || null;
+      state.googleRefreshToken = google_refresh_token || null;
+      state.googleTokenExpiry = google_token_expiry || null;
     },
-    userUpdated: (state, action) => {
-      state.user = { ...state.user, ...action.payload };
-    },
+
     userLoggedOut: (state) => {
       state.user = null;
       state.accessToken = null;
       state.refreshToken = null;
-      localStorage.removeItem("persist:root"); // remove persisted auth
-      window.location.href = "/"; // or use navigate
+      state.googleAccessToken = null;
+      state.googleRefreshToken = null;
+      state.googleTokenExpiry = null;
     },
   },
 });
 
-export const { userLoggedIn, userUpdated, userLoggedOut } = authSlice.actions;
-
-// Selectors
-export const selectUser = (state) => state.auth.user;
-export const selectAccessToken = (state) => state.auth.accessToken;
+export const { userLoggedIn, userLoggedOut } = authSlice.actions;
 
 export const authReducer = authSlice.reducer;

@@ -18,8 +18,9 @@ import CalendarDashboard from "./Components/Dashboard/UserLayout/CalendarDashboa
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { clientId } from "./constants";
 import { Provider } from "react-redux";
-import { store } from "./Redux/store";
+import { persistor, store } from "./Redux/store";
 import GoogleCallback from "./Components/Pages/GoogleCallback";
+import { PersistGate } from "redux-persist/integration/react";
 
 const router = createBrowserRouter([
   {
@@ -75,9 +76,11 @@ const client_id = clientId;
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>
+       <PersistGate loading={null} persistor={persistor}>
       <GoogleOAuthProvider clientId={client_id}>
         <RouterProvider router={router} />
       </GoogleOAuthProvider>
+      </PersistGate>
     </Provider>
   </StrictMode>
 );

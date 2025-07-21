@@ -1,42 +1,46 @@
+// src/pages/GoogleCallback.jsx
+
 import { useEffect } from "react";
 
 const GoogleCallback = () => {
-  useEffect(() => {
-    const fetchAndPostToMain = async () => {
-      const params = new URLSearchParams(window.location.search);
-      const code = params.get("code");
-             
-      if (!code) {
-        console.error("❌ No auth code found");
-        return;
-      }
+useEffect(() => {
+  const fetchAndPostToMain = async () => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
 
-      try {
-        const res = await fetch(
-          `https://3ed269d4afe9.ngrok-free.app/google-auth/google/login/callback/?code=${code}`
+    if (!code) {
+      console.error("❌ No auth code found");
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `https://3ed269d4afe9.ngrok-free.app/google-auth/google/login/callback/?code=${code}`
+      );
+      const data = await res.json();
+
+      console.log("✅ Fetched Google Data:", data); // ✅ Step 1A
+      console.log("📤 Posting to opener window..."); // ✅ Step 1B
+
+      if (window.opener) {
+        window.opener.postMessage(
+          { type: "GOOGLE_AUTH_SUCCESS", payload: data },
+          "*"
         );
-        const data = await res.json();
-
-        if (window.opener) {
-          // ✅ Send data to main window
-          window.opener.postMessage(
-            { type: "GOOGLE_AUTH_SUCCESS", payload: data },
-            "*"
-          );
-
-          window.close(); // ✅ Close the popup window
-        } else {
-          console.error("No opener found");
-        }
-      } catch (err) {
-        console.error("Google callback error", err);
+        window.close();
+      } else {
+        console.error("❌ No opener window found");
       }
-    };
+    } catch (err) {
+      console.error("❌ Google callback error", err);
+    }
+  };
 
-    fetchAndPostToMain();
-  }, []);
+  fetchAndPostToMain();
+}, []);
 
-  return <div>Authenticating...</div>; // Just for debugging (optional)
+
+  return <div>Authenticating...</div>;
 };
 
 export default GoogleCallback;
