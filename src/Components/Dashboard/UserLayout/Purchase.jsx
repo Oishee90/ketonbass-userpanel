@@ -6,6 +6,7 @@ import EditPurchaseModal from "./EditPurchaseModal";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import Swal from "sweetalert2";
 import EditPurchase from "./EditPurchase";
+import { useGetInboxQuery } from "../../../Redux/feature/auth/aithapi";
 const purchaseData = [
   {
     id: 1,
@@ -90,7 +91,8 @@ const Purchase = () => {
     }
   };
   const [spinning, setSpinning] = useState(false);
-
+  const { data, error, isLoading } = useGetInboxQuery();
+  console.log(data);
   const handleClick = () => {
     setSpinning(true);
 
@@ -271,12 +273,11 @@ const Purchase = () => {
         onClose={() => setIsModalOpen(false)}
       />
       {editModalOpen && (
-      <EditPurchase
-  isOpen={editModalOpen}
-  onClose={() => setEditModalOpen(false)}
-  data={editData}
-/>
-
+        <EditPurchase
+          isOpen={editModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          data={editData}
+        />
       )}
     </div>
   );

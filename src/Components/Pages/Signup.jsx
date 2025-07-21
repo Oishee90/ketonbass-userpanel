@@ -44,7 +44,7 @@ export default function SignUpPage() {
           </p>
         </div>
 
-        <Link to="https://3ed269d4afe9.ngrok-free.app/google-auth/google/login/">
+        <Link to="https://server.156-67-218-177.sslip.io/google-auth/google/login">
           <div className="mb-6 space-y-4">
             <button className="flex items-center justify-center w-full gap-4 px-5 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
               <span className="text-[#979797] text-base poppins">

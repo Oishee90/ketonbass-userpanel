@@ -1,20 +1,35 @@
 import { apiSlice } from "../../api/apiSlice";
 
-
-
 export const authapi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-
-  
-    getTotalOrder: builder.query({
+    getTotalPurchasePrice: builder.query({
       query: () => ({
-        url: "/profile/me/",
+        url: "/api/v1/user-orders/total-price/",
         method: "GET",
       }),
-      providesTags: ["Profile"],
+      providesTags: ["TotalPurchase"],
+    }),
+    getActiveWarranties: builder.query({
+      query: () => ({
+        url: "/api/v1/user-orders/active-warranty-count/",
+        method: "GET",
+      }),
+      providesTags: ["TotalPurchase"],
+    }),
+    getUpcomingReminders: builder.query({
+      query: () => ({
+        url: "/api/v1/user-orders/total-upcoming-warranty/",
+        method: "GET",
+      }),
+      providesTags: ["TotalPurchasePrice"],
+    }),
+    getInbox: builder.query({
+      query: () => ({
+        url: "google-auth/google/warranty/",
+        method: "GET",
+      }),
     }),
 
-   
     // updateProfile: builder.mutation({
     //   query: (updatedata) => ({
     //     url: "/profile/update_me/",
@@ -24,15 +39,14 @@ export const authapi = apiSlice.injectEndpoints({
     //   invalidatesTags: ["Profile"],
     // }),
     // package
-  
-    // addPackage: builder.mutation({
-    //   query: (newPackage) => ({
-    //     url: "/adminapi/packages/",
-    //     method: "POST",
-    //     body: newPackage,
-    //   }),
-    //   invalidatesTags: ["Package"],
-    // }),
+    createPurchase: builder.mutation({
+      query: (newPackage) => ({
+        url: "api/v1/orders/create/",
+        method: "POST",
+        body: newPackage,
+      }),
+      invalidatesTags: ["TotalPurchase"],
+    }),
     // updatePackage: builder.mutation({
     //   query: ({ id, ...patchData }) => ({
     //     url: `/adminapi/packages/${id}/`,
@@ -54,14 +68,13 @@ export const authapi = apiSlice.injectEndpoints({
     //   providesTags: ["Package"],
 
     //   reciepe
-
-
-     
-
   }),
 });
 
 export const {
-  
-
+  useGetTotalPurchasePriceQuery,
+  useGetInboxQuery,
+  useGetActiveWarrantiesQuery,
+  useGetUpcomingRemindersQuery,
+  useCreatePurchaseMutation,
 } = authapi;

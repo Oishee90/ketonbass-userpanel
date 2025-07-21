@@ -6,6 +6,11 @@ import EditPurchaseModal from "./EditPurchaseModal";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { userLoggedIn } from "../../../Redux/feature/auth/authSlice";
 import { useDispatch } from "react-redux";
+import {
+  useGetActiveWarrantiesQuery,
+  useGetTotalPurchasePriceQuery,
+  useGetUpcomingRemindersQuery,
+} from "../../../Redux/feature/auth/aithapi";
 const statsData = [
   {
     title: "Total Purchases",
@@ -44,6 +49,15 @@ const UserDashboard = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const {
+    data: totalPurchase,
+    refetch,
+    isLoading: isLoadingTotalPurchase,
+  } = useGetTotalPurchasePriceQuery();
+  const { data: activeWarranty, isLoading: isLoadingWarranty } =
+    useGetActiveWarrantiesQuery();
+  const { data: upcomingWarranty, error: upcomingError } =
+    useGetUpcomingRemindersQuery();
 
   useEffect(() => {
     // Extract query params from the URL
@@ -99,18 +113,24 @@ const UserDashboard = () => {
 
       {/* Stats */}
       <div className="grid grid-cols-1 gap-4 mb-6 md:grid-cols-4">
-        {statsData.map((item, index) => (
-          <div key={index} className="p-4 bg-white rounded-lg shadow">
-            <p className="mb-1 font-medium text-sbase tittle-color ">
-              {item.title}
-            </p>
-            <h2
-              className={`text-2xl font-bold tittle-color mb-1 ${item.valueColor}`}
-            >
-              {item.value}
-            </h2>
-          </div>
-        ))}
+        <div className="p-4 bg-white rounded-lg shadow tittle-color">
+          <p className="mb-1 text-base font-medium ">Total Purchases</p>
+          <h2 className={`text-2xl font-bold text-green-900 mb-1 `}>
+            ${totalPurchase?.total_purchase_price}
+          </h2>
+        </div>
+        <div className="p-4 bg-white rounded-lg shadow tittle-color">
+          <p className="mb-1 text-base font-medium ">Active Warranties</p>
+          <h2 className={`text-2xl font-bold text-green-900 mb-1 `}>
+            {activeWarranty?.total_active_products}
+          </h2>
+        </div>
+        <div className="p-4 bg-white rounded-lg shadow tittle-color">
+          <p className="mb-1 text-base font-medium ">Upcoming Reminders</p>
+          <h2 className={`text-2xl font-bold text-green-900 mb-1 `}>
+            {upcomingWarranty?.total_upcoming_warranty}
+          </h2>
+        </div>
       </div>
 
       {/* Quick Actions */}

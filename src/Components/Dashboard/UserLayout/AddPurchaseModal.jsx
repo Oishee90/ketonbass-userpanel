@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Swal from "sweetalert2";
 import CalenderPopup from "../CalenderPopup";
+import { useCreatePurchaseMutation } from "../../../Redux/feature/auth/aithapi";
 
 const AddPurchaseModal = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
@@ -13,8 +14,12 @@ const AddPurchaseModal = ({ isOpen, onClose }) => {
   const [pdfFile, setPdfFile] = useState(null);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [calendarDate, setCalendarDate] = useState(new Date());
+  const [isWarrantyCalendarOpen, setIsWarrantyCalendarOpen] = useState(false);
+  const [warrantycalendarDate, setWarrantyCalendarDate] = useState(new Date());
   const [isYearDropdownOpen, setIsYearDropdownOpen] = useState(false);
   const [isMonthDropdownOpen, setIsMonthDropdownOpen] = useState(false);
+  const [createPackage, { isLoading, error }] = useCreatePurchaseMutation();
+
   const months = [
     "January",
     "February",
@@ -36,11 +41,14 @@ const AddPurchaseModal = ({ isOpen, onClose }) => {
     productName: "",
     date: "",
   });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
   if (!isOpen) return null;
+
   const handleFileChange = (e) => {
     setPdfFile(e.target.files[0]);
   };
@@ -50,28 +58,59 @@ const AddPurchaseModal = ({ isOpen, onClose }) => {
     setIsYearDropdownOpen(false);
   };
 
+  const handleWarrantyYearSelect = (year) => {
+    setWarrantyCalendarDate(new Date(year, warrantycalendarDate.getMonth(), 1));
+    setIsYearDropdownOpen(false);
+  };
+
   const handleMonthSelect = (monthIndex) => {
     setCalendarDate(new Date(calendarDate.getFullYear(), monthIndex, 1));
     setIsMonthDropdownOpen(false);
   };
 
+  const handleWarrantyMonthSelect = (monthIndex) => {
+    setWarrantyCalendarDate(
+      new Date(warrantycalendarDate.getFullYear(), monthIndex, 1)
+    );
+    setIsMonthDropdownOpen(false);
+  };
   const handleDateSelect = (selectedDate) => {
-    const formattedDate = selectedDate.toISOString().split("T")[0];
-    setFormData((prev) => ({ ...prev, date: formattedDate }));
+    const date = new Date(selectedDate);
+    // Format to YYYY-MM-DD using local date components
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+    const day = String(date.getDate()).padStart(2, "0");
+    const dateString = `${year}-${month}-${day}`;
+
+    setFormData((prev) => ({ ...prev, date: dateString }));
     setErrors((prev) => ({ ...prev, date: "" }));
     setIsCalendarOpen(false);
+    setIsWarrantyCalendarOpen(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleWarrantyDateSelect = (selectedDate) => {
+    const date = new Date(selectedDate);
+    // Format to YYYY-MM-DD using local date components
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const dateString = `${year}-${month}-${day}`;
+
+    setFormData((prev) => ({ ...prev, warranty: dateString }));
+    setErrors((prev) => ({ ...prev, warranty: "" }));
+    setIsWarrantyCalendarOpen(false);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const { productName, date } = formData;
 
     let newErrors = {};
     if (!productName.trim()) {
-      newErrors.productName = "Product name must be requiered";
+      newErrors.productName = "Product name is required";
     }
     if (!date.trim()) {
-      newErrors.date = "Date must be requiered";
+      newErrors.date = "Date is required";
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -81,21 +120,46 @@ const AddPurchaseModal = ({ isOpen, onClose }) => {
 
     setErrors({ productName: "", date: "" });
 
-    Swal.fire({
-      icon: "success",
-      title: "Success!",
-      text: "Purchase added successfully!",
-    });
+    // Prepare data to be sent to the API
+    const newPackage = {
+      product_name: formData.productName,
+      purchase_date: formData.date,
 
-    setFormData({
-      productName: "",
-      storeName: "",
-      date: "",
-      amount: "",
-      warranty: "",
-    });
-    setPdfFile(null);
-    onClose();
+    };
+
+    try {
+      // Call the mutation to create the package
+      const response = await createPackage(newPackage).unwrap();
+
+      // Log the response from the API
+      console.log("Success:", response);
+
+      Swal.fire({
+        icon: "success",
+        title: "Success!",
+        text: "Purchase added successfully!",
+      });
+
+      // Reset form
+      setFormData({
+        productName: "",
+        storeName: "",
+        date: "",
+        amount: "",
+        warranty: "",
+      });
+      setPdfFile(null);
+      onClose();
+    } catch (err) {
+      // Log error if any
+      console.error("Error:", err);
+
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: `Something went wrong: ${err.message}`,
+      });
+    }
   };
 
   return (
@@ -181,16 +245,35 @@ const AddPurchaseModal = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          <div className="mb-4">
+          {/* Warranty Input */}
+          <div className="relative mb-4">
             <input
               type="text"
               name="warranty"
               value={formData.warranty}
+              placeholder="Warranty Date"
+              onClick={() => setIsWarrantyCalendarOpen(true)}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-xl"
-              placeholder="Warranty"
             />
+            {isWarrantyCalendarOpen && (
+              <CalenderPopup
+                calendarDate={warrantycalendarDate}
+                setCalendarDate={setWarrantyCalendarDate}
+                months={months}
+                yearRange={yearRange}
+                onClose={() => setIsWarrantyCalendarOpen(false)}
+                onDateSelect={handleWarrantyDateSelect}
+                isYearDropdownOpen={isYearDropdownOpen}
+                isMonthDropdownOpen={isMonthDropdownOpen}
+                setIsYearDropdownOpen={setIsYearDropdownOpen}
+                setIsMonthDropdownOpen={setIsMonthDropdownOpen}
+                handleYearSelect={handleWarrantyYearSelect}
+                handleMonthSelect={handleWarrantyMonthSelect}
+              />
+            )}
           </div>
+
           <div className="mt-4 mb-4">
             <label className="block mb-3 text-sm font-medium text-gray-700">
               Upload PDF (optional)
