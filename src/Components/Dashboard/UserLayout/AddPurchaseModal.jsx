@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useState } from "react";
 import Swal from "sweetalert2";
 import CalenderPopup from "../CalenderPopup";
@@ -76,13 +77,14 @@ const AddPurchaseModal = ({ isOpen, onClose }) => {
   };
   const handleDateSelect = (selectedDate) => {
     const date = new Date(selectedDate);
-    // Format to YYYY-MM-DD using local date components
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Adjusting month to 1-12 scale
     const day = String(date.getDate()).padStart(2, "0");
-    const dateString = `${year}-${month}-${day}`;
 
-    setFormData((prev) => ({ ...prev, date: dateString }));
+    // Log the date to check
+    console.log("Selected Date:", `${year}-${month}-${day}`);
+
+    setFormData((prev) => ({ ...prev, date: `${year}-${month}-${day}` }));
     setErrors((prev) => ({ ...prev, date: "" }));
     setIsCalendarOpen(false);
     setIsWarrantyCalendarOpen(false);
@@ -103,13 +105,21 @@ const AddPurchaseModal = ({ isOpen, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { productName, date } = formData;
+
+    const { productName, date, storeName, amount, warranty } = formData;
+    console.log("Form Data:", formData);
+
+    // Format the dates to ensure they are correctly passed
+    const formattedPurchaseDate = new Date(date).toISOString().split("T")[0]; // 'YYYY-MM-DD'
+    const formattedWarrantyDate = warranty
+      ? new Date(warranty).toISOString().split("T")[0]
+      : null;
 
     let newErrors = {};
     if (!productName.trim()) {
       newErrors.productName = "Product name is required";
     }
-    if (!date.trim()) {
+    if (!formattedPurchaseDate.trim()) {
       newErrors.date = "Date is required";
     }
 
@@ -122,16 +132,40 @@ const AddPurchaseModal = ({ isOpen, onClose }) => {
 
     // Prepare data to be sent to the API
     const newPackage = {
-      product_name: formData.productName,
-      purchase_date: formData.date,
-
+      product_name: productName,
+      purchase_date: formattedPurchaseDate,
+      shop_name: storeName,
+      price: amount, // Ensure this is the correct field
+      warranty_expire_date: formattedWarrantyDate, // Ensure this is in the correct format
+      warranty_status: "Active", // Assuming "Active" is the intended value
     };
 
-    try {
-      // Call the mutation to create the package
-      const response = await createPackage(newPackage).unwrap();
+    console.log("Data to Send to API:", newPackage); // Debugging the data before sending
 
-      // Log the response from the API
+    try {
+      // Create a new FormData object to send the data and file together
+      const formDataToSend = new FormData();
+      formDataToSend.append("product_name", newPackage.product_name);
+      formDataToSend.append("purchase_date", newPackage.purchase_date);
+      formDataToSend.append("shop_name", newPackage.shop_name);
+      formDataToSend.append("price", newPackage.price); // Use `price` here instead of `amount`
+      formDataToSend.append(
+        "warranty_expire_date",
+        newPackage.warranty_expire_date
+      );
+      formDataToSend.append("warranty_status", newPackage.warranty_status);
+
+      if (pdfFile) {
+        formDataToSend.append("invoice", pdfFile); // Attach the file correctly
+      }
+
+      // Log data being sent for debugging
+      console.log("Form Data to Send:", formDataToSend);
+
+      // Call the mutation to create the purchase package
+      const response = await createPackage(formDataToSend).unwrap();
+
+      // Refetch data after successful creation
       console.log("Success:", response);
 
       Swal.fire({
@@ -140,7 +174,7 @@ const AddPurchaseModal = ({ isOpen, onClose }) => {
         text: "Purchase added successfully!",
       });
 
-      // Reset form
+      // Reset form after submission
       setFormData({
         productName: "",
         storeName: "",
@@ -148,10 +182,10 @@ const AddPurchaseModal = ({ isOpen, onClose }) => {
         amount: "",
         warranty: "",
       });
-      setPdfFile(null);
-      onClose();
+      setPdfFile(null); // Clear the file after successful submission
+      onClose(); // Close the modal
     } catch (err) {
-      // Log error if any
+      // Handle error if the upload fails
       console.error("Error:", err);
 
       Swal.fire({

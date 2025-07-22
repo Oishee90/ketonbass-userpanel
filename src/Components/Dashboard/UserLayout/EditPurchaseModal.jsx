@@ -1,10 +1,19 @@
+/* eslint-disable react/prop-types */
 import React, { useState } from "react";
 import { FaFilePdf, FaTimes } from "react-icons/fa";
 import Swal from "sweetalert2";
-const EditPurchaseModal = ({ isOpen, onClose }) => {
+import { useUploadFileMutation } from "../../../Redux/feature/auth/aithapi";
+const EditPurchaseModal = ({
+  isOpen,
+  onClose,
+  refetchUpcomingWarranty,
+  refetchActiveWarranty,
+  refetchTotalPurchase,
+}) => {
   const [file, setFile] = useState(null);
   const [dragActive, setDragActive] = useState(false);
-
+  // Using the RTK Query hook for file upload
+  const [uploadFile, { isLoading, isError }] = useUploadFileMutation();
   if (!isOpen) return null;
 
   const handleFileChange = (e) => {
@@ -28,22 +37,58 @@ const EditPurchaseModal = ({ isOpen, onClose }) => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (file && file.type === "application/pdf") {
-      // Show SweetAlert success message
-      Swal.fire({
-        icon: "success",
-        title: "File Uploaded",
-        text: `${file.name} has been uploaded successfully!`,
-        confirmButtonColor: "#22c55e", // green
-      });
-      console.log("Uploading file:", file.name);
-      // Clear file or close modal if needed
-      setFile(null);
-      onClose(); // optional: close the modal
+      try {
+        // Generate a unique ID using the current timestamp
+        const uniqueId = new Date().getTime();
+
+        // Log the unique ID to verify it is being created
+        console.log("Unique ID for this request:", uniqueId);
+
+        // Upload the file with the unique ID as a query parameter
+        const response = await uploadFile(file, {
+          params: { uniqueId },
+        }).unwrap(); // Unwrap the response
+
+        // Log the server response
+        console.log("File upload response:", response);
+
+        // Check if the response contains data
+        if (response && response.length > 0) {
+          Swal.fire({
+            icon: "success",
+            title: "File Uploaded",
+            text: `${file.name} has been uploaded successfully!`,
+            confirmButtonColor: "#22c55e", // green
+          });
+        } else {
+          Swal.fire({
+            icon: "info",
+            title: "No Data",
+            text: "No relevant data was found in the file.",
+            confirmButtonColor: "#f59e0b", // orange
+          });
+        }
+
+        setFile(null); // Clear the file after upload
+        onClose(); // Close modal after upload
+      } catch (err) {
+        // Handle error
+        console.error("Error uploading file:", err);
+
+        // Show SweetAlert error message if upload fails
+        Swal.fire({
+          icon: "error",
+          title: "Upload Failed",
+          text: "There was an error uploading the file.",
+          confirmButtonColor: "#ef4444", // red
+        });
+      }
     } else {
-      // Show SweetAlert error
+      // Show SweetAlert error if file type is invalid
       Swal.fire({
         icon: "error",
         title: "Invalid File",
@@ -57,18 +102,18 @@ const EditPurchaseModal = ({ isOpen, onClose }) => {
     setFile(null);
   };
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 px-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black bg-opacity-40">
+      <div className="relative w-full max-w-md p-8 bg-white shadow-xl rounded-2xl">
         {/* Close Button */}
         <button
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl font-bold"
+          className="absolute text-2xl font-bold text-gray-400 top-4 right-4 hover:text-gray-700"
           onClick={onClose}
         >
           &times;
         </button>
 
         {/* Title */}
-        <h2 className="text-2xl font-semibold main-color mb-6 text-center poppins">
+        <h2 className="mb-6 text-2xl font-semibold text-center main-color poppins">
           📄 Upload PDF Receipt
         </h2>
 
@@ -86,15 +131,15 @@ const EditPurchaseModal = ({ isOpen, onClose }) => {
             }`}
           >
             {file ? (
-              <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded w-full justify-between">
+              <div className="flex items-center justify-between w-full gap-2 px-4 py-2 bg-gray-100 rounded">
                 <div className="flex items-center gap-2">
-                  <FaFilePdf className="text-green-600 text-xl" />
+                  <FaFilePdf className="text-xl text-green-600" />
                   <p className="text-sm text-black">{file.name}</p>
                 </div>
                 <button
                   type="button"
                   onClick={handleRemoveFile}
-                  className="text-red-500 hover:text-red-700 text-lg"
+                  className="text-lg text-red-500 hover:text-red-700"
                   title="Remove File"
                 >
                   <FaTimes />
@@ -102,11 +147,11 @@ const EditPurchaseModal = ({ isOpen, onClose }) => {
               </div>
             ) : (
               <>
-                <FaFilePdf className="text-green-600 text-4xl mb-3" />
-                <p className="text-gray-700 text-sm mb-2 poppins">
+                <FaFilePdf className="mb-3 text-4xl text-green-600" />
+                <p className="mb-2 text-sm text-gray-700 poppins">
                   Drag & Drop your PDF here or
                 </p>
-                <label className="cursor-pointer text-green-600 font-medium hover:underline">
+                <label className="font-medium text-green-600 cursor-pointer hover:underline">
                   Browse file
                   <input
                     type="file"
@@ -121,7 +166,7 @@ const EditPurchaseModal = ({ isOpen, onClose }) => {
 
           <button
             type="submit"
-            className="w-full py-3 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold text-lg shadow hover:from-green-600 hover:to-green-700 transition"
+            className="w-full py-3 text-lg font-semibold text-white transition rounded-lg shadow bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
           >
             Upload PDF
           </button>

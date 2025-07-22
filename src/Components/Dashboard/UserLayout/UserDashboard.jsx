@@ -8,8 +8,10 @@ import { userLoggedIn } from "../../../Redux/feature/auth/authSlice";
 import { useDispatch } from "react-redux";
 import {
   useGetActiveWarrantiesQuery,
+  useGetPurchaseQuery,
   useGetTotalPurchasePriceQuery,
   useGetUpcomingRemindersQuery,
+  useSyncGoogleDataQuery,
 } from "../../../Redux/feature/auth/aithapi";
 const statsData = [
   {
@@ -49,16 +51,32 @@ const UserDashboard = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [spinning, setSpinning] = useState(false);
+  const {
+    data: syncData,
+    error: syncError,
+    isLoading: syncLoading,
+    refetch: refetch,
+  } = useSyncGoogleDataQuery(); // Sync API for GET request
   const {
     data: totalPurchase,
-    refetch,
+    refetch: refetchTotalPurchase,
     isLoading: isLoadingTotalPurchase,
   } = useGetTotalPurchasePriceQuery();
-  const { data: activeWarranty, isLoading: isLoadingWarranty } =
-    useGetActiveWarrantiesQuery();
-  const { data: upcomingWarranty, error: upcomingError } =
-    useGetUpcomingRemindersQuery();
 
+  const {
+    data: activeWarranty,
+    refetch: refetchActiveWarranty,
+    isLoading: isLoadingWarranty,
+  } = useGetActiveWarrantiesQuery();
+
+  const {
+    data: upcomingWarranty,
+    refetch: refetchUpcomingWarranty,
+    error: upcomingError,
+  } = useGetUpcomingRemindersQuery();
+  const { data: purchase, error, isLoading } = useGetPurchaseQuery();
+  console.log("purchase", purchase);
   useEffect(() => {
     // Extract query params from the URL
     const queryParams = new URLSearchParams(location.search);
@@ -88,6 +106,9 @@ const UserDashboard = () => {
           profile_picture: picture,
         })
       );
+      refetchTotalPurchase(); // Trigger refetch for total purchases
+      refetchActiveWarranty(); // Trigger refetch for active warranties
+      refetchUpcomingWarranty(); // Trigger refetch for upcoming reminders
 
       // Optionally clean URL (remove tokens from query)
       const cleanUrl = window.location.origin + window.location.pathname;
@@ -97,6 +118,47 @@ const UserDashboard = () => {
       navigate("/dashboard");
     }
   }, [location, dispatch, navigate]);
+  const handleAddPurchaseSuccess = () => {
+    // Refetch after adding a new purchase to get the updated data
+    refetchTotalPurchase();
+    refetchActiveWarranty();
+    refetchUpcomingWarranty();
+    setIsModalOpen(true);
+  };
+
+  const handleFileUploadSuccess = () => {
+    // Refetch after successful file upload to get the updated data
+    refetchTotalPurchase();
+    refetchActiveWarranty();
+    refetchUpcomingWarranty();
+    setIsEditModalOpen(true);
+  };
+  const recentPurchases = purchase ? purchase.slice(0, 3) : [];
+  // refresh or synch
+
+  const handleSync = async () => {
+    setSpinning(true); // Start spinning when clicked
+
+    try {
+      // Trigger the sync API request
+      console.log("Syncing with Google API...");
+      await refetch(); // Call the refetch function from RTK Query to trigger the sync
+
+      console.log("Sync successful!");
+    } catch (err) {
+      console.error("Failed to sync data:", err);
+    } finally {
+      setSpinning(false); // Stop spinning when done
+    }
+  };
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+  console.log(error, "error");
+  if (error) {
+    return <p>Something went wrong. Please try again later.</p>;
+  }
   return (
     <div className="bg-[#f9f9f9] min-h-screen p-6 font-sans">
       {/* Header */}
@@ -141,22 +203,24 @@ const UserDashboard = () => {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 !mb-10">
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={handleAddPurchaseSuccess}
           className="flex items-center gap-2 bg-blue-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium"
         >
           <FaPlus /> Add New Purchase
         </button>
-        <NavLink
-          to="/dashboard/purchase"
-          className=" bg-orange-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium"
-        >
-          {" "}
-          <button className="flex items-center gap-2">
-            <FaSync className="text-[#EA580C]" /> Refresh Purchases
-          </button>{" "}
-        </NavLink>
         <button
-          onClick={() => setIsEditModalOpen(true)}
+          onClick={handleSync} // Trigger the sync when clicked
+          className="bg-orange-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium flex items-center gap-2"
+        >
+          <FaSync
+            className={`text-[#EA580C] ${
+              syncLoading || spinning ? "animate-spin" : ""
+            }`} // Conditionally apply spinning class
+          />
+          {syncLoading || spinning ? "Syncing..." : "Refresh Purchases"}
+        </button>
+        <button
+          onClick={handleFileUploadSuccess}
           className="flex items-center gap-2 bg-green-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium"
         >
           <FaUpload className="text-[#16A34A]" /> Upload Receipt
@@ -166,31 +230,31 @@ const UserDashboard = () => {
       {/* Recent Purchases & Reminders */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Recent Purchases */}
-        <div className="md:col-span-2 bg-white  rounded-lg shadow border border-[#E5E7EB] ">
-          <div className="flex  justify-between md:items-center mb-4  border border-b-[#E5E7EB] p-4">
-            <h2 className="text-lg font-semibold main-color poppins ">
+        <div className="md:col-span-2 bg-white rounded-lg shadow border border-[#E5E7EB]">
+          <div className="flex justify-between md:items-center mb-4 border border-b-[#E5E7EB] p-4">
+            <h2 className="text-lg font-semibold main-color poppins">
               Recent Purchases
             </h2>
             <NavLink
               to="/dashboard/purchase"
-              className="text-base font-semibold hover:underline main-color poppins "
+              className="text-base font-semibold hover:underline main-color poppins"
             >
               View All
             </NavLink>
           </div>
 
-          <div className="p-6 space-y-4 ">
+          <div className="p-6 space-y-4">
             {recentPurchases.map((purchase) => (
               <div
                 key={purchase.id}
                 className="flex md:flex-row flex-col justify-between items-start md:items-center p-3 rounded-lg shadow bg-[#F9FAFB] border border-[#E5E7EB]"
               >
                 <div>
-                  <p className="font-medium text-[#111827] poppins text-base ">
-                    {purchase.name}
+                  <p className="font-medium text-[#111827] poppins text-base">
+                    {purchase.product_name}
                   </p>
-                  <p className="text-sm text-[#6B7280] font-normal poppins ">
-                    {purchase.store} • {purchase.date}
+                  <p className="text-sm text-[#6B7280] font-normal poppins">
+                    {purchase.shop_name} • {purchase.purchase_date}
                   </p>
                 </div>
                 <div className="md:text-right">
@@ -198,16 +262,19 @@ const UserDashboard = () => {
                     {purchase.price}
                   </p>
                   <span
-                    className={`text-xs text-${purchase.statusColor}-600 bg-${purchase.statusColor}-100 px-2 py-1 rounded`}
+                    className={`text-xs rounded-lg mt-6 text-${
+                      purchase.warranty_status === "Active" ? "green" : "red"
+                    }-600 bg-${
+                      purchase.warranty_status === "Active" ? "green" : "red"
+                    }-100 px-2 py-1 rounded`}
                   >
-                    {purchase.status}
+                    {purchase.warranty_status}
                   </span>
                 </div>
               </div>
             ))}
           </div>
         </div>
-
         {/* Upcoming Reminders */}
         <div className="w-full p-4 bg-white rounded-lg shadow poppins">
           <h2 className="mb-4 font-semibold lg:text-lg main-color">
@@ -236,10 +303,16 @@ const UserDashboard = () => {
       <AddPurchaseModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        refetchTotalPurchase={refetchTotalPurchase}
+        refetchActiveWarranty={refetchActiveWarranty}
+        refetchUpcomingWarranty={refetchUpcomingWarranty}
       />
       <EditPurchaseModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
+        refetchTotalPurchase={refetchTotalPurchase}
+        refetchActiveWarranty={refetchActiveWarranty}
+        refetchUpcomingWarranty={refetchUpcomingWarranty}
       />
     </div>
   );

@@ -7,26 +7,40 @@ export const authapi = apiSlice.injectEndpoints({
         url: "/api/v1/user-orders/total-price/",
         method: "GET",
       }),
-      providesTags: ["TotalPurchase"],
+      providesTags: ["Purchase,"],
     }),
     getActiveWarranties: builder.query({
       query: () => ({
         url: "/api/v1/user-orders/active-warranty-count/",
         method: "GET",
       }),
-      providesTags: ["TotalPurchase"],
+      providesTags: ["Purchase"],
     }),
     getUpcomingReminders: builder.query({
       query: () => ({
         url: "/api/v1/user-orders/total-upcoming-warranty/",
         method: "GET",
       }),
-      providesTags: ["TotalPurchasePrice"],
+      providesTags: ["Purchase"],
     }),
     getInbox: builder.query({
       query: () => ({
-        url: "google-auth/google/warranty/",
+        url: "google-auth/google/sync/",
         method: "GET",
+      }),
+    }),
+    getPurchase: builder.query({
+      query: () => ({
+        url: "/api/v1/user-orders/",
+        method: "GET",
+      }),
+      providesTags: ["Purchase"],
+    }),
+
+    syncGoogleData: builder.query({
+      query: () => ({
+        url: "google-auth/google/sync/",
+        method: "GET", // This will be a GET request
       }),
     }),
 
@@ -45,8 +59,21 @@ export const authapi = apiSlice.injectEndpoints({
         method: "POST",
         body: newPackage,
       }),
-      invalidatesTags: ["TotalPurchase"],
+      invalidatesTags: ["Purchase"],
     }),
+    // upload pdf
+    uploadFile: builder.mutation({
+      query: (file) => {
+        const formData = new FormData();
+        formData.append("file", file);
+        return {
+          url: "api/v1/ai-order-extract/", // Your endpoint
+          method: "POST",
+          body: formData,
+        };
+      },
+    }),
+
     // updatePackage: builder.mutation({
     //   query: ({ id, ...patchData }) => ({
     //     url: `/adminapi/packages/${id}/`,
@@ -77,4 +104,7 @@ export const {
   useGetActiveWarrantiesQuery,
   useGetUpcomingRemindersQuery,
   useCreatePurchaseMutation,
+  useUploadFileMutation,
+  useGetPurchaseQuery,
+  useSyncGoogleDataQuery,
 } = authapi;

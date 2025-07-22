@@ -1,77 +1,14 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import AddPurchaseModal from "./AddPurchaseModal";
 import { FaPlus, FaSync } from "react-icons/fa";
-import { NavLink } from "react-router-dom";
-import EditPurchaseModal from "./EditPurchaseModal";
-import { FaEdit, FaTrashAlt } from "react-icons/fa";
+
+import { FaTrashAlt } from "react-icons/fa";
 import Swal from "sweetalert2";
 import EditPurchase from "./EditPurchase";
-import { useGetInboxQuery } from "../../../Redux/feature/auth/aithapi";
-const purchaseData = [
-  {
-    id: 1,
-    productName: "Apple Watch",
-    storeName: "Mac Shop",
-    dateTime: "12.09.2019 - 12.53 PM",
-    quantity: 423,
-    amount: "$34,295",
-    status: "Delivered",
-  },
-  {
-    id: 2,
-    productName: "Apple Watch",
-    storeName: "Aspire Shop",
-    dateTime: "13.09.2019 - 01.20 PM",
-    quantity: 305,
-    amount: "$28,765",
-    status: "Rejected",
-  },
-  {
-    id: 3,
-    productName: "Apple Watch",
-    storeName: "Tech World",
-    dateTime: "14.09.2019 - 10.45 AM",
-    quantity: 212,
-    amount: "$22,450",
-    status: "Pending",
-  },
-  {
-    id: 4,
-    productName: "Apple Watch",
-    storeName: "Gadget Hub",
-    dateTime: "15.09.2019 - 09.15 AM",
-    quantity: 150,
-    amount: "$17,550",
-    status: "Delivered",
-  },
-  {
-    id: 5,
-    productName: "Apple Watch",
-    storeName: "iCorner",
-    dateTime: "16.09.2019 - 03.30 PM",
-    quantity: 488,
-    amount: "$50,120",
-    status: "Rejected",
-  },
-  {
-    id: 6,
-    productName: "Apple Watch",
-    storeName: "Smart Deals",
-    dateTime: "17.09.2019 - 02.05 PM",
-    quantity: 390,
-    amount: "$42,875",
-    status: "Delivered",
-  },
-  {
-    id: 7,
-    productName: "Apple Watch",
-    storeName: "Tech World",
-    dateTime: "18.09.2019 - 11.45 AM",
-    quantity: 220,
-    amount: "$24,300",
-    status: "Pending",
-  },
-];
+import {
+  useGetPurchaseQuery,
+  useSyncGoogleDataQuery,
+} from "../../../Redux/feature/auth/aithapi";
 
 const Purchase = () => {
   const itemsPerPage = 6;
@@ -79,26 +16,20 @@ const Purchase = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editData, setEditData] = useState(null);
+  const { data: purchase, error, isLoading } = useGetPurchaseQuery();
+  console.log("purchase", purchase);
   // Pagination calculations
-  const totalItems = purchaseData.length;
+  const totalItems = purchase ? purchase.length : 0; // Ensure purchase data exists
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentData = purchaseData.slice(startIndex, startIndex + itemsPerPage);
+  const currentData = purchase
+    ? purchase.slice(startIndex, startIndex + itemsPerPage)
+    : [];
 
   const handlePageChange = (pageNum) => {
     if (pageNum >= 1 && pageNum <= totalPages) {
       setCurrentPage(pageNum);
     }
-  };
-  const [spinning, setSpinning] = useState(false);
-  const { data, error, isLoading } = useGetInboxQuery();
-  console.log(data);
-  const handleClick = () => {
-    setSpinning(true);
-
-    setTimeout(() => {
-      window.location.reload();
-    }, 300);
   };
 
   const handleEditClick = (item) => {
@@ -118,12 +49,40 @@ const Purchase = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         Swal.fire("Deleted!", "Your purchase has been deleted.", "success");
-
-        // const newData = purchaseData.filter(item => item.id !== id);
-        // setPurchaseData(newData);
       }
     });
   };
+  const [spinning, setSpinning] = useState(false);
+  const {
+    data: syncData,
+    error: syncError,
+    isLoading: syncLoading,
+    refetch: refetch,
+  } = useSyncGoogleDataQuery(); // Sync API for GET request
+
+  const handleSync = async () => {
+    setSpinning(true); // Start spinning when clicked
+
+    try {
+      // Trigger the sync API request
+      console.log("Syncing with Google API...");
+      await refetch(); // Call the refetch function from RTK Query to trigger the sync
+
+      console.log("Sync successful!");
+    } catch (err) {
+      console.error("Failed to sync data:", err);
+    } finally {
+      setSpinning(false); // Stop spinning when done
+    }
+  };
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>Something went wrong. Please try again later.</p>;
+  }
 
   return (
     <div className="p-4 font-sans sm:p-6">
@@ -134,17 +93,19 @@ const Purchase = () => {
           </h1>
           <p className="text-xs text-gray-600 sm:text-sm poppins">
             Track your purchases and all details
-          </p>{" "}
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={handleClick}
+            onClick={handleSync} // Trigger the sync when clicked
             className="bg-orange-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium flex items-center gap-2"
           >
             <FaSync
-              className={`text-[#EA580C] ${spinning ? "animate-spin" : ""}`}
+              className={`text-[#EA580C] ${
+                syncLoading || spinning ? "animate-spin" : ""
+              }`} // Conditionally apply spinning class
             />
-            Refresh Purchases
+            {syncLoading || spinning ? "Syncing..." : "Refresh Purchases"}
           </button>
           <button
             onClick={() => setIsModalOpen(true)}
@@ -155,7 +116,7 @@ const Purchase = () => {
         </div>
       </div>
 
-      <div className="p-4 bg-white rounded-lg shadow sm:p-6 ">
+      <div className="p-4 bg-white rounded-lg shadow sm:p-6">
         <h2 className="mb-4 text-lg font-semibold text-green-800 sm:text-xl poppins sm:mb-6">
           Purchases Details
         </h2>
@@ -173,9 +134,7 @@ const Purchase = () => {
                 <th className="sticky top-0 hidden px-2 py-2 text-lg font-bold text-gray-800 bg-gray-200 sm:px-4 sm:table-cell">
                   Date - Time
                 </th>
-                <th className="sticky top-0 px-2 py-2 text-lg font-bold text-gray-800 bg-gray-200 sm:px-4">
-                  Quantity
-                </th>
+
                 <th className="sticky top-0 px-2 py-2 text-lg font-bold text-gray-800 bg-gray-200 sm:px-4">
                   Amount
                 </th>
@@ -190,30 +149,18 @@ const Purchase = () => {
                   key={item.id}
                   className="text-gray-800 border-b hover:bg-gray-50"
                 >
-                  <td className="px-2 py-3 text-base sm:px-4 sm:text-sm whitespace-nowrap">
-                    {item.productName}
+                  <td className="px-2 py-3 ">
+                    {item.product_name || "Not Provided"}
                   </td>
-                  <td className="px-2 py-3 text-base sm:px-4 sm:text-sm whitespace-nowrap">
-                    {item.storeName}
+                  <td className="px-2 py-3 ">
+                    {item.shop_name || "Not Provided"}
                   </td>
                   <td className="hidden px-2 py-3 text-base sm:px-4 sm:text-sm whitespace-nowrap sm:table-cell">
-                    {item.dateTime}
+                    {item.purchase_date || "Not Provided"}
                   </td>
-                  <td className="px-2 py-3 text-base sm:px-4 sm:text-sm whitespace-nowrap">
-                    {item.quantity}
-                  </td>
-                  <td className="px-2 py-3 text-base sm:px-4 sm:text-sm whitespace-nowrap">
-                    {item.amount}
-                  </td>
-                  <td className="flex items-center gap-4 px-2 py-3 sm:px-4">
-                    <button
-                      onClick={() => handleEditClick(item)}
-                      className="flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-800"
-                      title="Edit"
-                    >
-                      <FaEdit className="text-xl" />
-                    </button>
 
+                  <td className="px-2 py-3 ">{item.price || "N/A"}</td>
+                  <td className="flex items-center gap-4 px-2 py-3 sm:px-4">
                     <button
                       onClick={() => handleDelete(item.id)}
                       className="text-xl text-red-600 hover:text-red-800"

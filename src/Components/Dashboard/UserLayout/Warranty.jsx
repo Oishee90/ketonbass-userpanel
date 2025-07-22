@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaRegFileAlt } from "react-icons/fa";
 import { format, parse } from "date-fns";
+import { useGetInboxQuery } from "../../../Redux/feature/auth/aithapi";
 
 const warrantyData = [
   {
@@ -66,6 +67,8 @@ const Warranty = () => {
   const ITEMS_PER_PAGE = 6;
 
   const today = new Date();
+  const { data: warranty, error, isLoading } = useGetInboxQuery();
+  console.log(warranty, "warranty");
 
   const getStatus = (warrantyDateStr) => {
     const warrantyDate = new Date(warrantyDateStr);
@@ -101,8 +104,13 @@ const Warranty = () => {
   };
 
   const formatDate = (dateString) => {
+    if (!dateString) return "N/A"; // Check for empty date
     const date = new Date(dateString);
     return format(date, "MM/dd/yyyy");
+  };
+
+  const renderValue = (value) => {
+    return value ? value : "N/A"; // Return "N/A" if the value is missing
   };
 
   return (
@@ -143,13 +151,13 @@ const Warranty = () => {
             <tbody>
               {currentItems.map((item) => (
                 <tr key={item.id} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-3">{item.productName}</td>
+                  <td className="px-4 py-3">{renderValue(item.productName)}</td>
                   <td className="px-4 py-3">{formatDate(item.purchaseDate)}</td>
                   <td className="px-4 py-3">{formatDate(item.warrantyDate)}</td>
                   <td className="px-4 py-3 text-center">
                     <div className="flex items-center justify-center gap-2">
                       <FaRegFileAlt className="text-gray-600" />{" "}
-                      {item.documents}
+                      {item.documents || "N/A"}
                     </div>
                   </td>
                   <td className="px-4 py-3">
