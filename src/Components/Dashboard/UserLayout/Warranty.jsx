@@ -1,116 +1,34 @@
 import React, { useState } from "react";
 import { FaRegFileAlt } from "react-icons/fa";
 import { format, parse } from "date-fns";
-import { useGetInboxQuery } from "../../../Redux/feature/auth/aithapi";
-
-const warrantyData = [
-  {
-    id: 1,
-    productName: "Apple Watch",
-    purchaseDate: "1 June, 2025",
-    warrantyDate: "1 June, 2027",
-    documents: 2,
-  },
-  {
-    id: 2,
-    productName: "Mac Book Pro",
-    purchaseDate: "1 June, 2025",
-    warrantyDate: "1 June, 2027",
-    documents: 1,
-  },
-  {
-    id: 3,
-    productName: "AirPods Pro",
-    purchaseDate: "2 June, 2025",
-    warrantyDate: "2 June, 2027",
-    documents: 1,
-  },
-  {
-    id: 4,
-    productName: "iPad Air",
-    purchaseDate: "3 June, 2025",
-    warrantyDate: "3 June, 2027",
-    documents: 2,
-  },
-  {
-    id: 5,
-    productName: "iPhone 14",
-    purchaseDate: "4 June, 2025",
-    warrantyDate: "4 June, 2026",
-    documents: 1,
-  },
-  {
-    id: 6,
-    productName: "Apple TV",
-    purchaseDate: "5 June, 2025",
-    warrantyDate: "5 June, 2026",
-    documents: 1,
-  },
-  {
-    id: 7,
-    productName: "Magic Keyboard",
-    purchaseDate: "6 June, 2025",
-    warrantyDate: "6 June, 2026",
-    documents: 2,
-  },
-  {
-    id: 8,
-    productName: "Mac Mini",
-    purchaseDate: "7 June, 2025",
-    warrantyDate: "7 June, 2027",
-    documents: 2,
-  },
-];
+import { IoDocumentTextOutline } from "react-icons/io5";
+import {
+  useGetInboxQuery,
+  useGetPurchaseQuery,
+} from "../../../Redux/feature/auth/aithapi";
 
 const Warranty = () => {
+  const itemsPerPage = 6;
   const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 6;
-
-  const today = new Date();
-  const { data: warranty, error, isLoading } = useGetInboxQuery();
-  console.log(warranty, "warranty");
-
-  const getStatus = (warrantyDateStr) => {
-    const warrantyDate = new Date(warrantyDateStr);
-    const twoWeeksBefore = new Date(warrantyDate);
-    twoWeeksBefore.setDate(warrantyDate.getDate() - 14);
-
-    if (today > warrantyDate) return "Expired";
-    if (today >= twoWeeksBefore) return "Expires Soon";
-    return "Active";
-  };
-
-  const sortedWarrantyData = [...warrantyData]
-    .map((item) => ({
-      ...item,
-      status: getStatus(item.warrantyDate),
-    }))
-    .sort(
-      (a, b) =>
-        new Date(a.purchaseDate).getTime() - new Date(b.purchaseDate).getTime()
-    );
-
-  const totalPages = Math.ceil(sortedWarrantyData.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentItems = sortedWarrantyData.slice(
-    startIndex,
-    startIndex + ITEMS_PER_PAGE
-  );
-
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editData, setEditData] = useState(null);
+  const { data: purchase, error, isLoading } = useGetPurchaseQuery();
+  console.log("purchase", purchase);
+  // Pagination calculations
+  const totalItems = purchase ? purchase.length : 0; // Ensure purchase data exists
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentData = purchase
+    ? purchase.slice(startIndex, startIndex + itemsPerPage)
+    : [];
+  // const backendBaseURL = import.meta.env.REACT_APP_BACKEND_BASE_URL;
+  const frontendBaseURL = "https://server.156-67-218-177.sslip.io/";
+  console.log("backendBaseURL", frontendBaseURL);
+  const handlePageChange = (pageNum) => {
+    if (pageNum >= 1 && pageNum <= totalPages) {
+      setCurrentPage(pageNum);
     }
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A"; // Check for empty date
-    const date = new Date(dateString);
-    return format(date, "MM/dd/yyyy");
-  };
-
-  const renderValue = (value) => {
-    return value ? value : "N/A"; // Return "N/A" if the value is missing
   };
 
   return (
@@ -149,28 +67,55 @@ const Warranty = () => {
               </tr>
             </thead>
             <tbody>
-              {currentItems.map((item) => (
+              {currentData.map((item) => (
                 <tr key={item.id} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-3">{renderValue(item.productName)}</td>
-                  <td className="px-4 py-3">{formatDate(item.purchaseDate)}</td>
-                  <td className="px-4 py-3">{formatDate(item.warrantyDate)}</td>
+                  <td className="px-4 py-3">
+                    {" "}
+                    {item.product_name || "Not Provided"}
+                  </td>
+                  <td className="px-4 py-3">
+                    {" "}
+                    {item.purchase_date || "Not Provided"}
+                  </td>
+                  <td className="px-4 py-3">
+                    {" "}
+                    {item.warranty_expire_date || "Not Provided"}
+                  </td>
                   <td className="px-4 py-3 text-center">
-                    <div className="flex items-center justify-center gap-2">
-                      <FaRegFileAlt className="text-gray-600" />{" "}
-                      {item.documents || "N/A"}
+                    <div className="flex items-center justify-center ">
+                      {/* Always displaying the PDF icon */}
+                      <IoDocumentTextOutline className="w-6 h-6 text-red-600" />{" "}
+                      {/* Customize size and color */}
+                      {/* Checking if the invoice exists */}
+                      {item.invoice ? (
+                        // Displaying the clickable number of files if invoice exists
+                        <a
+                          href={frontendBaseURL + item.invoice} // Link to the PDF or document
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="ml-2 text-blue-600 hover:text-blue-800"
+                        >
+                          {item.files ? item.files.length : 1} file
+                          {item.files && item.files.length > 1 ? "s" : ""}
+                        </a>
+                      ) : (
+                        // Displaying "Not Provided" when invoice is not available
+                        <span className="ml-2 text-gray-500">Not Provided</span>
+                      )}
                     </div>
                   </td>
+
                   <td className="px-4 py-3">
                     <span
                       className={`px-3 py-1 text-base font-medium rounded-full ${
-                        item.status === "Active"
+                        item.warranty_status === "Active"
                           ? "bg-green-100 text-green-700"
-                          : item.status === "Expired"
+                          : item.warranty_status === "Expiring_Soon"
                           ? "bg-orange-100 text-orange-700"
                           : "bg-yellow-100 text-yellow-700"
                       }`}
                     >
-                      {item.status}
+                      {item.warranty_status}
                     </span>
                   </td>
                 </tr>

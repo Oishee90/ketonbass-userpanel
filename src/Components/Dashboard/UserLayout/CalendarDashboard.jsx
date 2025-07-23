@@ -9,6 +9,7 @@ import {
 } from "react-icons/fa";
 import "tailwindcss/tailwind.css";
 import SetReminders from "./SetReminders";
+import { useGetEventsQuery } from "../../../Redux/feature/auth/aithapi";
 
 const CalendarDashboard = () => {
   const [date, setDate] = useState(new Date());
@@ -16,39 +17,30 @@ const CalendarDashboard = () => {
   const [isYearDropdownOpen, setIsYearDropdownOpen] = useState(false);
   const [isMonthDropdownOpen, setIsMonthDropdownOpen] = useState(false);
 
-  // Sample events
-  const events = [
-    { date: new Date(2025, 5, 10), label: "Filter Change", type: "extend" },
-    { date: new Date(2025, 5, 27), label: "TV warranty", type: "warranty" },
-  ];
+  const { data, error, isLoading } = useGetEventsQuery();
 
-  // Raw reminder data with dueDate
-  const rawReminders = [
-    {
-      title: "TV Warranty Expires",
-      description: 'Samsung 65" QLED',
-      dueDate: new Date("2025-06-21"),
-    },
-    {
-      title: "Car Maintenance",
-      description: "Oil Change Due",
-      dueDate: new Date("2025-06-25"),
-    },
-    {
-      title: "Filter Replacement",
-      description: "Water Filter System",
-      dueDate: new Date("2025-07-02"),
-    },
-  ];
+  if (isLoading) {
+    return <div>Loading events...</div>;
+  }
 
-  // Calculate time difference and decorate reminders
+  if (error) {
+    return <div>Error loading events</div>;
+  }
+
+  const events = data?.events || [];
   const now = new Date();
-  const decoratedReminders = rawReminders
-    .map((reminder) => {
-      const diffTime = reminder.dueDate - now;
+
+  const decoratedReminders = events
+    .filter((event) => {
+      const eventDate = new Date(event.end.date || event.end.dateTime);
+      return eventDate >= now; // Past date বাদ
+    })
+    .map((event) => {
+      const eventDate = new Date(event.end.date || event.end.dateTime);
+      const diffTime = eventDate - now;
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-      let color = "blue";
+      let color = "green"; // default
       let icon = <FaBell />;
 
       if (diffDays <= 3) {
@@ -57,47 +49,82 @@ const CalendarDashboard = () => {
       } else if (diffDays <= 7) {
         color = "yellow";
         icon = <FaTools />;
+      } else {
+        color = "green";
+        icon = <FaBell />;
       }
 
       return {
-        ...reminder,
-        time: `In ${diffDays} day${diffDays > 1 ? "s" : ""}`,
+        ...event,
+        time:
+          diffDays === 0
+            ? "Today"
+            : `In ${diffDays} day${diffDays > 1 ? "s" : ""}`,
         color,
         icon,
       };
     })
     .sort((a, b) => {
-      const aDays = parseInt(a.time.split(" ")[1]);
-      const bDays = parseInt(b.time.split(" ")[1]);
-      return aDays - bDays;
+      const aDate = new Date(a.end.date || a.end.dateTime);
+      const bDate = new Date(b.end.date || b.end.dateTime);
+      return aDate - bDate; // earliest first
     });
 
+  //  Updated tileContent
   const tileContent = ({ date, view }) => {
     if (view === "month") {
-      const formattedDate = date.toISOString().split("T")[0]; // 'YYYY-MM-DD'
+      const formattedDate = date.toLocaleDateString("en-CA");
+      const todayDate = new Date().toLocaleDateString("en-CA");
+
       const hasEvent = events.find((e) => {
-        const eventDate = e.date.toISOString().split("T")[0];
+        const eventDate = new Date(
+          e.start.date || e.start.dateTime
+        ).toLocaleDateString("en-CA");
         return eventDate === formattedDate;
       });
 
-      return hasEvent ? (
-        <div
-          className={`mt-1 text-[10px] rounded-full text-center text-white px-1 py-0.5 ${
-            hasEvent.type === "extend" ? "bg-red-500" : "bg-green-500"
-          }`}
-        >
-          {hasEvent.label}
-        </div>
-      ) : null;
+      if (hasEvent) {
+        const eventDateObj = new Date(
+          hasEvent.start.date || hasEvent.start.dateTime
+        );
+        const calendarDate = new Date(date);
+
+        // Strip time for accurate comparison
+        const eventTime = new Date(
+          eventDateObj.getFullYear(),
+          eventDateObj.getMonth(),
+          eventDateObj.getDate()
+        ).getTime();
+        const currentTime = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate()
+        ).getTime();
+
+        let bgColor = "bg-green-500"; // default: future
+        if (eventTime < currentTime) {
+          bgColor = "bg-red-500"; // past
+        } else if (eventTime === currentTime) {
+          bgColor = "bg-yellow-500"; // today
+        }
+
+        return (
+          <div
+            className={`mt-1 text-[10px] rounded-full text-center text-white px-1 py-0.5 ${bgColor}`}
+          >
+            {hasEvent.summary}
+          </div>
+        );
+      }
+
+      return null;
     }
     return null;
   };
 
-  // Generate a range of years for the dropdown (±5 years from current year)
   const currentYear = new Date().getFullYear();
   const yearRange = Array.from({ length: 11 }, (_, i) => currentYear - 5 + i);
 
-  // List of months
   const months = [
     "January",
     "February",
@@ -113,16 +140,14 @@ const CalendarDashboard = () => {
     "December",
   ];
 
-  // Handle year selection
   const handleYearSelect = (year) => {
-    setDate(new Date(year, date.getMonth(), 1)); // Preserve current month
-    setIsYearDropdownOpen(false); // Close year dropdown
+    setDate(new Date(year, date.getMonth(), 1));
+    setIsYearDropdownOpen(false);
   };
 
-  // Handle month selection
   const handleMonthSelect = (monthIndex) => {
-    setDate(new Date(date.getFullYear(), monthIndex, 1)); // Set to first day of selected month
-    setIsMonthDropdownOpen(false); // Close month dropdown
+    setDate(new Date(date.getFullYear(), monthIndex, 1));
+    setIsMonthDropdownOpen(false);
   };
 
   return (
@@ -146,19 +171,18 @@ const CalendarDashboard = () => {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {/* Calendar */}
         <div className="border rounded-lg shadow md:col-span-2 calender">
-          {/* Custom Header with Select Year and Month Buttons */}
           <div className="flex items-center justify-between p-2 bg-white ">
             <div></div>
             <div className="text-2xl font-bold text-green-700">
               {months[date.getMonth()]} {date.getFullYear()}
             </div>
             <div className="relative flex gap-2">
-              {/* Select Year Button */}
+              {/* Year Dropdown */}
               <div className="relative">
                 <button
                   onClick={() => {
                     setIsYearDropdownOpen(!isYearDropdownOpen);
-                    setIsMonthDropdownOpen(false); // Close month dropdown if open
+                    setIsMonthDropdownOpen(false);
                   }}
                   className="flex items-center gap-2 px-3 py-1 text-green-700 transition bg-green-100 border border-green-300 rounded shadow hover:bg-green-200"
                 >
@@ -178,12 +202,12 @@ const CalendarDashboard = () => {
                   </div>
                 )}
               </div>
-              {/* Select Month Button */}
+              {/* Month Dropdown */}
               <div className="relative">
                 <button
                   onClick={() => {
                     setIsMonthDropdownOpen(!isMonthDropdownOpen);
-                    setIsYearDropdownOpen(false); // Close year dropdown if open
+                    setIsYearDropdownOpen(false);
                   }}
                   className="flex items-center gap-2 px-3 py-1 text-green-700 transition bg-green-100 border border-green-300 rounded shadow hover:bg-green-200"
                 >
@@ -210,21 +234,21 @@ const CalendarDashboard = () => {
             onChange={setDate}
             value={date}
             tileContent={tileContent}
-            showNavigation={false} // Disable default navigation
+            showNavigation={false}
           />
         </div>
 
         {/* Reminders */}
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">Upcoming Reminders</h3>
-          <div className="pr-2 space-y-4 overflow-y-auto max-h-82">
+          <div className="pr-2 space-y-4 overflow-y-auto h-[440px] scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
             {decoratedReminders.map((reminder, index) => (
               <div
                 key={index}
                 className={`bg-${reminder.color}-100 border border-${reminder.color}-300 p-3 rounded`}
               >
                 <div
-                  className={`flex items-center gap-2 text-${reminder.color}-700 font-semibold`}
+                  className={`flex  items-center gap-2 text-${reminder.color}-700 font-semibold`}
                 >
                   {reminder.icon} {reminder.title}
                 </div>

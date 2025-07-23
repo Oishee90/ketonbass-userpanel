@@ -6,6 +6,7 @@ import CalenderPopup from "../CalenderPopup";
 import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useCreateEventMutation, useGetEventsQuery } from "../../../Redux/feature/auth/aithapi";
 const SetReminders = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
     productName: "",
@@ -44,7 +45,7 @@ const SetReminders = ({ isOpen, onClose }) => {
 
   const currentYear = new Date().getFullYear();
   const yearRange = Array.from({ length: 11 }, (_, i) => currentYear - 5 + i);
-
+  const [createEvent, { isLoading }] = useCreateEventMutation();
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -64,15 +65,14 @@ const SetReminders = ({ isOpen, onClose }) => {
     setCalendarDate(new Date(calendarDate.getFullYear(), monthIndex, 1));
     setIsMonthDropdownOpen(false);
   };
-
   const handleDateSelect = (selectedDate) => {
-    const formattedDate = selectedDate.toISOString().split("T")[0];
+    const formattedDate = selectedDate.toLocaleDateString("en-CA"); // Local timezone
     setFormData((prev) => ({ ...prev, date: formattedDate }));
     setErrors((prev) => ({ ...prev, date: "" }));
     setIsCalendarOpen(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const { productName, date } = formData;
     const newErrors = {};
@@ -82,19 +82,30 @@ const SetReminders = ({ isOpen, onClose }) => {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-
       return;
     }
 
-    setErrors({});
-    setFormData({ productName: "", date: "" });
-    setPdfFile(null);
+    try {
+      const payload = {
+        product_name: productName,
+        event_date: date,
+      };
 
-    toast.success("Reminder added successfully!");
-    setTimeout(() => {
-      onClose();
-    }, 1000);
-    console.log(formData, "submitted");
+      const response = await createEvent(payload).unwrap();
+      console.log("API Response:", response);
+
+      toast.success("Reminder added successfully!");
+      
+      setFormData({ productName: "", date: "" });
+      setPdfFile(null);
+
+      setTimeout(() => {
+        onClose();
+      }, 1000);
+    } catch (error) {
+      console.error("Error creating event:", error);
+      toast.error("Failed to add reminder!");
+    }
   };
 
   return (

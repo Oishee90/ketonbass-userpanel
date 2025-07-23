@@ -73,6 +73,23 @@ export const authapi = apiSlice.injectEndpoints({
         };
       },
     }),
+    // calender
+    createEvent: builder.mutation({
+      query: (newEvent) => ({
+        url: "api/v1/calendar/create/",
+        method: "POST",
+        body: newEvent,
+      }),
+      invalidatesTags: ["Events"],
+    }),
+
+    getEvents: builder.query({
+      query: () => ({
+        url: "api/v1/calendar/list/",
+        method: "GET", // This will be a GET request
+      }),
+      providesTags: ["Events"],
+    }),
 
     // updatePackage: builder.mutation({
     //   query: ({ id, ...patchData }) => ({
@@ -107,4 +124,6 @@ export const {
   useUploadFileMutation,
   useGetPurchaseQuery,
   useSyncGoogleDataQuery,
+  useGetEventsQuery,
+  useCreateEventMutation,
 } = authapi;
