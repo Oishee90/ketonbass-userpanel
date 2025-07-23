@@ -2,7 +2,7 @@ import { useState } from "react";
 import AddPurchaseModal from "./AddPurchaseModal";
 import { FaPlus, FaSync } from "react-icons/fa";
 
-import { FaTrashAlt } from "react-icons/fa";
+import { FaTrashAlt, FaEdit } from "react-icons/fa";
 import Swal from "sweetalert2";
 import EditPurchase from "./EditPurchase";
 import {
@@ -161,6 +161,13 @@ const Purchase = () => {
 
                   <td className="px-2 py-3 ">{item.price || "N/A"}</td>
                   <td className="flex items-center gap-4 px-2 py-3 sm:px-4">
+                    <button
+                      onClick={() => handleEditClick(item)}
+                      className="text-xl text-blue-600 hover:text-blue-800"
+                      title="Edit"
+                    >
+                      <FaEdit />
+                    </button>
                     <button
                       onClick={() => handleDelete(item.id)}
                       className="text-xl text-red-600 hover:text-red-800"

@@ -245,15 +245,15 @@ const CalendarDashboard = () => {
             {decoratedReminders.map((reminder, index) => (
               <div
                 key={index}
-                className={`bg-${reminder.color}-100 border border-${reminder.color}-300 p-3 rounded`}
+                className={`p-3  bg-${reminder.color}-100 border-l-4 border-${reminder.color}-500 rounded`}
               >
                 <div
                   className={`flex  items-center gap-2 text-${reminder.color}-700 font-semibold`}
                 >
                   {reminder.icon} {reminder.title}
                 </div>
-                <p className="text-sm">{reminder.description}</p>
-                <p className={`text-xs text-${reminder.color}-600`}>
+                <p className={`font-medium text-base text-${reminder.color}-800`}>{reminder.description}</p>
+                <p className={`text-sm text-${reminder.color}-600`}>
                   {reminder.time}
                 </p>
               </div>

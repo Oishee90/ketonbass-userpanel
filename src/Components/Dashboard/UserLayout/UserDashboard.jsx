@@ -8,11 +8,18 @@ import { userLoggedIn } from "../../../Redux/feature/auth/authSlice";
 import { useDispatch } from "react-redux";
 import {
   useGetActiveWarrantiesQuery,
+  useGetEventsQuery,
   useGetPurchaseQuery,
   useGetTotalPurchasePriceQuery,
   useGetUpcomingRemindersQuery,
   useSyncGoogleDataQuery,
 } from "../../../Redux/feature/auth/aithapi";
+import {
+  FaBell,
+  FaTools,
+  FaExclamationTriangle,
+  FaCalendarPlus,
+} from "react-icons/fa";
 const statsData = [
   {
     title: "Total Purchases",
@@ -69,13 +76,13 @@ const UserDashboard = () => {
     refetch: refetchActiveWarranty,
     isLoading: isLoadingWarranty,
   } = useGetActiveWarrantiesQuery();
-
+  const { data, isLoading } = useGetEventsQuery();
   const {
     data: upcomingWarranty,
     refetch: refetchUpcomingWarranty,
     error: upcomingError,
   } = useGetUpcomingRemindersQuery();
-  const { data: purchase, error, isLoading } = useGetPurchaseQuery();
+  const { data: purchase, error } = useGetPurchaseQuery();
   console.log("purchase", purchase);
   useEffect(() => {
     // Extract query params from the URL
@@ -159,6 +166,49 @@ const UserDashboard = () => {
   if (error) {
     return <p>Something went wrong. Please try again later.</p>;
   }
+  // UPCOMING REMINDERS   const now = new Date();
+  const events = data?.events || [];
+  const now = new Date();
+
+  const decoratedReminders = events
+    .filter((event) => {
+      const eventDate = new Date(event.end.date || event.end.dateTime);
+      return eventDate >= now; // Past date বাদ
+    })
+    .map((event) => {
+      const eventDate = new Date(event.end.date || event.end.dateTime);
+      const diffTime = eventDate - now;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      let color = "green"; // default
+      let icon = <FaBell />;
+
+      if (diffDays <= 3) {
+        color = "red";
+        icon = <FaExclamationTriangle />;
+      } else if (diffDays <= 7) {
+        color = "yellow";
+        icon = <FaTools />;
+      } else {
+        color = "green";
+        icon = <FaBell />;
+      }
+
+      return {
+        ...event,
+        time:
+          diffDays === 0
+            ? "Today"
+            : `In ${diffDays} day${diffDays > 1 ? "s" : ""}`,
+        color,
+        icon,
+      };
+    })
+    .sort((a, b) => {
+      const aDate = new Date(a.end.date || a.end.dateTime);
+      const bDate = new Date(b.end.date || b.end.dateTime);
+      return aDate - bDate; // earliest first
+    });
   return (
     <div className="bg-[#f9f9f9] min-h-screen p-6 font-sans">
       {/* Header */}
@@ -276,24 +326,27 @@ const UserDashboard = () => {
           </div>
         </div>
         {/* Upcoming Reminders */}
-        <div className="w-full p-4 bg-white rounded-lg shadow poppins">
-          <h2 className="mb-4 font-semibold lg:text-lg main-color">
-            Upcoming Reminders
-          </h2>
-
-          <div className="space-y-4">
-            {upcomingReminders.map((reminder) => (
+        {/* Reminders */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Upcoming Reminders</h3>
+          <div className="pr-2 space-y-4 overflow-y-auto h-[440px] scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
+            {decoratedReminders.map((reminder, index) => (
               <div
-                key={reminder.id}
+                key={index}
                 className={`p-3  bg-${reminder.color}-100 border-l-4 border-${reminder.color}-500 rounded`}
               >
+                <div
+                  className={`flex  items-center gap-2 text-${reminder.color}-700 font-semibold`}
+                >
+                  {reminder.icon} {reminder.title}
+                </div>
                 <p
                   className={`font-medium text-base text-${reminder.color}-800`}
                 >
-                  {reminder.title}
+                  {reminder.description}
                 </p>
                 <p className={`text-sm text-${reminder.color}-600`}>
-                  {reminder.description}
+                  {reminder.time}
                 </p>
               </div>
             ))}
