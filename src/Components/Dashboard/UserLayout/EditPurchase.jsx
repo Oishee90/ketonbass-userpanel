@@ -2,8 +2,14 @@
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import CalenderPopup from "../CalenderPopup";
+import {
+  useGetPurchaseQuery,
+  useUpdateOrderMutation,
+} from "../../../Redux/feature/auth/aithapi";
 
 const EditPurchase = ({ isOpen, onClose, data }) => {
+  const [updateOrder, { isLoading }] = useUpdateOrderMutation();
+  console.log("data", data);
   const [formData, setFormData] = useState({
     productName: "",
     storeName: "",
@@ -17,25 +23,37 @@ const EditPurchase = ({ isOpen, onClose, data }) => {
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [isYearDropdownOpen, setIsYearDropdownOpen] = useState(false);
   const [isMonthDropdownOpen, setIsMonthDropdownOpen] = useState(false);
-  const [errors, setErrors] = useState({ productName: "", date: "" });
+  const [isWarrantyCalendarOpen, setIsWarrantyCalendarOpen] = useState(false);
+  const [warrantycalendarDate, setWarrantyCalendarDate] = useState(new Date());
 
+  const { data: purchase, refetch } = useGetPurchaseQuery();
   const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   const currentYear = new Date().getFullYear();
   const yearRange = Array.from({ length: 11 }, (_, i) => currentYear - 5 + i);
 
-  // Populate form with data when modal opens
+  //  Populate current values from API data
   useEffect(() => {
     if (data) {
       setFormData({
-        productName: data.productName || "",
-        storeName: data.storeName || "",
-        date: data.dateTime?.split(" - ")[0] || "",
-        amount: data.amount || "",
-        warranty: data.warranty || "",
+        productName: data.product_name || "",
+        storeName: data.shop_name || "",
+        date: data.purchase_date || "",
+        amount: data.price || "",
+        warranty: data.warranty_status || "",
       });
     }
   }, [data]);
@@ -64,42 +82,62 @@ const EditPurchase = ({ isOpen, onClose, data }) => {
   const handleDateSelect = (selectedDate) => {
     const formattedDate = selectedDate.toISOString().split("T")[0];
     setFormData((prev) => ({ ...prev, date: formattedDate }));
-    setErrors((prev) => ({ ...prev, date: "" }));
     setIsCalendarOpen(false);
   };
+  const handleWarrantyDateSelect = (selectedDate) => {
+    const date = new Date(selectedDate);
+    // Format to YYYY-MM-DD using local date components
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const dateString = `${year}-${month}-${day}`;
 
-  const handleSubmit = (e) => {
+    setFormData((prev) => ({ ...prev, warranty: dateString }));
+
+    setIsWarrantyCalendarOpen(false);
+  };
+  const handleWarrantyMonthSelect = (monthIndex) => {
+    setWarrantyCalendarDate(
+      new Date(warrantycalendarDate.getFullYear(), monthIndex, 1)
+    );
+    setIsMonthDropdownOpen(false);
+  };
+  const handleWarrantyYearSelect = (year) => {
+    setWarrantyCalendarDate(new Date(year, warrantycalendarDate.getMonth(), 1));
+    setIsYearDropdownOpen(false);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const { productName, date } = formData;
 
-    let newErrors = {};
-    if (!productName.trim()) newErrors.productName = "Product name is required";
-    if (!date.trim()) newErrors.date = "Date is required";
+    try {
+      const payload = new FormData();
+      payload.append("product_name", formData.productName);
+      payload.append("shop_name", formData.storeName);
+      payload.append("purchase_date", formData.date);
+      payload.append("price", formData.amount);
+      payload.append("warranty_status", formData.warranty);
+      if (pdfFile) {
+        payload.append("invoice_pdf", pdfFile);
+      }
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
+      await updateOrder({ orderId: data.order_id, formData: payload }).unwrap();
+
+      Swal.fire({
+        icon: "success",
+        title: "Updated!",
+        text: "Purchase details updated successfully.",
+      });
+
+      onClose();
+      refetch();
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: error?.data?.message || "Failed to update order.",
+      });
     }
-
-    setErrors({ productName: "", date: "" });
-
-    // Show success message (actual update logic can be added later)
-    Swal.fire({
-      icon: "success",
-      title: "Success!",
-      text: "Purchase updated successfully!",
-    });
-
-    // Optionally clear the form and close modal
-    setFormData({
-      productName: "",
-      storeName: "",
-      date: "",
-      amount: "",
-      warranty: "",
-    });
-    setPdfFile(null);
-    onClose();
   };
 
   return (
@@ -116,6 +154,7 @@ const EditPurchase = ({ isOpen, onClose, data }) => {
         </h2>
 
         <form onSubmit={handleSubmit}>
+          {/* Product Name */}
           <div className="mb-4">
             <input
               type="text"
@@ -123,13 +162,11 @@ const EditPurchase = ({ isOpen, onClose, data }) => {
               value={formData.productName}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-xl"
-              placeholder="Product name*"
+              placeholder="Product name"
             />
-            {errors.productName && (
-              <p className="mt-1 text-sm text-red-600">{errors.productName}</p>
-            )}
           </div>
 
+          {/* Store Name */}
           <div className="mb-4">
             <input
               type="text"
@@ -141,6 +178,7 @@ const EditPurchase = ({ isOpen, onClose, data }) => {
             />
           </div>
 
+          {/* Amount */}
           <div className="mb-4">
             <input
               type="text"
@@ -152,6 +190,7 @@ const EditPurchase = ({ isOpen, onClose, data }) => {
             />
           </div>
 
+          {/* Date */}
           <div className="relative mb-4">
             <input
               type="text"
@@ -159,12 +198,9 @@ const EditPurchase = ({ isOpen, onClose, data }) => {
               value={formData.date}
               onClick={() => setIsCalendarOpen(true)}
               className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-300"
-              placeholder="Date*"
+              placeholder="Date"
               readOnly
             />
-            {errors.date && (
-              <p className="mt-1 text-sm text-red-500">{errors.date}</p>
-            )}
 
             {isCalendarOpen && (
               <CalenderPopup
@@ -184,22 +220,40 @@ const EditPurchase = ({ isOpen, onClose, data }) => {
             )}
           </div>
 
-          <div className="mb-4">
+          {/* Warranty */}
+          <div className="relative mb-4">
             <input
               type="text"
               name="warranty"
               value={formData.warranty}
+              placeholder="Warranty Date"
+              onClick={() => setIsWarrantyCalendarOpen(true)}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-xl"
-              placeholder="Warranty"
             />
+            {isWarrantyCalendarOpen && (
+              <CalenderPopup
+                calendarDate={warrantycalendarDate}
+                setCalendarDate={setWarrantyCalendarDate}
+                months={months}
+                yearRange={yearRange}
+                onClose={() => setIsWarrantyCalendarOpen(false)}
+                onDateSelect={handleWarrantyDateSelect}
+                isYearDropdownOpen={isYearDropdownOpen}
+                isMonthDropdownOpen={isMonthDropdownOpen}
+                setIsYearDropdownOpen={setIsYearDropdownOpen}
+                setIsMonthDropdownOpen={setIsMonthDropdownOpen}
+                handleYearSelect={handleWarrantyYearSelect}
+                handleMonthSelect={handleWarrantyMonthSelect}
+              />
+            )}
           </div>
 
+          {/* PDF Upload */}
           <div className="mt-4 mb-4">
             <label className="block mb-3 text-sm font-medium text-gray-700">
               Upload PDF (optional)
             </label>
-
             <div className="flex items-center gap-3 bg-gray-100 border border-gray-300 rounded-lg">
               <label className="inline-block p-2 text-white bg-green-600 cursor-pointer rounded-l-md">
                 Browse File
@@ -226,12 +280,14 @@ const EditPurchase = ({ isOpen, onClose, data }) => {
             </div>
           </div>
 
+          {/* Submit */}
           <div className="justify-center w-1/2 mx-auto mt-6">
             <button
               type="submit"
+              disabled={isLoading}
               className="w-full px-4 py-2 text-white bg-green-600 rounded-2xl hover:bg-green-700"
             >
-              Update
+              {isLoading ? "Updating..." : "Update"}
             </button>
           </div>
         </form>

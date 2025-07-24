@@ -44,14 +44,6 @@ export const authapi = apiSlice.injectEndpoints({
       }),
     }),
 
-    // updateProfile: builder.mutation({
-    //   query: (updatedata) => ({
-    //     url: "/profile/update_me/",
-    //     method: "PATCH",
-    //     body: updatedata,
-    //   }),
-    //   invalidatesTags: ["Profile"],
-    // }),
     // package
     createPurchase: builder.mutation({
       query: (newPackage) => ({
@@ -72,6 +64,15 @@ export const authapi = apiSlice.injectEndpoints({
           body: formData,
         };
       },
+      invalidatesTags: ["Pdf"],
+    }),
+
+    getReciepts: builder.query({
+      query: () => ({
+        url: "api/v1/invoice/",
+        method: "GET",
+      }),
+      providesTags: ["Pdf"],
     }),
     // calender
     createEvent: builder.mutation({
@@ -90,7 +91,29 @@ export const authapi = apiSlice.injectEndpoints({
       }),
       providesTags: ["Events"],
     }),
-
+    // purchase
+    updateOrder: builder.mutation({
+      query: ({ orderId, formData }) => ({
+        url: `api/v1/user-orders/update/${orderId}/`,
+        method: "PUT",
+        body: formData,
+      }),
+      invalidatesTags: ["Purchase"],
+    }),
+    deleteOrder: builder.mutation({
+      query: (orderId) => ({
+        url: `api/v1/user-delete-order/${orderId}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Purchase"],
+    }),
+ deleteRecipts: builder.mutation({
+      query: (orderId) => ({
+        url: `api/v1/invoice/${orderId}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Pdf"],
+    }),
     // updatePackage: builder.mutation({
     //   query: ({ id, ...patchData }) => ({
     //     url: `/adminapi/packages/${id}/`,
@@ -126,4 +149,8 @@ export const {
   useSyncGoogleDataQuery,
   useGetEventsQuery,
   useCreateEventMutation,
+  useGetRecieptsQuery,
+  useUpdateOrderMutation,
+  useDeleteOrderMutation,
+  useDeleteReciptsMutation
 } = authapi;

@@ -6,6 +6,7 @@ import { FaTrashAlt, FaEdit } from "react-icons/fa";
 import Swal from "sweetalert2";
 import EditPurchase from "./EditPurchase";
 import {
+  useDeleteOrderMutation,
   useGetPurchaseQuery,
   useSyncGoogleDataQuery,
 } from "../../../Redux/feature/auth/aithapi";
@@ -16,9 +17,15 @@ const Purchase = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editData, setEditData] = useState(null);
-  const { data: purchase, error, isLoading } = useGetPurchaseQuery();
+  const {
+    data: purchase,
+    error,
+    isLoading,
+    refetch: refetchPurchase,
+  } = useGetPurchaseQuery();
   console.log("purchase", purchase);
   // Pagination calculations
+  const [deleteOrder] = useDeleteOrderMutation();
   const totalItems = purchase ? purchase.length : 0; // Ensure purchase data exists
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -31,13 +38,11 @@ const Purchase = () => {
       setCurrentPage(pageNum);
     }
   };
-
   const handleEditClick = (item) => {
     setEditData(item);
     setEditModalOpen(true);
   };
-
-  const handleDelete = (id) => {
+  const handleDelete = (orderId) => {
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -46,12 +51,23 @@ const Purchase = () => {
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
       confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        Swal.fire("Deleted!", "Your purchase has been deleted.", "success");
+        try {
+          await deleteOrder(orderId).unwrap();
+          refetchPurchase();
+          Swal.fire("Deleted!", "Your purchase has been deleted.", "success");
+        } catch (error) {
+          Swal.fire(
+            "Error!",
+            error?.data?.message || "Failed to delete order.",
+            "error"
+          );
+        }
       }
     });
   };
+
   const [spinning, setSpinning] = useState(false);
   const {
     data: syncData,
@@ -169,7 +185,7 @@ const Purchase = () => {
                       <FaEdit />
                     </button>
                     <button
-                      onClick={() => handleDelete(item.id)}
+                      onClick={() => handleDelete(item.order_id)}
                       className="text-xl text-red-600 hover:text-red-800"
                       title="Delete"
                     >
