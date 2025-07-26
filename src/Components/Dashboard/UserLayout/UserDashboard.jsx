@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { FaPlus, FaSync, FaUpload } from "react-icons/fa";
-import { recentPurchases, upcomingReminders } from "../../../fakeData";
+
 import AddPurchaseModal from "./AddPurchaseModal";
 import EditPurchaseModal from "./EditPurchaseModal";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { userLoggedIn } from "../../../Redux/feature/auth/authSlice";
+
 import { useDispatch } from "react-redux";
 import {
   useGetActiveWarrantiesQuery,
@@ -84,47 +84,7 @@ const UserDashboard = () => {
   } = useGetUpcomingRemindersQuery();
   const { data: purchase, error } = useGetPurchaseQuery();
   console.log("purchase", purchase);
-  useEffect(() => {
-    // Extract query params from the URL
-    const queryParams = new URLSearchParams(location.search);
 
-    const accessToken = queryParams.get("access_token");
-    const refreshToken = queryParams.get("refresh_token");
-    const email = queryParams.get("email");
-    const name = queryParams.get("name");
-    const picture = queryParams.get("picture");
-
-    if (accessToken && refreshToken) {
-      console.log("✅ Tokens from URL:", { accessToken, refreshToken });
-      console.log("✅ User info:", { email, name, picture });
-
-      // Save tokens and user info in localStorage
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
-      localStorage.setItem("user", JSON.stringify({ email, name, picture }));
-
-      // Dispatch to Redux to save user and tokens
-      dispatch(
-        userLoggedIn({
-          access_token: accessToken,
-          refresh_token: refreshToken,
-          email: email,
-          name: name,
-          profile_picture: picture,
-        })
-      );
-      refetchTotalPurchase(); // Trigger refetch for total purchases
-      refetchActiveWarranty(); // Trigger refetch for active warranties
-      refetchUpcomingWarranty(); // Trigger refetch for upcoming reminders
-
-      // Optionally clean URL (remove tokens from query)
-      const cleanUrl = window.location.origin + window.location.pathname;
-      window.history.replaceState({}, document.title, cleanUrl);
-
-      // Optionally navigate to the dashboard (if it's not already there)
-      navigate("/dashboard");
-    }
-  }, [location, dispatch, navigate]);
   const handleAddPurchaseSuccess = () => {
     // Refetch after adding a new purchase to get the updated data
     refetchTotalPurchase();

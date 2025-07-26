@@ -35,6 +35,8 @@ const Reciepts = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [deleteRecipts] = useDeleteReciptsMutation();
+  const [selectedReceiptId, setSelectedReceiptId] = useState(null);
+  console.log("data", data);
   const receiptsPerPage = 6;
 
   if (isLoading) return <p>Loading data...</p>;
@@ -82,14 +84,15 @@ const Reciepts = () => {
     });
   };
 
-  const handleView = (receipt) => {
-    setSelectedReceipt(receipt);
+  const handleView = (orderId) => {
+    setSelectedReceiptId(orderId);
     setModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setModalOpen(false);
     setSelectedReceipt(null);
+    setSelectedReceiptId(null);
   };
 
   return (
@@ -169,7 +172,7 @@ const Reciepts = () => {
                 {receipt.warranty_status}
               </span>
               <button
-                onClick={() => handleView(receipt)}
+                onClick={() => handleView(receipt.order_id)}
                 className="text-sm font-medium text-green-700"
               >
                 View
@@ -216,7 +219,7 @@ const Reciepts = () => {
       <ReceiptModal
         isOpen={modalOpen}
         onClose={handleCloseModal}
-        receipt={selectedReceipt}
+        orderId={selectedReceiptId}
       />
       <EditPurchaseModal
         isOpen={isEditModalOpen}

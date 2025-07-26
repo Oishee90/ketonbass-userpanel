@@ -21,6 +21,7 @@ import { Provider } from "react-redux";
 import { persistor, store } from "./Redux/store";
 import GoogleCallback from "./Components/Pages/GoogleCallback";
 import { PersistGate } from "redux-persist/integration/react";
+import GoogleLoginSuccess from "./Components/Pages/GoogleLoginSuccess";
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <SignUpPage></SignUpPage>,
+  },
+    {
+    path: "/success",
+    element: <GoogleLoginSuccess></GoogleLoginSuccess>,
   },
   {
     path: "/google/callback",

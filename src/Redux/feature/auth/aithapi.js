@@ -107,13 +107,19 @@ export const authapi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Purchase"],
     }),
- deleteRecipts: builder.mutation({
+    deleteRecipts: builder.mutation({
       query: (orderId) => ({
-        url: `api/v1/invoice/${orderId}/`,
+        url: `api/v1/invoice/${orderId}/delete/`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Pdf"],
     }),
+    getReceiptDetails: builder.query({
+      query: (orderId) => ({
+        url: `api/v1/invoice/${orderId}/`,
+        method: "GET",
+      }),
+    }),
+
     // updatePackage: builder.mutation({
     //   query: ({ id, ...patchData }) => ({
     //     url: `/adminapi/packages/${id}/`,
@@ -152,5 +158,6 @@ export const {
   useGetRecieptsQuery,
   useUpdateOrderMutation,
   useDeleteOrderMutation,
-  useDeleteReciptsMutation
+  useDeleteReciptsMutation,
+  useGetReceiptDetailsQuery
 } = authapi;
