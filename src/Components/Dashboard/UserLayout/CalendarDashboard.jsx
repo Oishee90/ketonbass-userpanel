@@ -162,23 +162,22 @@ const CalendarDashboard = () => {
         </div>
         <div>
           <button
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-3 py-1 text-green-700 bg-green-100 border border-green-300 rounded shadow"
-        >
-          <FaCalendarPlus /> Set Reminder
-        </button> 
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center gap-2 px-3 py-1 text-green-700 bg-green-100 border border-green-300 rounded shadow"
+          >
+            <FaCalendarPlus /> Set Reminder
+          </button>
         </div>
-       
       </div>
 
       <div className="grid grid-cols-1 gap-6 2xl:grid-cols-3">
         {/* Calendar */}
-        <div className="overflow-x-auto border rounded-lg shadow md:col-span-2 calender">
-          <div className="min-w-[800px]">
+        <div className="border rounded-lg shadow md:col-span-2 calender">
+          <div className="">
             {" "}
             {/* ✅ Fixed minimum width for scroll */}
             {/* Header */}
-            <div className="flex flex-col items-start justify-between gap-4 p-2 bg-white sm:flex-row sm:items-center">
+            <div className="flex flex-col items-center justify-between gap-4 p-2 bg-white sm:flex-row">
               <div></div>
               <div className="text-xl font-bold text-green-700 sm:text-2xl">
                 {months[date.getMonth()]} {date.getFullYear()}
@@ -191,7 +190,7 @@ const CalendarDashboard = () => {
                       setIsYearDropdownOpen(!isYearDropdownOpen);
                       setIsMonthDropdownOpen(false);
                     }}
-                    className="flex items-center gap-2 px-1 py-1 text-sm text-green-700 transition bg-green-100 border border-green-300 rounded shadow lg:text-base lg:px-3 hover:bg-green-200"
+                    className="flex flex-col items-center px-1 py-1 text-sm text-green-700 transition bg-green-100 border border-green-300 rounded shadow lg:gap-2 lg:text-base lg:px-3 hover:bg-green-200"
                   >
                     Select Year ▼
                   </button>
@@ -238,9 +237,9 @@ const CalendarDashboard = () => {
               </div>
             </div>
             {/* Calendar */}
-            <div className="p-2">
+            <div className="p-2 overflow-x-auto ">
               <Calendar
-                className="w-full"
+                className="w-full min-w-[800px]"
                 onChange={setDate}
                 value={date}
                 tileContent={tileContent}
