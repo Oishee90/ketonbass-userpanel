@@ -10,30 +10,99 @@ import {
 const Warranty = () => {
   const itemsPerPage = 6;
   const [currentPage, setCurrentPage] = useState(1);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [editData, setEditData] = useState(null);
+  const [showAllPages, setShowAllPages] = useState(false);
   const { data: purchase, error, isLoading } = useGetPurchaseQuery();
-  console.log("purchase", purchase);
-  // Pagination calculations
-  const totalItems = purchase ? purchase.length : 0; // Ensure purchase data exists
+
+  const totalItems = purchase ? purchase.length : 0;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentData = purchase
     ? purchase.slice(startIndex, startIndex + itemsPerPage)
     : [];
-  // const backendBaseURL = import.meta.env.REACT_APP_BACKEND_BASE_URL;
+
   const frontendBaseURL = "https://server.156-67-218-177.sslip.io/";
-  console.log("backendBaseURL", frontendBaseURL);
+
   const handlePageChange = (pageNum) => {
     if (pageNum >= 1 && pageNum <= totalPages) {
       setCurrentPage(pageNum);
     }
   };
 
+  const handleDotsClick = () => {
+    setShowAllPages(true);
+  };
+
+  const renderPages = () => {
+    if (showAllPages || totalPages <= 6) {
+      return Array.from({ length: totalPages }, (_, index) => (
+        <li key={index}>
+          <button
+            onClick={() => handlePageChange(index + 1)}
+            className={`px-2 py-1 rounded ${
+              currentPage === index + 1
+                ? "bg-green-800 text-white"
+                : "hover:bg-gray-200"
+            } sm:px-3`}
+          >
+            {index + 1}
+          </button>
+        </li>
+      ));
+    } else {
+      return (
+        <>
+          <li>
+            <button
+              onClick={() => handlePageChange(1)}
+              className={`px-2 py-1 rounded ${
+                currentPage === 1
+                  ? "bg-green-800 text-white"
+                  : "hover:bg-gray-200"
+              } sm:px-3`}
+            >
+              1
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => handlePageChange(2)}
+              className={`px-2 py-1 rounded ${
+                currentPage === 2
+                  ? "bg-green-800 text-white"
+                  : "hover:bg-gray-200"
+              } sm:px-3`}
+            >
+              2
+            </button>
+          </li>
+          <li>
+            <span
+              onClick={handleDotsClick}
+              className="px-2 py-1 cursor-pointer select-none"
+            >
+              ...
+            </span>
+          </li>
+          <li>
+            <button
+              onClick={() => handlePageChange(totalPages)}
+              className={`px-2 py-1 rounded ${
+                currentPage === totalPages
+                  ? "bg-green-800 text-white"
+                  : "hover:bg-gray-200"
+              } sm:px-3`}
+            >
+              {totalPages}
+            </button>
+          </li>
+        </>
+      );
+    }
+  };
+
   return (
-    <div className="bg-[#f9f9f9] min-h-screen p-6 font-sans">
-      <h1 className="mb-1 text-2xl font-bold text-green-800">
+    <div className="bg-[#f9f9f9] min-h-screen p-2 sm:p-6 font-sans">
+      <h1 className="mb-1 text-xl font-bold text-green-800 sm:text-2xl poppins">
         Oishee Khan’s Warranties
       </h1>
       <p className="mb-6 text-sm text-gray-600">
@@ -45,7 +114,7 @@ const Warranty = () => {
           Warranties Details
         </h2>
 
-        <div className="overflow-x-auto">
+        <div className="hidden overflow-x-auto lg:block">
           <table className="min-w-full text-left border-collapse">
             <thead>
               <tr className="text-2xl text-gray-600 bg-gray-200 sm:text-sm rounded-xl">
@@ -58,9 +127,9 @@ const Warranty = () => {
                 <th className="px-4 py-2 text-lg font-bold text-gray-800">
                   Warranty Date
                 </th>
-                <th className="px-4 py-2 text-lg font-bold text-center text-gray-800">
+                {/* <th className="px-4 py-2 text-lg font-bold text-center text-gray-800">
                   Documents
-                </th>
+                </th> */}
                 <th className="px-4 py-2 text-lg font-bold text-gray-800">
                   Status
                 </th>
@@ -70,27 +139,20 @@ const Warranty = () => {
               {currentData.map((item) => (
                 <tr key={item.id} className="border-b hover:bg-gray-50">
                   <td className="px-4 py-3">
-                    {" "}
                     {item.product_name || "Not Provided"}
                   </td>
                   <td className="px-4 py-3">
-                    {" "}
                     {item.purchase_date || "Not Provided"}
                   </td>
                   <td className="px-4 py-3">
-                    {" "}
                     {item.warranty_expire_date || "Not Provided"}
                   </td>
-                  <td className="px-4 py-3 text-center">
-                    <div className="flex items-center justify-center ">
-                      {/* Always displaying the PDF icon */}
-                      <IoDocumentTextOutline className="w-6 h-6 text-red-600" />{" "}
-                      {/* Customize size and color */}
-                      {/* Checking if the invoice exists */}
+                  {/* <td className="px-4 py-3 text-center">
+                    <div className="flex items-center justify-center">
+                      <IoDocumentTextOutline className="w-6 h-6 text-red-600" />
                       {item.invoice ? (
-                        // Displaying the clickable number of files if invoice exists
                         <a
-                          href={frontendBaseURL + item.invoice} // Link to the PDF or document
+                          href={frontendBaseURL + item.invoice}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="ml-2 text-blue-600 hover:text-blue-800"
@@ -99,12 +161,10 @@ const Warranty = () => {
                           {item.files && item.files.length > 1 ? "s" : ""}
                         </a>
                       ) : (
-                        // Displaying "Not Provided" when invoice is not available
                         <span className="ml-2 text-gray-500">Not Provided</span>
                       )}
                     </div>
-                  </td>
-
+                  </td> */}
                   <td className="px-4 py-3">
                     <span
                       className={`px-3 py-1 text-base font-medium rounded-full ${
@@ -123,38 +183,141 @@ const Warranty = () => {
             </tbody>
           </table>
         </div>
+        {/* Responsive Card Layout for Tablet  */}
+        <div className="hidden space-y-4 sm:block lg:hidden">
+          {currentData.map((item) => (
+            <div
+              key={item.id}
+              className="w-full p-4 bg-white border border-gray-200 rounded-lg shadow"
+            >
+              <div className="flex flex-wrap py-2 border-b">
+                <p className="w-1/3 text-sm font-semibold md:text-base">Name</p>
+                <p className="w-2/3 text-sm md:text-base">
+                  {item.product_name || "Not Provided"}
+                </p>
+              </div>
+              <div className="flex flex-wrap py-2 border-b">
+                <p className="w-1/3 text-sm font-semibold md:text-base">
+                  Purchase Date
+                </p>
+                <p className="w-2/3 text-sm md:text-base">
+                  {item.purchase_date || "Not Provided"}
+                </p>
+              </div>
+              <div className="flex flex-wrap py-2 border-b">
+                <p className="w-1/3 text-sm font-semibold md:text-base">
+                  Warranty Date
+                </p>
+                <p className="w-2/3 text-sm md:text-base">
+                  {item.warranty_expire_date || "Not Provided"}
+                </p>
+              </div>
+              {/* <div className="flex flex-wrap py-2 border-b">
+                <p className="w-1/3 text-sm font-semibold md:text-base">
+                  Doccument
+                </p>
+                <p className="w-2/3 text-sm md:text-base">
+                  {item.invoice ? item.invoice : "Not Provided"}
+                </p>
+              </div> */}
+              <div className="flex flex-wrap py-2">
+                <p className="w-1/3 text-sm font-semibold md:text-base">
+                  Status
+                </p>
+                <p className="w-2/3 text-sm md:text-base">
+                  {item.warranty_status || "Not Provided"}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Responsive Card Layout for Tablet & Mobile */}
+        <div className="space-y-2 sm:hidden lg:hidden">
+          {currentData.map((item) => (
+            <div
+              key={item.id}
+              className="w-full p-4 transition-shadow duration-300 bg-white border border-gray-200 rounded-lg shadow-lg hover:shadow-xl"
+            >
+              <h3 className="mb-3 text-lg font-semibold text-green-800">
+                {item.product_name || "Not Provided"}
+              </h3>
+
+              <div className="flex flex-wrap justify-between mb-3">
+                <p className="text-sm text-gray-700">
+                  <span className="font-semibold">Purchase Date:</span>{" "}
+                  {item.purchase_date || "Not Provided"}
+                </p>
+                <p className="text-sm text-gray-700">
+                  <span className="font-semibold">Warranty Date:</span>{" "}
+                  {item.warranty_expire_date || "Not Provided"}
+                </p>
+              </div>
+
+              {/* <div className="flex flex-wrap items-center justify-between mb-3">
+                <p className="text-sm text-gray-700">
+                  <span className="font-semibold">Documents:</span>
+                </p>
+                <div className="flex items-center">
+                  <IoDocumentTextOutline className="w-5 h-5 text-red-600" />
+                  {item.invoice ? (
+                    <a
+                      href={frontendBaseURL + item.invoice}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-2 text-sm text-blue-600 hover:text-blue-800"
+                    >
+                      {item.files ? item.files.length : 1} file
+                      {item.files && item.files.length > 1 ? "s" : ""}
+                    </a>
+                  ) : (
+                    <span className="ml-2 text-sm text-gray-500">
+                      Not Provided
+                    </span>
+                  )}
+                </div>
+              </div> */}
+
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-gray-700">
+                  <span className="font-semibold">Status:</span>
+                </p>
+                <span
+                  className={`px-3 py-1 text-sm font-medium rounded-full ${
+                    item.warranty_status === "Active"
+                      ? "bg-green-100 text-green-700"
+                      : item.warranty_status === "Expiring_Soon"
+                      ? "bg-orange-100 text-orange-700"
+                      : "bg-yellow-100 text-yellow-700"
+                  }`}
+                >
+                  {item.warranty_status || "Not Provided"}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
 
         {/* Pagination */}
-        <div className="flex justify-end mt-6">
-          <ul className="flex space-x-2 text-sm">
+        {/* Pagination */}
+        {/* Pagination */}
+        <div className="flex justify-center mt-6">
+          <ul className="flex flex-wrap justify-center gap-1 text-sm">
             <li>
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="px-3 py-1 rounded hover:bg-gray-200 disabled:text-gray-400"
+                className="px-2 py-1 rounded hover:bg-gray-200 disabled:text-gray-400 sm:px-3"
               >
                 &lt;
               </button>
             </li>
-            {Array.from({ length: totalPages }, (_, index) => (
-              <li key={index}>
-                <button
-                  onClick={() => handlePageChange(index + 1)}
-                  className={`px-3 py-1 rounded ${
-                    currentPage === index + 1
-                      ? "bg-green-800 text-white"
-                      : "hover:bg-gray-200"
-                  }`}
-                >
-                  {index + 1}
-                </button>
-              </li>
-            ))}
+            {renderPages()}
             <li>
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="px-3 py-1 rounded hover:bg-gray-200 disabled:text-gray-400"
+                className="px-2 py-1 rounded hover:bg-gray-200 disabled:text-gray-400 sm:px-3"
               >
                 &gt;
               </button>

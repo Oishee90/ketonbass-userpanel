@@ -59,18 +59,18 @@ const features = [
 
 const Powerfulfeatures = () => {
   return (
-    <div className=" container mx-auto  p-4">
+    <div className="container p-4 mx-auto">
       <h1 className="text-[#16A34A] poppins w-full text-center text-3xl leading-none lg:text-[64px] ">
         Powerful Features for Smart Consumers
       </h1>
       <p className="text-[#979797] rubik w-full text-center text-xl leading-none lg:text-[32px] !mt-5 lg:!mt-10 leading-0">
         Everything you need to stay on top of your purchases and warranties
       </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-12 lg:mt-20">
+      <div className="grid grid-cols-1 gap-6 mt-12 sm:grid-cols-2 lg:grid-cols-3 lg:mt-20">
         {features.map(({ id, title, description, icon, bg }) => (
           <div
             key={id}
-            className="flex  flex-col items-start gap-4 border rounded-xl p-6 sha   dow-sm hover:shadow-md transition duration-300 cursor-pointer"
+            className="flex flex-col items-start gap-4 p-6 transition duration-300 border cursor-pointer rounded-xl sha dow-sm hover:shadow-md"
           >
             <div className={`p-3 rounded-md ${bg}`}>{icon}</div>
             <div>

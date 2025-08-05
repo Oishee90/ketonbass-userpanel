@@ -153,89 +153,101 @@ const CalendarDashboard = () => {
   return (
     <div className="p-6 font-sans text-gray-800">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col justify-between mb-4 lg:items-center lg:flex-row">
         <div>
           <h1 className="text-2xl font-bold text-green-700">Welcome Oishe !</h1>
           <p className="mb-4 text-xs text-gray-600 sm:text-sm sm:mb-6 poppins">
             Track your warranties and all details
           </p>
         </div>
-        <button
+        <div>
+          <button
           onClick={() => setIsModalOpen(true)}
           className="flex items-center gap-2 px-3 py-1 text-green-700 bg-green-100 border border-green-300 rounded shadow"
         >
           <FaCalendarPlus /> Set Reminder
-        </button>
+        </button> 
+        </div>
+       
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 2xl:grid-cols-3">
         {/* Calendar */}
-        <div className="border rounded-lg shadow md:col-span-2 calender">
-          <div className="flex items-center justify-between p-2 bg-white ">
-            <div></div>
-            <div className="text-2xl font-bold text-green-700">
-              {months[date.getMonth()]} {date.getFullYear()}
+        <div className="overflow-x-auto border rounded-lg shadow md:col-span-2 calender">
+          <div className="min-w-[800px]">
+            {" "}
+            {/* ✅ Fixed minimum width for scroll */}
+            {/* Header */}
+            <div className="flex flex-col items-start justify-between gap-4 p-2 bg-white sm:flex-row sm:items-center">
+              <div></div>
+              <div className="text-xl font-bold text-green-700 sm:text-2xl">
+                {months[date.getMonth()]} {date.getFullYear()}
+              </div>
+              <div className="relative flex gap-2">
+                {/* Year Dropdown */}
+                <div className="relative">
+                  <button
+                    onClick={() => {
+                      setIsYearDropdownOpen(!isYearDropdownOpen);
+                      setIsMonthDropdownOpen(false);
+                    }}
+                    className="flex items-center gap-2 px-1 py-1 text-sm text-green-700 transition bg-green-100 border border-green-300 rounded shadow lg:text-base lg:px-3 hover:bg-green-200"
+                  >
+                    Select Year ▼
+                  </button>
+                  {isYearDropdownOpen && (
+                    <div className="absolute right-0 z-10 w-32 overflow-y-auto bg-white border border-gray-300 rounded shadow-lg top-10 max-h-60">
+                      {yearRange.map((year) => (
+                        <button
+                          key={year}
+                          onClick={() => handleYearSelect(year)}
+                          className="block w-full px-4 py-2 text-left text-gray-800 hover:bg-green-100"
+                        >
+                          {year}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Month Dropdown */}
+                <div className="relative">
+                  <button
+                    onClick={() => {
+                      setIsMonthDropdownOpen(!isMonthDropdownOpen);
+                      setIsYearDropdownOpen(false);
+                    }}
+                    className="flex items-center gap-2 px-1 py-1 text-sm text-green-700 transition bg-green-100 border border-green-300 rounded shadow lg:text-base lg:px-3 hover:bg-green-200"
+                  >
+                    Select Month ▼
+                  </button>
+                  {isMonthDropdownOpen && (
+                    <div className="absolute right-0 z-10 w-40 overflow-y-auto bg-white border border-gray-300 rounded shadow-lg top-10 max-h-60">
+                      {months.map((month, index) => (
+                        <button
+                          key={month}
+                          onClick={() => handleMonthSelect(index)}
+                          className="block w-full px-4 py-2 text-left text-gray-800 hover:bg-green-100"
+                        >
+                          {month}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
-            <div className="relative flex gap-2">
-              {/* Year Dropdown */}
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    setIsYearDropdownOpen(!isYearDropdownOpen);
-                    setIsMonthDropdownOpen(false);
-                  }}
-                  className="flex items-center gap-2 px-3 py-1 text-green-700 transition bg-green-100 border border-green-300 rounded shadow hover:bg-green-200"
-                >
-                  Select Year ▼
-                </button>
-                {isYearDropdownOpen && (
-                  <div className="absolute right-0 z-10 w-32 overflow-y-auto bg-white border border-gray-300 rounded shadow-lg top-10 max-h-60">
-                    {yearRange.map((year) => (
-                      <button
-                        key={year}
-                        onClick={() => handleYearSelect(year)}
-                        className="block w-full px-4 py-2 text-left text-gray-800 hover:bg-green-100"
-                      >
-                        {year}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-              {/* Month Dropdown */}
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    setIsMonthDropdownOpen(!isMonthDropdownOpen);
-                    setIsYearDropdownOpen(false);
-                  }}
-                  className="flex items-center gap-2 px-3 py-1 text-green-700 transition bg-green-100 border border-green-300 rounded shadow hover:bg-green-200"
-                >
-                  Select Month ▼
-                </button>
-                {isMonthDropdownOpen && (
-                  <div className="absolute right-0 z-10 w-40 overflow-y-auto bg-white border border-gray-300 rounded shadow-lg top-10 max-h-60">
-                    {months.map((month, index) => (
-                      <button
-                        key={month}
-                        onClick={() => handleMonthSelect(index)}
-                        className="block w-full px-4 py-2 text-left text-gray-800 hover:bg-green-100"
-                      >
-                        {month}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+            {/* Calendar */}
+            <div className="p-2">
+              <Calendar
+                className="w-full"
+                onChange={setDate}
+                value={date}
+                tileContent={tileContent}
+                showNavigation={false}
+              />
             </div>
           </div>
-          <Calendar
-            className="w-full"
-            onChange={setDate}
-            value={date}
-            tileContent={tileContent}
-            showNavigation={false}
-          />
         </div>
 
         {/* Reminders */}
@@ -252,7 +264,11 @@ const CalendarDashboard = () => {
                 >
                   {reminder.icon} {reminder.title}
                 </div>
-                <p className={`font-medium text-base text-${reminder.color}-800`}>{reminder.description}</p>
+                <p
+                  className={`font-medium text-base text-${reminder.color}-800`}
+                >
+                  {reminder.description}
+                </p>
                 <p className={`text-sm text-${reminder.color}-600`}>
                   {reminder.time}
                 </p>

@@ -6,6 +6,7 @@ import UserDashboard from "./UserLayout/UserDashboard";
 import AdminSidebar from "./Sidebar/AdminSidebar"; // Example, can be removed if only one sidebar exists
 import UserSidebar from "./Sidebar/UserSidebar";
 import Header from "./Header";
+import TrackTabInteraction from "../Pages/TrackTabInteraction";
 
 const Root = () => {
   const navigate = useNavigate();
@@ -48,7 +49,7 @@ const Root = () => {
       >
         {/* Header */}
         <Header />
-
+        <TrackTabInteraction />
         {/* Main Scrollable Area */}
         <main className="flex-1 overflow-y-auto bg-white dark:bg-white h-[calc(100vh-64px)]">
           {isDashboardRoot ? <UserDashboard /> : <Outlet />}

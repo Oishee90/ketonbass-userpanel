@@ -119,6 +119,19 @@ export const authapi = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+    // track
+    postTabInteraction: builder.mutation({
+      query: (tab_name) => ({
+        url: "api/v1/track-interaction/", // তোমার backend API
+        method: "POST",
+        body: { tab_name }, // যেমন { "tab_name": "dashboard" }
+      }),
+    
+    }),
+    // replacement
+     getMainProducts: builder.query({
+      query: () => "/google-auth/google/main-product/",
+    }),
 
     // updatePackage: builder.mutation({
     //   query: ({ id, ...patchData }) => ({
@@ -159,5 +172,7 @@ export const {
   useUpdateOrderMutation,
   useDeleteOrderMutation,
   useDeleteReciptsMutation,
-  useGetReceiptDetailsQuery
+  useGetReceiptDetailsQuery,
+  usePostTabInteractionMutation,
+  useGetMainProductsQuery
 } = authapi;

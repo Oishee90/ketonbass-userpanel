@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useGetMainProductsQuery } from "../../../Redux/feature/auth/aithapi";
 
 const purchaseData = [
   {
@@ -133,12 +134,12 @@ const purchaseData = [
 const ITEMS_PER_PAGE = 3;
 
 const Replacement = () => {
+  const { data, error, isLoading } = useGetMainProductsQuery();
   const [currentPage, setCurrentPage] = useState(1);
+  const orders = data?.orders || [];
+  const totalPages = Math.ceil(orders.length / ITEMS_PER_PAGE);
 
-  const totalPages = Math.ceil(purchaseData.length / ITEMS_PER_PAGE);
-
-  // Get current page data slice
-  const currentData = purchaseData.slice(
+  const currentData = orders.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
@@ -148,6 +149,22 @@ const Replacement = () => {
       setCurrentPage(pageNum);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-lg font-semibold text-gray-600">Loading...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-red-500">Failed to load data!</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen p-6 bg-gray-50">
@@ -184,31 +201,53 @@ const Replacement = () => {
               </tr>
             </thead>
             <tbody>
-              {currentData.map((purchase, index) =>
-                purchase.replacements.map((item, idx) => (
+              {currentData.map((order, index) =>
+                (order.products.length > 0
+                  ? order.products
+                  : [
+                      {
+                        product_name: null,
+                        purchased_date: null,
+                        store_link: null,
+                        price: null,
+                      },
+                    ]
+                ).map((item, idx) => (
                   <tr
                     key={`${index}-${idx}`}
                     className="border-t border-gray-200"
                   >
                     {idx === 0 && (
                       <td
-                        rowSpan={purchase.replacements.length}
+                        rowSpan={
+                          order.products.length > 0 ? order.products.length : 1
+                        }
                         className="px-4 py-4 font-medium text-gray-700 align-top border-b border-r border-gray-300"
                       >
-                        {purchase.original}
+                        {order.main_product || "No Main Product"}
                       </td>
                     )}
                     <td className="px-4 py-4 text-gray-700 border-b border-gray-300 poppins">
-                      {item.part}
-                    </td>
-                    <td className="px-4 py-4 text-gray-700 border-b border-gray-300 poppins ">
-                      {item.timeline}
-                    </td>
-                    <td className="px-4 py-4 text-blue-600 underline border-b border-gray-300 cursor-pointer poppins">
-                      {item.link}
+                      {item.product_name || "null"}
                     </td>
                     <td className="px-4 py-4 text-gray-700 border-b border-gray-300 poppins">
-                      {item.price}
+                      {item.purchased_date || "null"}
+                    </td>
+                    <td className="px-4 py-4 text-blue-600 underline border-b border-gray-300 cursor-pointer poppins">
+                      {item.store_link ? (
+                        <a
+                          href={item.store_link}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {item.store_link}
+                        </a>
+                      ) : (
+                        "null"
+                      )}
+                    </td>
+                    <td className="px-4 py-4 text-gray-700 border-b border-gray-300 poppins">
+                      {item.price !== null ? `$${item.price}` : "null"}
                     </td>
                   </tr>
                 ))

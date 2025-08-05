@@ -1,8 +1,6 @@
 import { useState } from "react";
 import AddPurchaseModal from "./AddPurchaseModal";
-import { FaPlus, FaSync } from "react-icons/fa";
-
-import { FaTrashAlt, FaEdit } from "react-icons/fa";
+import { FaPlus, FaSync, FaTrashAlt, FaEdit } from "react-icons/fa";
 import Swal from "sweetalert2";
 import EditPurchase from "./EditPurchase";
 import {
@@ -14,6 +12,7 @@ import {
 const Purchase = () => {
   const itemsPerPage = 6;
   const [currentPage, setCurrentPage] = useState(1);
+  const [showAllPages, setShowAllPages] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editData, setEditData] = useState(null);
@@ -24,24 +23,21 @@ const Purchase = () => {
     refetch: refetchPurchase,
   } = useGetPurchaseQuery();
   console.log("purchase", purchase);
+
   // Pagination calculations
   const [deleteOrder] = useDeleteOrderMutation();
-  const totalItems = purchase ? purchase.length : 0; // Ensure purchase data exists
+  const totalItems = purchase ? purchase.length : 0;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentData = purchase
     ? purchase.slice(startIndex, startIndex + itemsPerPage)
     : [];
 
-  const handlePageChange = (pageNum) => {
-    if (pageNum >= 1 && pageNum <= totalPages) {
-      setCurrentPage(pageNum);
-    }
-  };
   const handleEditClick = (item) => {
     setEditData(item);
     setEditModalOpen(true);
   };
+
   const handleDelete = (orderId) => {
     Swal.fire({
       title: "Are you sure?",
@@ -74,21 +70,18 @@ const Purchase = () => {
     error: syncError,
     isLoading: syncLoading,
     refetch: refetch,
-  } = useSyncGoogleDataQuery(); // Sync API for GET request
+  } = useSyncGoogleDataQuery();
 
   const handleSync = async () => {
-    setSpinning(true); // Start spinning when clicked
-
+    setSpinning(true);
     try {
-      // Trigger the sync API request
       console.log("Syncing with Google API...");
-      await refetch(); // Call the refetch function from RTK Query to trigger the sync
-
+      await refetch();
       console.log("Sync successful!");
     } catch (err) {
       console.error("Failed to sync data:", err);
     } finally {
-      setSpinning(false); // Stop spinning when done
+      setSpinning(false);
     }
   };
 
@@ -100,28 +93,107 @@ const Purchase = () => {
     return <p>Something went wrong. Please try again later.</p>;
   }
 
+  const handlePageChange = (pageNum) => {
+    if (pageNum >= 1 && pageNum <= totalPages) {
+      setCurrentPage(pageNum);
+    }
+  };
+
+  const handleDotsClick = () => {
+    setShowAllPages(true);
+  };
+
+  const renderPages = () => {
+    if (showAllPages || totalPages <= 6) {
+      return Array.from({ length: totalPages }, (_, index) => (
+        <li key={index}>
+          <button
+            onClick={() => handlePageChange(index + 1)}
+            className={`px-2 py-1 rounded ${
+              currentPage === index + 1
+                ? "bg-green-800 text-white"
+                : "hover:bg-gray-200"
+            } sm:px-3`}
+          >
+            {index + 1}
+          </button>
+        </li>
+      ));
+    } else {
+      return (
+        <>
+          <li>
+            <button
+              onClick={() => handlePageChange(1)}
+              className={`px-2 py-1 rounded ${
+                currentPage === 1
+                  ? "bg-green-800 text-white"
+                  : "hover:bg-gray-200"
+              } sm:px-3`}
+            >
+              1
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => handlePageChange(2)}
+              className={`px-2 py-1 rounded ${
+                currentPage === 2
+                  ? "bg-green-800 text-white"
+                  : "hover:bg-gray-200"
+              } sm:px-3`}
+            >
+              2
+            </button>
+          </li>
+          <li>
+            <span
+              onClick={handleDotsClick}
+              className="px-2 py-1 cursor-pointer select-none"
+            >
+              ...
+            </span>
+          </li>
+          <li>
+            <button
+              onClick={() => handlePageChange(totalPages)}
+              className={`px-2 py-1 rounded ${
+                currentPage === totalPages
+                  ? "bg-green-800 text-white"
+                  : "hover:bg-gray-200"
+              } sm:px-3`}
+            >
+              {totalPages}
+            </button>
+          </li>
+        </>
+      );
+    }
+  };
   return (
-    <div className="p-4 font-sans sm:p-6">
-      <div className="flex items-center justify-between mb-4 sm:mb-6">
-        <div className="">
+    <div className="p-2 font-sans sm:p-6">
+      <div className="flex flex-col items-start justify-between gap-6 mb-4 2xl:flex-row 2xl:items-center sm:mb-6">
+        <div>
           <h1 className="mb-1 text-xl font-bold text-green-800 sm:text-2xl poppins">
-            Welcome Oishe!
+            Oishee Khan’s Purchases
           </h1>
           <p className="text-xs text-gray-600 sm:text-sm poppins">
             Track your purchases and all details
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col items-start gap-2 md:items-center 2xl:flex-row">
           <button
-            onClick={handleSync} // Trigger the sync when clicked
-            className="bg-orange-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium flex items-center gap-2"
+            onClick={handleSync}
+            className="bg-orange-100 text-[#111827] px-2 md:px-4 py-3 rounded-lg poppins text-base font-medium flex items-center gap-1 md:gap-2"
           >
             <FaSync
               className={`text-[#EA580C] ${
                 syncLoading || spinning ? "animate-spin" : ""
-              }`} // Conditionally apply spinning class
+              }`}
             />
-            {syncLoading || spinning ? "Syncing..." : "Refresh Purchases"}
+            {syncLoading || spinning
+              ? "Syncing Purchases"
+              : "Refresh Purchases"}
           </button>
           <button
             onClick={() => setIsModalOpen(true)}
@@ -137,24 +209,131 @@ const Purchase = () => {
           Purchases Details
         </h2>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-left border-collapse">
+        {/* Mobile Card Layout (Visible on Small Screens) */}
+        {/* ✅ Mobile View (sm:hidden) */}
+        <div className="space-y-2 sm:hidden">
+          {currentData.map((item) => (
+            <div
+              key={item.id}
+              className="w-full p-4 transition-shadow duration-300 bg-white border border-gray-200 rounded-lg shadow-lg hover:shadow-xl"
+            >
+              <h3 className="mb-3 text-lg font-semibold text-green-800">
+                {item.product_name || "Not Provided"}
+              </h3>
+
+              <div className="mb-2 text-sm text-gray-700">
+                <p>
+                  <span className="font-semibold">Store:</span>{" "}
+                  {item.shop_name || "Not Provided"}
+                </p>
+                <p>
+                  <span className="font-semibold">Date:</span>{" "}
+                  {item.purchase_date || "Not Provided"}
+                </p>
+                <p>
+                  <span className="font-semibold">Amount:</span>{" "}
+                  {item.price || "N/A"}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3 mt-3">
+                <button
+                  onClick={() => handleEditClick(item)}
+                  className="text-base text-blue-600 hover:text-blue-800"
+                  title="Edit"
+                >
+                  <FaEdit />
+                </button>
+                <button
+                  onClick={() => handleDelete(item.order_id)}
+                  className="text-base text-red-600 hover:text-red-800"
+                  title="Delete"
+                >
+                  <FaTrashAlt />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* ✅ Tablet View (sm:block lg:hidden) */}
+        <div className="hidden space-y-4 sm:block 2xl:hidden">
+          {currentData.map((item) => (
+            <div
+              key={item.id}
+              className="w-full p-4 bg-white border border-gray-200 rounded-lg shadow"
+            >
+              <div className="flex flex-wrap py-2 border-b">
+                <p className="w-1/3 text-sm font-semibold md:text-base">
+                  Product
+                </p>
+                <p className="w-2/3 text-sm md:text-base">
+                  {item.product_name || "Not Provided"}
+                </p>
+              </div>
+              <div className="flex flex-wrap py-2 border-b">
+                <p className="w-1/3 text-sm font-semibold md:text-base">
+                  Store
+                </p>
+                <p className="w-2/3 text-sm md:text-base">
+                  {item.shop_name || "Not Provided"}
+                </p>
+              </div>
+              <div className="flex flex-wrap py-2 border-b">
+                <p className="w-1/3 text-sm font-semibold md:text-base">Date</p>
+                <p className="w-2/3 text-sm md:text-base">
+                  {item.purchase_date || "Not Provided"}
+                </p>
+              </div>
+              <div className="flex flex-wrap py-2 border-b">
+                <p className="w-1/3 text-sm font-semibold md:text-base">
+                  Amount
+                </p>
+                <p className="w-2/3 text-sm md:text-base">
+                  {item.price || "N/A"}
+                </p>
+              </div>
+              <div className="flex justify-start gap-3 py-2">
+                <p className="w-1/3 text-sm font-semibold md:text-base">
+                  Actions
+                </p>
+                <button
+                  onClick={() => handleEditClick(item)}
+                  className="text-base text-blue-600 hover:text-blue-800"
+                  title="Edit"
+                >
+                  <FaEdit />
+                </button>
+                <button
+                  onClick={() => handleDelete(item.order_id)}
+                  className="text-base text-red-600 hover:text-red-800"
+                  title="Delete"
+                >
+                  <FaTrashAlt />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* ✅ Large Screen Table View (lg:block) */}
+        <div className="hidden w-full overflow-x-auto 2xl:block">
+          <table className="min-w-[800px] w-full text-left table-auto">
             <thead>
-              <tr className="text-2xl text-gray-600 bg-gray-200 sm:text-sm rounded-xl">
-                <th className="sticky top-0 px-2 py-2 text-lg font-bold text-gray-800 bg-gray-200 sm:px-4">
+              <tr className="text-gray-600 bg-gray-200 rounded-xl">
+                <th className="px-4 py-2 text-base font-bold text-gray-800 bg-gray-200 min-w-[150px]">
                   Product Name
                 </th>
-                <th className="sticky top-0 px-2 py-2 text-lg font-bold text-gray-800 bg-gray-200 sm:px-4">
+                <th className="px-4 py-2 text-base font-bold text-gray-800 bg-gray-200 min-w-[150px]">
                   Store Name
                 </th>
-                <th className="sticky top-0 hidden px-2 py-2 text-lg font-bold text-gray-800 bg-gray-200 sm:px-4 sm:table-cell">
-                  Date - Time
+                <th className="px-4 py-2 text-base font-bold text-gray-800 bg-gray-200 min-w-[150px] ">
+                  Date
                 </th>
-
-                <th className="sticky top-0 px-2 py-2 text-lg font-bold text-gray-800 bg-gray-200 sm:px-4">
+                <th className="px-4 py-2 text-base font-bold text-gray-800 bg-gray-200 min-w-[100px]">
                   Amount
                 </th>
-                <th className="px-2 py-2 text-lg font-bold text-gray-800 sm:px-4">
+                <th className="px-4 py-2 text-base font-bold text-gray-800 bg-gray-200 min-w-[100px]">
                   Actions
                 </th>
               </tr>
@@ -165,28 +344,27 @@ const Purchase = () => {
                   key={item.id}
                   className="text-gray-800 border-b hover:bg-gray-50"
                 >
-                  <td className="px-2 py-3 ">
+                  <td className="px-4 py-2 text-sm">
                     {item.product_name || "Not Provided"}
                   </td>
-                  <td className="px-2 py-3 ">
+                  <td className="px-4 py-2 text-sm">
                     {item.shop_name || "Not Provided"}
                   </td>
-                  <td className="hidden px-2 py-3 text-base sm:px-4 sm:text-sm whitespace-nowrap sm:table-cell">
+                  <td className="px-4 py-2 text-sm ">
                     {item.purchase_date || "Not Provided"}
                   </td>
-
-                  <td className="px-2 py-3 ">{item.price || "N/A"}</td>
-                  <td className="flex items-center gap-4 px-2 py-3 sm:px-4">
+                  <td className="px-4 py-2 text-sm">{item.price || "N/A"}</td>
+                  <td className="flex items-center gap-3 px-4 py-2">
                     <button
                       onClick={() => handleEditClick(item)}
-                      className="text-xl text-blue-600 hover:text-blue-800"
+                      className="text-base text-blue-600 hover:text-blue-800"
                       title="Edit"
                     >
                       <FaEdit />
                     </button>
                     <button
                       onClick={() => handleDelete(item.order_id)}
-                      className="text-xl text-red-600 hover:text-red-800"
+                      className="text-base text-red-600 hover:text-red-800"
                       title="Delete"
                     >
                       <FaTrashAlt />
@@ -199,38 +377,23 @@ const Purchase = () => {
         </div>
 
         {/* Pagination */}
-        <div className="flex justify-end mt-4 sm:mt-6">
-          <ul className="flex space-x-1 text-xs sm:space-x-2 sm:text-sm">
+        <div className="flex justify-center mt-6">
+          <ul className="flex flex-wrap justify-center gap-1 text-sm">
             <li>
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
-                className="px-2 py-1 text-lg rounded sm:px-3 sm:py-2 hover:bg-gray-200"
                 disabled={currentPage === 1}
+                className="px-2 py-1 rounded hover:bg-gray-200 disabled:text-gray-400 sm:px-3"
               >
                 &lt;
               </button>
             </li>
-
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <li key={page}>
-                <button
-                  onClick={() => handlePageChange(page)}
-                  className={`px-2 py-1 sm:px-3 sm:py-2 rounded ${
-                    page === currentPage
-                      ? "bg-green-800 text-white"
-                      : "hover:bg-gray-200"
-                  }`}
-                >
-                  {page}
-                </button>
-              </li>
-            ))}
-
+            {renderPages()}
             <li>
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
-                className="px-2 py-1 text-lg rounded sm:px-3 sm:py-2 hover:bg-gray-200"
                 disabled={currentPage === totalPages}
+                className="px-2 py-1 rounded hover:bg-gray-200 disabled:text-gray-400 sm:px-3"
               >
                 &gt;
               </button>
