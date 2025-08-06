@@ -155,9 +155,11 @@ const CalendarDashboard = () => {
       {/* Header */}
       <div className="flex flex-col justify-between mb-4 lg:items-center lg:flex-row">
         <div>
-          <h1 className="text-2xl font-bold text-green-700">Welcome Oishe !</h1>
-          <p className="mb-4 text-xs text-gray-600 sm:text-sm sm:mb-6 poppins">
-            Track your warranties and all details
+          <h1 className="text-xl sm:text-2xl font-bold main-color poppins">
+            Oishee Khan's Reminders
+          </h1>
+          <p className="mb-4 text-xs text-gray-600 sm:text-sm  mt-2 sm:mb-6 poppins">
+            Track your warranties easily.
           </p>
         </div>
         <div>

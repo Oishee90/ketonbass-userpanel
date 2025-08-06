@@ -33,6 +33,7 @@ const Reciepts = () => {
   const [selectedReceipt, setSelectedReceipt] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showAllPages, setShowAllPages] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [deleteRecipts] = useDeleteReciptsMutation();
   const [selectedReceiptId, setSelectedReceiptId] = useState(null);
@@ -94,17 +95,95 @@ const Reciepts = () => {
     setSelectedReceipt(null);
     setSelectedReceiptId(null);
   };
+  const handlePageChange = (pageNum) => {
+    if (pageNum >= 1 && pageNum <= totalPages) {
+      setCurrentPage(pageNum);
+    }
+  };
 
+  const handleDotsClick = () => {
+    setShowAllPages(true);
+  };
+
+  const renderPages = () => {
+    if (showAllPages || totalPages <= 6) {
+      return Array.from({ length: totalPages }, (_, index) => (
+        <li key={index}>
+          <button
+            onClick={() => handlePageChange(index + 1)}
+            className={`px-2 py-1 rounded ${
+              currentPage === index + 1
+                ? "bg-green-800 text-white"
+                : "hover:bg-gray-200"
+            } sm:px-3`}
+          >
+            {index + 1}
+          </button>
+        </li>
+      ));
+    } else {
+      return (
+        <>
+          <li>
+            <button
+              onClick={() => handlePageChange(1)}
+              className={`px-2 py-1 rounded ${
+                currentPage === 1
+                  ? "bg-green-800 text-white"
+                  : "hover:bg-gray-200"
+              } sm:px-3`}
+            >
+              1
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => handlePageChange(2)}
+              className={`px-2 py-1 rounded ${
+                currentPage === 2
+                  ? "bg-green-800 text-white"
+                  : "hover:bg-gray-200"
+              } sm:px-3`}
+            >
+              2
+            </button>
+          </li>
+          <li>
+            <span
+              onClick={handleDotsClick}
+              className="px-2 py-1 cursor-pointer select-none"
+            >
+              ...
+            </span>
+          </li>
+          <li>
+            <button
+              onClick={() => handlePageChange(totalPages)}
+              className={`px-2 py-1 rounded ${
+                currentPage === totalPages
+                  ? "bg-green-800 text-white"
+                  : "hover:bg-gray-200"
+              } sm:px-3`}
+            >
+              {totalPages}
+            </button>
+          </li>
+        </>
+      );
+    }
+  };
   return (
-    <div className="min-h-screen p-6 bg-gray-50">
-      <div className="flex items-center justify-between mb-6">
+    <div className="min-h-screen p-2 sm:p-6 bg-gray-50">
+      <div className="flex flex-col items-start justify-between mb-6 sm:flex-row sm:items-center sm">
         <div>
-          <h1 className="mb-2 text-2xl font-bold text-green-800 poppins">
-            Welcome Oishe!
+          <h1 className="text-2xl font-bold main-color poppins">
+            Oishee Khan's Reminders
           </h1>
-          <p className="text-sm text-gray-600 poppins">
+          <p className="mt-2 mb-4 text-xs text-gray-600 sm:text-sm sm:mb-6 poppins">
             Track your Receipts Collection
           </p>
+
+          <p className="text-sm text-gray-600 poppins"></p>
         </div>
 
         <div>
@@ -183,36 +262,28 @@ const Reciepts = () => {
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-center mt-6 space-x-2">
-        <button
-          className="p-2 text-gray-500 rounded hover:bg-gray-200"
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-        >
-          &lt;
-        </button>
-        {[...Array(totalPages)].map((_, i) => (
-          <button
-            key={i}
-            className={`p-2 rounded ${
-              currentPage === i + 1
-                ? "bg-green-600 text-white"
-                : "text-gray-700 hover:bg-gray-200"
-            }`}
-            onClick={() => setCurrentPage(i + 1)}
-          >
-            {i + 1}
-          </button>
-        ))}
-        <button
-          className="p-2 text-gray-500 rounded hover:bg-gray-200"
-          onClick={() =>
-            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-          }
-          disabled={currentPage === totalPages}
-        >
-          &gt;
-        </button>
+      <div className="flex justify-center mt-6 poppins">
+        <ul className="flex flex-wrap justify-center gap-1 text-sm">
+          <li>
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-2 py-1 rounded hover:bg-gray-200 disabled:text-gray-400 sm:px-3"
+            >
+              &lt;
+            </button>
+          </li>
+          {renderPages()}
+          <li>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-2 py-1 rounded hover:bg-gray-200 disabled:text-gray-400 sm:px-3"
+            >
+              &gt;
+            </button>
+          </li>
+        </ul>
       </div>
 
       {/* Modals */}

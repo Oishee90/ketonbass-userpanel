@@ -102,15 +102,15 @@ const Warranty = () => {
 
   return (
     <div className="bg-[#f9f9f9] min-h-screen p-2 sm:p-6 font-sans">
-      <h1 className="mb-1 text-xl font-bold text-green-800 sm:text-2xl poppins">
+      <h1 className="mb-1 text-xl font-bold main-color sm:text-2xl poppins">
         Oishee Khan’s Warranties
       </h1>
-      <p className="mb-6 text-sm text-gray-600">
+      <p className="mb-6 text-sm tittle-color sm:text-base">
         Track your warranties and all details
       </p>
 
       <div className="p-6 bg-white rounded-lg shadow">
-        <h2 className="mb-4 text-lg font-semibold text-green-800 sm:text-xl poppins sm:mb-6">
+        <h2 className="mb-4 text-lg font-semibold main-color sm:text-xl poppins sm:mb-6">
           Warranties Details
         </h2>
 
@@ -298,8 +298,7 @@ const Warranty = () => {
           ))}
         </div>
 
-        {/* Pagination */}
-        {/* Pagination */}
+      
         {/* Pagination */}
         <div className="flex justify-center mt-6">
           <ul className="flex flex-wrap justify-center gap-1 text-sm">

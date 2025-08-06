@@ -8,6 +8,8 @@ import {
   useGetPurchaseQuery,
   useSyncGoogleDataQuery,
 } from "../../../Redux/feature/auth/aithapi";
+import Spinner from "../../../Shared/Spinner";
+import ErrorPage from "../../../Shared/ErrorPage";
 
 const Purchase = () => {
   const itemsPerPage = 6;
@@ -86,11 +88,13 @@ const Purchase = () => {
   };
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <Spinner />;
   }
 
   if (error) {
-    return <p>Something went wrong. Please try again later.</p>;
+    return (
+      <ErrorPage message="Failed to load data. Please try again."></ErrorPage>
+    );
   }
 
   const handlePageChange = (pageNum) => {
@@ -171,20 +175,20 @@ const Purchase = () => {
     }
   };
   return (
-    <div className="p-2 font-sans sm:p-6">
+    <div className="p-2 font-sans bg-[#f9f9f9] sm:p-6">
       <div className="flex flex-col items-start justify-between gap-6 mb-4 2xl:flex-row 2xl:items-center sm:mb-6">
         <div>
-          <h1 className="mb-1 text-xl font-bold text-green-800 sm:text-2xl poppins">
+          <h1 className="mb-2 text-xl font-bold main-color sm:text-2xl poppins">
             Oishee Khan’s Purchases
           </h1>
-          <p className="text-xs text-gray-600 sm:text-sm poppins">
+          <p className="text-xs tittle-color sm:text-sm poppins">
             Track your purchases and all details
           </p>
         </div>
         <div className="flex flex-col items-start gap-2 md:items-center 2xl:flex-row">
           <button
             onClick={handleSync}
-            className="bg-orange-100 text-[#111827] px-2 md:px-4 py-3 rounded-lg poppins text-base font-medium flex items-center gap-1 md:gap-2"
+            className="bg-orange-100 text-[#111827] px-2 md:px-4 py-3 rounded-lg poppins text-sm sm:text-base font-medium flex items-center gap-1 md:gap-2"
           >
             <FaSync
               className={`text-[#EA580C] ${
@@ -197,7 +201,7 @@ const Purchase = () => {
           </button>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 bg-blue-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium"
+            className="flex items-center gap-2 bg-blue-100 text-[#111827] px-2 py-3 rounded-lg poppins text-sm sm:text-base font-medium"
           >
             <FaPlus /> Add New Purchase
           </button>
@@ -205,7 +209,7 @@ const Purchase = () => {
       </div>
 
       <div className="p-4 bg-white rounded-lg shadow sm:p-6">
-        <h2 className="mb-4 text-lg font-semibold text-green-800 sm:text-xl poppins sm:mb-6">
+        <h2 className="mb-4 text-lg font-bold main-color sm:text-xl poppins sm:mb-6">
           Purchases Details
         </h2>
 
@@ -217,13 +221,13 @@ const Purchase = () => {
               key={item.id}
               className="w-full p-4 transition-shadow duration-300 bg-white border border-gray-200 rounded-lg shadow-lg hover:shadow-xl"
             >
-              <h3 className="mb-3 text-lg font-semibold text-green-800">
+              <h3 className="mb-3 text-lg font-semibold main-color poppins">
                 {item.product_name || "Not Provided"}
               </h3>
 
-              <div className="mb-2 text-sm text-gray-700">
+              <div className="mb-2 space-y-1 text-sm tittle-color poppins">
                 <p>
-                  <span className="font-semibold">Store:</span>{" "}
+                  <span className="font-semibold ">Store:</span>{" "}
                   {item.shop_name || "Not Provided"}
                 </p>
                 <p>
@@ -239,14 +243,14 @@ const Purchase = () => {
               <div className="flex items-center gap-3 mt-3">
                 <button
                   onClick={() => handleEditClick(item)}
-                  className="text-base text-blue-600 hover:text-blue-800"
+                  className="text-lg main-color hover:text-green-800"
                   title="Edit"
                 >
                   <FaEdit />
                 </button>
                 <button
                   onClick={() => handleDelete(item.order_id)}
-                  className="text-base text-red-600 hover:text-red-800"
+                  className="text-lg text-red-600 hover:text-red-800"
                   title="Delete"
                 >
                   <FaTrashAlt />
@@ -264,49 +268,51 @@ const Purchase = () => {
               className="w-full p-4 bg-white border border-gray-200 rounded-lg shadow"
             >
               <div className="flex flex-wrap py-2 border-b">
-                <p className="w-1/3 text-sm font-semibold md:text-base">
+                <p className="w-1/3 text-sm font-semibold poppins lg:text-lg md:text-base">
                   Product
                 </p>
-                <p className="w-2/3 text-sm md:text-base">
+                <p className="w-2/3 text-sm md:text-base lg:text-lg">
                   {item.product_name || "Not Provided"}
                 </p>
               </div>
               <div className="flex flex-wrap py-2 border-b">
-                <p className="w-1/3 text-sm font-semibold md:text-base">
+                <p className="w-1/3 text-sm font-semibold poppins md:text-base lg:text-lg">
                   Store
                 </p>
-                <p className="w-2/3 text-sm md:text-base">
+                <p className="w-2/3 text-sm md:text-base poppins lg:text-lg">
                   {item.shop_name || "Not Provided"}
                 </p>
               </div>
               <div className="flex flex-wrap py-2 border-b">
-                <p className="w-1/3 text-sm font-semibold md:text-base">Date</p>
-                <p className="w-2/3 text-sm md:text-base">
+                <p className="w-1/3 text-sm font-semibold poppins md:text-base lg:text-lg">
+                  Date
+                </p>
+                <p className="w-2/3 text-sm md:text-base poppins lg:text-lg ">
                   {item.purchase_date || "Not Provided"}
                 </p>
               </div>
-              <div className="flex flex-wrap py-2 border-b">
-                <p className="w-1/3 text-sm font-semibold md:text-base">
+              <div className="flex flex-wrap py-2 border-b poppins ">
+                <p className="w-1/3 text-sm font-semibold lg:text-lg md:text-base">
                   Amount
                 </p>
-                <p className="w-2/3 text-sm md:text-base">
+                <p className="w-2/3 text-sm md:text-base lg:text-lg">
                   {item.price || "N/A"}
                 </p>
               </div>
-              <div className="flex justify-start gap-3 py-2">
-                <p className="w-1/3 text-sm font-semibold md:text-base">
+              <div className="flex justify-start gap-3 py-2 poppins ">
+                <p className="w-1/3 font-semibold md:text-base lg:text-lg">
                   Actions
                 </p>
                 <button
                   onClick={() => handleEditClick(item)}
-                  className="text-base text-blue-600 hover:text-blue-800"
+                  className=" main-color hover:text-green-800 md:text-base lg:text-lg"
                   title="Edit"
                 >
                   <FaEdit />
                 </button>
                 <button
                   onClick={() => handleDelete(item.order_id)}
-                  className="text-base text-red-600 hover:text-red-800"
+                  className="text-base text-red-600 lg:text-lg hover:text-red-800"
                   title="Delete"
                 >
                   <FaTrashAlt />
@@ -317,7 +323,7 @@ const Purchase = () => {
         </div>
 
         {/* ✅ Large Screen Table View (lg:block) */}
-        <div className="hidden w-full overflow-x-auto 2xl:block">
+        <div className="hidden w-full overflow-x-auto 2xl:block poppins ">
           <table className="min-w-[800px] w-full text-left table-auto">
             <thead>
               <tr className="text-gray-600 bg-gray-200 rounded-xl">
@@ -357,14 +363,14 @@ const Purchase = () => {
                   <td className="flex items-center gap-3 px-4 py-2">
                     <button
                       onClick={() => handleEditClick(item)}
-                      className="text-base text-blue-600 hover:text-blue-800"
+                      className="text-2xl main-color hover:text-green-800"
                       title="Edit"
                     >
                       <FaEdit />
                     </button>
                     <button
                       onClick={() => handleDelete(item.order_id)}
-                      className="text-base text-red-600 hover:text-red-800"
+                      className="text-2xl text-red-600 hover:text-red-800"
                       title="Delete"
                     >
                       <FaTrashAlt />
@@ -377,7 +383,7 @@ const Purchase = () => {
         </div>
 
         {/* Pagination */}
-        <div className="flex justify-center mt-6">
+        <div className="flex justify-center mt-6 poppins">
           <ul className="flex flex-wrap justify-center gap-1 text-sm">
             <li>
               <button

@@ -1,140 +1,13 @@
 import React, { useState } from "react";
 import { useGetMainProductsQuery } from "../../../Redux/feature/auth/aithapi";
-
-const purchaseData = [
-  {
-    original: "Dyson V7 Vacuum",
-    replacements: [
-      {
-        part: "Pre-Filter",
-        timeline: "6 months",
-        link: "Dyson Link",
-        price: "$11.99",
-      },
-      {
-        part: "Post-Filter",
-        timeline: "6 months",
-        link: "Dyson Link",
-        price: "$134.99",
-      },
-      {
-        part: "Battery",
-        timeline: "6 months",
-        link: "Dyson Link",
-        price: "$55.99",
-      },
-    ],
-  },
-  {
-    original: "iRobot Roomba 960",
-    replacements: [
-      {
-        part: "Side Brush",
-        timeline: "3 months",
-        link: "iRobot Store",
-        price: "$9.99",
-      },
-      {
-        part: "Filter",
-        timeline: "6 months",
-        link: "iRobot Store",
-        price: "$14.99",
-      },
-    ],
-  },
-  {
-    original: "Nespresso VertuoPlus",
-    replacements: [
-      {
-        part: "Water Tank",
-        timeline: "12 months",
-        link: "Nespresso Shop",
-        price: "$24.99",
-      },
-      {
-        part: "Drip Tray",
-        timeline: "12 months",
-        link: "Nespresso Shop",
-        price: "$15.00",
-      },
-    ],
-  },
-
-  // New 4 fake purchases:
-  {
-    original: "Sony WH-1000XM4 Headphones",
-    replacements: [
-      {
-        part: "Ear Pads",
-        timeline: "12 months",
-        link: "Sony Store",
-        price: "$29.99",
-      },
-      {
-        part: "Battery",
-        timeline: "24 months",
-        link: "Sony Store",
-        price: "$79.99",
-      },
-    ],
-  },
-  {
-    original: "KitchenAid Mixer",
-    replacements: [
-      {
-        part: "Beater Attachment",
-        timeline: "18 months",
-        link: "KitchenAid Parts",
-        price: "$19.99",
-      },
-      {
-        part: "Motor",
-        timeline: "36 months",
-        link: "KitchenAid Parts",
-        price: "$199.99",
-      },
-    ],
-  },
-  {
-    original: "Fitbit Charge 5",
-    replacements: [
-      {
-        part: "Charging Cable",
-        timeline: "12 months",
-        link: "Fitbit Store",
-        price: "$14.99",
-      },
-      {
-        part: "Strap",
-        timeline: "6 months",
-        link: "Fitbit Store",
-        price: "$24.99",
-      },
-    ],
-  },
-  {
-    original: "Canon EOS M50 Camera",
-    replacements: [
-      {
-        part: "Battery",
-        timeline: "12 months",
-        link: "Canon Parts",
-        price: "$59.99",
-      },
-      {
-        part: "Lens Cap",
-        timeline: "18 months",
-        link: "Canon Parts",
-        price: "$9.99",
-      },
-    ],
-  },
-];
+import Spinner from "../../../Shared/Spinner";
+import ErrorPage from "../../../Shared/ErrorPage";
 
 const ITEMS_PER_PAGE = 3;
 
 const Replacement = () => {
   const { data, error, isLoading } = useGetMainProductsQuery();
+  const [showAllPages, setShowAllPages] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const orders = data?.orders || [];
   const totalPages = Math.ceil(orders.length / ITEMS_PER_PAGE);
@@ -151,23 +24,94 @@ const Replacement = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg font-semibold text-gray-600">Loading...</p>
-      </div>
-    );
+    return <Spinner />;
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-red-500">Failed to load data!</p>
-      </div>
+      <ErrorPage message="Failed to load data. Please try again."></ErrorPage>
     );
   }
 
+  const handlePageChange = (pageNum) => {
+    if (pageNum >= 1 && pageNum <= totalPages) {
+      setCurrentPage(pageNum);
+    }
+  };
+
+  const handleDotsClick = () => {
+    setShowAllPages(true);
+  };
+
+  const renderPages = () => {
+    if (showAllPages || totalPages <= 6) {
+      return Array.from({ length: totalPages }, (_, index) => (
+        <li key={index}>
+          <button
+            onClick={() => handlePageChange(index + 1)}
+            className={`px-2 py-1 rounded ${
+              currentPage === index + 1
+                ? "bg-green-800 text-white"
+                : "hover:bg-gray-200"
+            } sm:px-3`}
+          >
+            {index + 1}
+          </button>
+        </li>
+      ));
+    } else {
+      return (
+        <>
+          <li>
+            <button
+              onClick={() => handlePageChange(1)}
+              className={`px-2 py-1 rounded ${
+                currentPage === 1
+                  ? "bg-green-800 text-white"
+                  : "hover:bg-gray-200"
+              } sm:px-3`}
+            >
+              1
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => handlePageChange(2)}
+              className={`px-2 py-1 rounded ${
+                currentPage === 2
+                  ? "bg-green-800 text-white"
+                  : "hover:bg-gray-200"
+              } sm:px-3`}
+            >
+              2
+            </button>
+          </li>
+          <li>
+            <span
+              onClick={handleDotsClick}
+              className="px-2 py-1 cursor-pointer select-none"
+            >
+              ...
+            </span>
+          </li>
+          <li>
+            <button
+              onClick={() => handlePageChange(totalPages)}
+              className={`px-2 py-1 rounded ${
+                currentPage === totalPages
+                  ? "bg-green-800 text-white"
+                  : "hover:bg-gray-200"
+              } sm:px-3`}
+            >
+              {totalPages}
+            </button>
+          </li>
+        </>
+      );
+    }
+  };
   return (
-    <div className="min-h-screen p-6 bg-gray-50">
+    <div className="min-h-screen p-2 sm:p-6 bg-gray-50">
       <h1 className="mb-1 text-xl font-bold sm:text-2xl main-color poppins">
         Oishee Khan’s Replacement Parts
       </h1>
@@ -179,7 +123,7 @@ const Replacement = () => {
         <h2 className="mb-4 text-lg font-semibold sm:text-xl main-color poppins sm:mb-6">
           Purchases Details
         </h2>
-        <div className="overflow-auto">
+        <div className="hidden overflow-auto overflow-x-auto 2xl:block">
           <table className="w-full border-separate table-auto border-spacing-y-2">
             <thead className="text-left bg-gray-100">
               <tr>
@@ -255,48 +199,190 @@ const Replacement = () => {
             </tbody>
           </table>
         </div>
+        {/* ✅ tablet view - Card Layout */}
+        <div className="hidden space-y-4 sm:block 2xl:hidden">
+          {currentData.map((order, index) => (
+            <div
+              key={index}
+              className="w-full p-4 bg-white border border-gray-200 rounded-lg shadow"
+            >
+              {/* ✅ Original Purchase */}
+              <div className="flex flex-wrap py-2 border-b">
+                <p className="w-1/3 text-sm font-semibold poppins lg:text-lg md:text-base">
+                  Original Purchase
+                </p>
+                <p className="w-2/3 text-sm md:text-base lg:text-lg">
+                  {order.main_product || "Not Provided"}
+                </p>
+              </div>
+
+              {/* ✅ Replacement Parts List */}
+              {(order.products.length > 0
+                ? order.products
+                : [
+                    {
+                      product_name: null,
+                      purchased_date: null,
+                      store_link: null,
+                      price: null,
+                    },
+                  ]
+              ).map((item, idx) => (
+                <div key={idx} className="py-2 border-b">
+                  <div className="flex flex-wrap mb-1">
+                    <p className="w-1/3 text-sm font-semibold poppins md:text-base">
+                      Replacement Part
+                    </p>
+                    <p className="w-2/3 text-sm md:text-base poppins">
+                      {item.product_name || "Not Provided"}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap mb-1">
+                    <p className="w-1/3 text-sm font-semibold poppins md:text-base">
+                      Timeline
+                    </p>
+                    <p className="w-2/3 text-sm md:text-base poppins">
+                      {item.purchased_date || "Not Provided"}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap mb-1">
+                    <p className="w-1/3 text-sm font-semibold poppins md:text-base">
+                      Link
+                    </p>
+                    <p className="w-2/3 text-sm text-blue-600 underline break-all md:text-base">
+                      {item.store_link ? (
+                        <a
+                          href={item.store_link}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {item.store_link}
+                        </a>
+                      ) : (
+                        "Not Provided"
+                      )}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap">
+                    <p className="w-1/3 text-sm font-semibold poppins md:text-base">
+                      Price
+                    </p>
+                    <p className="w-2/3 text-sm md:text-base poppins">
+                      {item.price !== null ? `$${item.price}` : "N/A"}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+        {/* mobile-view */}
+        <div className="block space-y-4 sm:hidden 2xl:hidden">
+          {currentData.map((order, index) => (
+            <div
+              key={index}
+              className="w-full p-4 bg-white border border-gray-300 shadow-lg rounded-xl"
+            >
+              {/* ✅ Original Purchase */}
+              <div className="mb-3 ">
+                <h3 className="text-base font-bold text-gray-800 poppins md:text-lg">
+                  Original Purchase
+                </h3>
+                <p className="text-sm title-color md:text-base">
+                  {order.main_product || "Not Provided"}
+                </p>
+              </div>
+
+              {/* ✅ Replacement Parts */}
+              <div className="space-y-3">
+                {(order.products.length > 0
+                  ? order.products
+                  : [
+                      {
+                        product_name: null,
+                        purchased_date: null,
+                        store_link: null,
+                        price: null,
+                      },
+                    ]
+                ).map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3 border border-gray-200 rounded-lg bg-gray-50"
+                  >
+                    <div className="mb-2">
+                      <p className="text-sm font-semibold title-color poppins">
+                        Replacement Part:
+                      </p>
+                      <p className="text-sm title-color">
+                        {item.product_name || "Not Provided"}
+                      </p>
+                    </div>
+                    <div className="mb-2">
+                      <p className="text-sm font-semibold title-color poppins">
+                        Timeline:
+                      </p>
+                      <p className="text-sm title-color">
+                        {item.purchased_date || "Not Provided"}
+                      </p>
+                    </div>
+                    <div className="mb-2">
+                      <p className="text-sm font-semibold title-color poppins">
+                        Link:
+                      </p>
+                      <p className="text-sm text-blue-600 underline break-all">
+                        {item.store_link ? (
+                          <a
+                            href={item.store_link}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {item.store_link}
+                          </a>
+                        ) : (
+                          "Not Provided"
+                        )}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold title-color poppins">
+                        Price:
+                      </p>
+                      <p className="text-sm title-color">
+                        {item.price !== null ? `$${item.price}` : "N/A"}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Pagination Controls */}
-      <div className="flex items-center justify-center mt-6 space-x-2">
-        <button
-          onClick={() => goToPage(currentPage - 1)}
-          disabled={currentPage === 1}
-          className={`p-2 rounded ${
-            currentPage === 1
-              ? "text-gray-300 cursor-not-allowed"
-              : "text-gray-500 hover:bg-gray-200"
-          }`}
-        >
-          &lt;
-        </button>
-
-        {/* Show page numbers */}
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-          <button
-            key={pageNum}
-            onClick={() => goToPage(pageNum)}
-            className={`p-2 rounded ${
-              currentPage === pageNum
-                ? "bg-green-600 text-white"
-                : "text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            {pageNum}
-          </button>
-        ))}
-
-        <button
-          onClick={() => goToPage(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          className={`p-2 rounded ${
-            currentPage === totalPages
-              ? "text-gray-300 cursor-not-allowed"
-              : "text-gray-500 hover:bg-gray-200"
-          }`}
-        >
-          &gt;
-        </button>
+      <div className="flex justify-center mt-6 poppins">
+        <ul className="flex flex-wrap justify-center gap-1 text-sm">
+          <li>
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-2 py-1 rounded hover:bg-gray-200 disabled:text-gray-400 sm:px-3"
+            >
+              &lt;
+            </button>
+          </li>
+          {renderPages()}
+          <li>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-2 py-1 rounded hover:bg-gray-200 disabled:text-gray-400 sm:px-3"
+            >
+              &gt;
+            </button>
+          </li>
+        </ul>
       </div>
     </div>
   );

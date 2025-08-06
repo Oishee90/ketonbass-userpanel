@@ -102,7 +102,7 @@ const EditPurchaseModal = ({
     setFile(null);
   };
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black bg-opacity-40">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black bg-opacity-40">
       <div className="relative w-full max-w-md p-8 bg-white shadow-xl rounded-2xl">
         {/* Close Button */}
         <button
@@ -113,7 +113,7 @@ const EditPurchaseModal = ({
         </button>
 
         {/* Title */}
-        <h2 className="mb-6 text-2xl font-semibold text-center main-color poppins">
+        <h2 className="mb-6 text-base  sm:text-2xl font-semibold text-center main-color poppins">
           📄 Upload PDF Receipt
         </h2>
 
@@ -147,11 +147,11 @@ const EditPurchaseModal = ({
               </div>
             ) : (
               <>
-                <FaFilePdf className="mb-3 text-4xl text-green-600" />
-                <p className="mb-2 text-sm text-gray-700 poppins">
+                <FaFilePdf className="mb-3 text-2xl sm:text-4xl text-green-600" />
+                <p className="mb-2 text-xs sm:text-sm text-gray-700 poppins">
                   Drag & Drop your PDF here or
                 </p>
-                <label className="font-medium text-green-600 cursor-pointer hover:underline">
+                <label className="font-medium sm:text-base  text-sm text-green-600 cursor-pointer hover:underline">
                   Browse file
                   <input
                     type="file"
@@ -166,7 +166,7 @@ const EditPurchaseModal = ({
 
           <button
             type="submit"
-            className="w-full py-3 text-lg font-semibold text-white transition rounded-lg shadow bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+            className="w-full text-base py-1 sm:py-3 sm:text-lg font-semibold text-white transition rounded-lg shadow bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
           >
             Upload PDF
           </button>

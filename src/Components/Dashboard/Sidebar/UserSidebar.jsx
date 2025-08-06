@@ -43,8 +43,8 @@ const UserSidebar = ({ isSidebarOpen, toggleSidebar }) => {
     >
       {/* Top Section: Logo and Toggle */}
       <div className="flex flex-col py-4">
-        <div className="flex items-center justify-between px-4 pb-4 mt-9 gap-3">
-          {isSidebarOpen && <img src={logo} alt="Logo" className=" " />}
+        <div className="flex items-center justify-between gap-3 px-4 pb-4 mt-9">
+          {isSidebarOpen && <img src={logo} alt="Logo" />}
           <div onClick={toggleSidebar} className="cursor-pointer">
             {isSidebarOpen ? (
               <BiArrowToLeft className="w-[24px] h-[24px]" />
@@ -56,218 +56,128 @@ const UserSidebar = ({ isSidebarOpen, toggleSidebar }) => {
 
         {/* Menu Items */}
         {isSidebarOpen ? (
+          // ✅ Expanded Sidebar
           <nav className="flex flex-col text-[#364636] dark:text-white mt-9">
-            <NavLink
-              to="/dashboard"
-              className="flex items-center justify-between w-full p-2"
-            >
-              <div
-                className={`flex items-center justify-start gap-2 w-full h-[50px] p-2 ${
-                  isActiveDashboard
-                    ? "bg-[#1F762C] text-white rounded-xl"
-                    : "text-[#4B5563] dark:text-white"
-                }`}
+            {[
+              {
+                path: "/dashboard",
+                icon: <FaRegClock className="w-[18px] h-[18px]" />,
+                label: "Dashboard",
+                active: isActiveDashboard,
+              },
+              {
+                path: "/dashboard/purchase",
+                icon: <BiPurchaseTag className="w-[18px] h-[18px]" />,
+                label: "Purchase",
+                active: isActivePurchase,
+              },
+              {
+                path: "/dashboard/warranties",
+                icon: <FaRegHeart className="w-[18px] h-[18px]" />,
+                label: "Warranties",
+                active: isActiveWarranties,
+              },
+              {
+                path: "/dashboard/reminders",
+                icon: <TbMessages className="w-[18px] h-[18px]" />,
+                label: "Reminders",
+                active: isActiveReminders,
+              },
+              {
+                path: "/dashboard/receipts",
+                icon: <FaRegClipboard className="w-[18px] h-[18px]" />,
+                label: "Receipts",
+                active: isActiveReceipts,
+              },
+              {
+                path: "/dashboard/replacement",
+                icon: <TbReplaceFilled className="w-[18px] h-[18px]" />,
+                label: "Replacement",
+                active: isActiveReplacement,
+              },
+            ].map((item, index) => (
+              <NavLink
+                key={index}
+                to={item.path}
+                className="flex items-center justify-between w-full p-2"
               >
-                <FaRegClock className="w-[18px] h-[18px]" />
-                <h1 className="poppins font-semibold text-base">Dashboard</h1>
-              </div>
-            </NavLink>
-
-            <NavLink
-              to="/dashboard/purchase"
-              className="flex items-center justify-between w-full p-2"
-            >
-              <div
-                className={`flex items-center justify-start gap-2 w-full h-[50px] p-2 ${
-                  isActivePurchase
-                    ? "bg-[#1F762C] text-white rounded-xl"
-                    : "text-[#4B5563] dark:text-white"
-                }`}
-              >
-                <BiPurchaseTag className="w-[18px] h-[18px]" />
-                <h1 className="poppins font-semibold text-base">Purchase</h1>
-              </div>
-            </NavLink>
-
-            <NavLink
-              to="/dashboard/warranties"
-              className="flex items-center justify-between w-full p-2"
-            >
-              <div
-                className={`flex items-center justify-start gap-2 w-full h-[50px] p-2 ${
-                  isActiveWarranties
-                    ? "bg-[#1F762C] text-white rounded-xl"
-                    : "text-[#4B5563] dark:text-white"
-                }`}
-              >
-                <FaRegHeart className="w-[18px] h-[18px]" />
-                <h1 className="poppins font-semibold text-base">Warranties</h1>
-              </div>
-            </NavLink>
-
-            <NavLink
-              to="/dashboard/reminders"
-              className="flex items-center justify-between w-full p-2"
-            >
-              <div
-                className={`flex items-center justify-start gap-2 w-full h-[50px] p-2 ${
-                  isActiveReminders
-                    ? "bg-[#1F762C] text-white rounded-xl"
-                    : "text-[#4B5563] dark:text-white"
-                }`}
-              >
-                <TbMessages className="w-[18px] h-[18px]" />
-                <h1 className="poppins font-semibold text-base">Reminders</h1>
-              </div>
-            </NavLink>
-
-            <NavLink
-              to="/dashboard/receipts"
-              className="flex items-center justify-between w-full p-2"
-            >
-              <div
-                className={`flex items-center justify-start gap-2 w-full h-[50px] p-2 ${
-                  isActiveReceipts
-                    ? "bg-[#1F762C] text-white rounded-xl"
-                    : "text-[#4B5563] dark:text-white"
-                }`}
-              >
-                <FaRegClipboard className="w-[18px] h-[18px]" />
-                <h1 className="poppins font-semibold text-base">Receipts</h1>
-              </div>
-            </NavLink>
-
-            <NavLink
-              to="/dashboard/replacement"
-              className="flex items-center justify-between w-full p-2"
-            >
-              <div
-                className={`flex items-center justify-start gap-2 w-full h-[50px] p-2 ${
-                  isActiveReplacement
-                    ? "bg-[#1F762C] text-white rounded-xl"
-                    : "text-[#4B5563] dark:text-white"
-                }`}
-              >
-                <TbReplaceFilled className="w-[18px] h-[18px]" />
-                <h1 className="poppins font-semibold text-base">Replacement</h1>
-              </div>
-            </NavLink>
+                <div
+                  className={`flex items-center gap-2 w-full h-[50px] p-2 ${
+                    item.active
+                      ? "bg-[#1F762C] text-white rounded-xl"
+                      : "text-[#4B5563] dark:text-white"
+                  }`}
+                >
+                  {item.icon}
+                  <h1 className="text-base font-semibold poppins">
+                    {item.label}
+                  </h1>
+                </div>
+              </NavLink>
+            ))}
           </nav>
         ) : (
+          // ✅ Collapsed Sidebar
           <nav className="flex flex-col text-[#364636] dark:text-white mt-9">
-            <NavLink
-              to="/dashboard"
-              className="flex items-center justify-center w-full p-2 relative group"
-              aria-label="Dashboard"
-            >
-              <div
-                className={`flex items-center justify-center w-full h-[50px] p-2 ${
-                  isActiveDashboard
-                    ? "bg-[#1F762C] text-white rounded-xl"
-                    : "text-[#4B5563] dark:text-white"
-                }`}
+            {[
+              {
+                path: "/dashboard",
+                icon: <FaRegClock className="w-[18px] h-[18px]" />,
+                label: "Dashboard",
+                active: isActiveDashboard,
+              },
+              {
+                path: "/dashboard/purchase",
+                icon: <BiPurchaseTag className="w-[18px] h-[18px]" />,
+                label: "Purchase",
+                active: isActivePurchase,
+              },
+              {
+                path: "/dashboard/warranties",
+                icon: <FaRegHeart className="w-[18px] h-[18px]" />,
+                label: "Warranties",
+                active: isActiveWarranties,
+              },
+              {
+                path: "/dashboard/reminders",
+                icon: <TbMessages className="w-[18px] h-[18px]" />,
+                label: "Reminders",
+                active: isActiveReminders,
+              },
+              {
+                path: "/dashboard/receipts",
+                icon: <FaRegClipboard className="w-[18px] h-[18px]" />,
+                label: "Receipts",
+                active: isActiveReceipts,
+              },
+              {
+                path: "/dashboard/replacement",
+                icon: <TbReplaceFilled className="w-[18px] h-[18px]" />,
+                label: "Replacement",
+                active: isActiveReplacement,
+              },
+            ].map((item, index) => (
+              <NavLink
+                key={index}
+                to={item.path}
+                className="relative flex items-center justify-center w-full p-2 group"
+                aria-label={item.label}
               >
-                <FaRegClock className="w-[18px] h-[18px]" />
-              </div>
-              <span className="absolute left-16 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 z-10">
-                Dashboard
-              </span>
-            </NavLink>
-
-            <NavLink
-              to="/dashboard/purchase"
-              className="flex items-center justify-center w-full p-2 relative group"
-              aria-label="Purchase"
-            >
-              <div
-                className={`flex items-center justify-center w-full h-[50px] p-2 ${
-                  isActivePurchase
-                    ? "bg-[#1F762C] text-white rounded-xl"
-                    : "text-[#4B5563] dark:text-white"
-                }`}
-              >
-                <BiPurchaseTag className="w-[18px] h-[18px]" />
-              </div>
-              <span className="absolute left-16 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 z-10">
-                Purchase
-              </span>
-            </NavLink>
-
-            <NavLink
-              to="/dashboard/warranties"
-              className="flex items-center justify-center w-full p-2 relative group"
-              aria-label="Warranties"
-            >
-              <div
-                className={`flex items-center justify-center w-full h-[50px] p-2 ${
-                  isActiveWarranties
-                    ? "bg-[#1F762C] text-white rounded-xl"
-                    : "text-[#4B5563] dark:text-white"
-                }`}
-              >
-                <FaRegHeart className="w-[18px] h-[18px]" />
-              </div>
-              <span className="absolute left-16 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 z-10">
-                Warranties
-              </span>
-            </NavLink>
-
-            <NavLink
-              to="/dashboard/reminders"
-              className="flex items-center justify-center w-full p-2 relative group"
-              aria-label="Reminders"
-            >
-              <div
-                className={`flex items-center justify-center w-full h-[50px] p-2 ${
-                  isActiveReminders
-                    ? "bg-[#1F762C] text-white rounded-xl"
-                    : "text-[#4B5563] dark:text-white"
-                }`}
-              >
-                <TbMessages className="w-[18px] h-[18px]" />
-              </div>
-              <span className="absolute left-16 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 z-10">
-                Reminders
-              </span>
-            </NavLink>
-
-            <NavLink
-              to="/dashboard/receipts"
-              className="flex items-center justify-center w-full p-2 relative group"
-              aria-label="Receipts"
-            >
-              <div
-                className={`flex items-center justify-center w-full h-[50px] p-2 ${
-                  isActiveReceipts
-                    ? "bg-[#1F762C] text-white rounded-xl"
-                    : "text-[#4B5563] dark:text-white"
-                }`}
-              >
-                <FaRegClipboard className="w-[18px] h-[18px]" />
-              </div>
-              <span className="absolute left-16 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 z-10">
-                Receipts
-              </span>
-            </NavLink>
-
-            <NavLink
-              to="/dashboard/replacement"
-              className="flex items-center justify-center w-full p-2 relative group"
-              aria-label="Replacement"
-            >
-              <div
-                className={`flex items-center justify-center w-full h-[50px] p-2 ${
-                  isActiveReplacement
-                    ? "bg-[#1F762C] text-white rounded-xl"
-                    : "text-[#4B5563] dark:text-white"
-                }`}
-              >
-                <TbReplaceFilled className="w-[18px] h-[18px]" />
-              </div>
-              <span className="absolute left-16 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 z-10">
-                Replacement
-              </span>
-            </NavLink>
+                <div
+                  className={`flex items-center justify-center w-full h-[50px] p-2 ${
+                    item.active
+                      ? "bg-[#1F762C] text-white rounded-xl"
+                      : "text-[#4B5563] dark:text-white"
+                  }`}
+                >
+                  {item.icon}
+                </div>
+                {/* Tooltip on Hover */}
+                <span className="absolute z-10 hidden px-2 py-1 text-xs text-white bg-gray-800 rounded left-16 group-hover:block whitespace-nowrap">
+                  {item.label}
+                </span>
+              </NavLink>
+            ))}
           </nav>
         )}
       </div>
@@ -281,7 +191,7 @@ const UserSidebar = ({ isSidebarOpen, toggleSidebar }) => {
       >
         <FaSignOutAlt className="w-[18px] h-[18px]" />
         {isSidebarOpen && (
-          <span className="poppins font-semibold text-base">Log Out</span>
+          <span className="text-base font-semibold poppins">Log Out</span>
         )}
       </div>
     </div>

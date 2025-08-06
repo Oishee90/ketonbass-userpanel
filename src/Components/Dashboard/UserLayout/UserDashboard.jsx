@@ -20,6 +20,8 @@ import {
   FaExclamationTriangle,
   FaCalendarPlus,
 } from "react-icons/fa";
+import Spinner from "../../../Shared/Spinner";
+import ErrorPage from "../../../Shared/ErrorPage";
 const statsData = [
   {
     title: "Total Purchases",
@@ -120,11 +122,13 @@ const UserDashboard = () => {
   };
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <Spinner />;
   }
   console.log(error, "error");
   if (error) {
-    return <p>Something went wrong. Please try again later.</p>;
+    return (
+      <ErrorPage message="Failed to load data. Please try again."></ErrorPage>
+    );
   }
   // UPCOMING REMINDERS   const now = new Date();
   const events = data?.events || [];
@@ -170,14 +174,14 @@ const UserDashboard = () => {
       return aDate - bDate; // earliest first
     });
   return (
-    <div className="bg-[#f9f9f9] min-h-screen p-6 font-sans">
+    <div className="bg-[#f9f9f9] min-h-screen p-4 sm:p-6 font-sans">
       {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div>
-          <h1 className="mb-1 text-2xl font-bold main-color poppins">
+          <h1 className="mb-2 text-xl sm:text-2xl font-bold main-color poppins">
             Dashboard Overview
           </h1>
-          <p className="text-base font-normal poppins tittle-color">
+          <p className="text-sm sm:text-base font-normal poppins tittle-color">
             Track your purchases, warranties, and upcoming reminders
           </p>
         </div>
@@ -212,29 +216,37 @@ const UserDashboard = () => {
         </h1>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 !mb-10">
-        <button
-          onClick={handleAddPurchaseSuccess}
-          className="flex items-center gap-2 bg-blue-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium"
-        >
-          <FaPlus /> Add New Purchase
-        </button>
-        <button
-          onClick={handleSync} // Trigger the sync when clicked
-          className="bg-orange-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium flex items-center gap-2"
-        >
-          <FaSync
-            className={`text-[#EA580C] ${
-              syncLoading || spinning ? "animate-spin" : ""
-            }`} // Conditionally apply spinning class
-          />
-          {syncLoading || spinning ? "Syncing..." : "Refresh Purchases"}
-        </button>
-        <button
-          onClick={handleFileUploadSuccess}
-          className="flex items-center gap-2 bg-green-100 text-[#111827] px-4 py-3 rounded-lg poppins text-base font-medium"
-        >
-          <FaUpload className="text-[#16A34A]" /> Upload Receipt
-        </button>
+        <div>
+          <button
+            onClick={handleAddPurchaseSuccess}
+            className="flex items-center gap-1 md:gap-2 bg-blue-100 text-[#111827] px-2 py-3 rounded-lg poppins text-sm sm:text-base font-medium"
+          >
+            <FaPlus /> Add New Purchase
+          </button>
+        </div>
+        <div>
+          <button
+            onClick={handleSync}
+            className="bg-orange-100 text-[#111827] px-2 py-3 rounded-lg poppins text-sm sm:text-base font-medium flex items-center gap-2"
+          >
+            <FaSync
+              className={`text-[#EA580C] ${
+                syncLoading || spinning ? "animate-spin" : ""
+              }`}
+            />
+            {syncLoading || spinning
+              ? "Syncing Purchases"
+              : "Refresh Purchases"}
+          </button>
+        </div>
+        <div>
+          <button
+            onClick={handleFileUploadSuccess}
+            className="flex items-center gap-2 bg-green-100 text-[#111827] px-4 py-3 rounded-lg poppins text-sm sm:text-base font-medium"
+          >
+            <FaUpload className="text-[#16A34A]" /> Upload Receipt
+          </button>
+        </div>
       </div>
 
       {/* Recent Purchases & Reminders */}
@@ -242,33 +254,33 @@ const UserDashboard = () => {
         {/* Recent Purchases */}
         <div className="md:col-span-2 bg-white rounded-lg shadow border border-[#E5E7EB]">
           <div className="flex justify-between md:items-center mb-4 border border-b-[#E5E7EB] p-4">
-            <h2 className="text-lg font-semibold main-color poppins">
+            <h2 className="text-sm sm:text-lg font-semibold  main-color poppins">
               Recent Purchases
             </h2>
             <NavLink
               to="/dashboard/purchase"
-              className="text-base font-semibold hover:underline main-color poppins"
+              className="text-sm sm:text-base font-semibold hover:underline main-color poppins whitespace-nowrap"
             >
               View All
             </NavLink>
           </div>
 
-          <div className="p-6 space-y-4">
+          <div className="sm:p-6 space-y-4 p-2">
             {recentPurchases.map((purchase) => (
               <div
                 key={purchase.id}
-                className="flex md:flex-row flex-col justify-between items-start md:items-center p-3 rounded-lg shadow bg-[#F9FAFB] border border-[#E5E7EB]"
+                className="flex md:flex-row flex-col justify-between items-start md:items-center p-3 g shadow bg-[#F9FAFB] border border-[#E5E7EB]"
               >
                 <div>
-                  <p className="font-medium text-[#111827] poppins text-base">
+                  <p className="font-medium text-[#111827] poppins sm:text-base text-sm mb-2">
                     {purchase.product_name}
                   </p>
-                  <p className="text-sm text-[#6B7280] font-normal poppins">
+                  <p className="sm:text-sm  text-xs text-[#6B7280] font-normal poppins mb-2">
                     {purchase.shop_name} • {purchase.purchase_date}
                   </p>
                 </div>
                 <div className="md:text-right">
-                  <p className="font-bold text-gray-800 poppins">
+                  <p className="font-bold sm:text-base text-sm text-gray-800 poppins  mb-2">
                     {purchase.price}
                   </p>
                   <span
@@ -288,7 +300,9 @@ const UserDashboard = () => {
         {/* Upcoming Reminders */}
         {/* Reminders */}
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Upcoming Reminders</h3>
+          <h3 className=" text-base sm:text-lg font-semibold">
+            Upcoming Reminders
+          </h3>
           <div className="pr-2 space-y-4 overflow-y-auto h-[440px] scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
             {decoratedReminders.map((reminder, index) => (
               <div
