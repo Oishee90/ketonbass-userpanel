@@ -10,7 +10,6 @@ const initialState = {
   googleTokenExpiry: null,
 
   // Microsoft user info
-  microsoftUser: null,
   microsoftAccessToken: null,
   microsoftRefreshToken: null,
   microsoftTokenExpiry: null,
@@ -39,7 +38,6 @@ const authSlice = createSlice({
         messages,
       } = action.payload;
 
-      // fallback for user object
       state.user = user || {
         name: name || "",
         email: email || "",
@@ -59,39 +57,48 @@ const authSlice = createSlice({
     // Microsoft Login
     microsoftLoggedIn: (state, action) => {
       const {
-        microsoftUser,
+        user,
+        name,
+        email,
+        profile_picture,
+        access_token,
+        refresh_token,
         microsoft_access_token,
         microsoft_refresh_token,
         microsoft_token_expiry,
         messages,
       } = action.payload;
 
-      state.microsoftUser = microsoftUser || null;
+      state.user = user || {
+        name: name || "",
+        email: email || "",
+        profile_picture: profile_picture || "",
+      };
+
+      state.accessToken = access_token || null;
+      state.refreshToken = refresh_token || null;
       state.microsoftAccessToken = microsoft_access_token || null;
       state.microsoftRefreshToken = microsoft_refresh_token || null;
       state.microsoftTokenExpiry = microsoft_token_expiry || null;
 
       state.authProvider = "microsoft";
-      state.messages = messages || "Microsoft";
+      state.messages = messages || "null";
     },
 
     // Logout
     userLoggedOut: (state) => {
-      // Clear Google-related
       state.user = null;
       state.accessToken = null;
       state.refreshToken = null;
+
       state.googleAccessToken = null;
       state.googleRefreshToken = null;
       state.googleTokenExpiry = null;
 
-      // Clear Microsoft-related
-      state.microsoftUser = null;
       state.microsoftAccessToken = null;
       state.microsoftRefreshToken = null;
       state.microsoftTokenExpiry = null;
 
-      // Common
       state.authProvider = null;
       state.messages = null;
     },
