@@ -39,7 +39,7 @@ const UserSidebar = ({ isSidebarOpen, toggleSidebar }) => {
     <div
       className={`${
         isSidebarOpen ? "w-64" : "w-16"
-      } bg-white dark:bg-[#374151] dark:text-white border-r-2 border-r-white min-h-screen flex flex-col justify-between transition-all duration-300`}
+      } bg-white dark:bg-white dark:text-black border-r-2 border-r-white min-h-screen flex flex-col justify-between transition-all duration-300`}
     >
       {/* Top Section: Logo and Toggle */}
       <div className="flex flex-col py-4">
@@ -57,7 +57,7 @@ const UserSidebar = ({ isSidebarOpen, toggleSidebar }) => {
         {/* Menu Items */}
         {isSidebarOpen ? (
           // ✅ Expanded Sidebar
-          <nav className="flex flex-col text-[#364636] dark:text-white mt-9">
+          <nav className="flex flex-col text-[#364636]  mt-9">
             {[
               {
                 path: "/dashboard",
@@ -105,7 +105,7 @@ const UserSidebar = ({ isSidebarOpen, toggleSidebar }) => {
                   className={`flex items-center gap-2 w-full h-[50px] p-2 ${
                     item.active
                       ? "bg-[#1F762C] text-white rounded-xl"
-                      : "text-[#4B5563] dark:text-white"
+                      : "text-[#4B5563] "
                   }`}
                 >
                   {item.icon}
@@ -118,7 +118,7 @@ const UserSidebar = ({ isSidebarOpen, toggleSidebar }) => {
           </nav>
         ) : (
           // ✅ Collapsed Sidebar
-          <nav className="flex flex-col text-[#364636] dark:text-white mt-9">
+          <nav className="flex flex-col text-[#364636]  mt-9">
             {[
               {
                 path: "/dashboard",
@@ -167,7 +167,7 @@ const UserSidebar = ({ isSidebarOpen, toggleSidebar }) => {
                   className={`flex items-center justify-center w-full h-[50px] p-2 ${
                     item.active
                       ? "bg-[#1F762C] text-white rounded-xl"
-                      : "text-[#4B5563] dark:text-white"
+                      : "text-[#4B5563] "
                   }`}
                 >
                   {item.icon}

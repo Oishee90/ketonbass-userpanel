@@ -4,8 +4,9 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
 import google from "../../assets/google.png";
 import image from "../../assets/ketonregister.png";
-import { useEffect } from "react";
-import { userLoggedIn } from "../../Redux/feature/auth/authSlice";
+
+import { FaMicrosoft } from "react-icons/fa";
+
 import { useDispatch } from "react-redux";
 
 export default function SignUpPage() {
@@ -51,6 +52,16 @@ export default function SignUpPage() {
                 Login with Google
               </span>
               <img src={google} alt="Google" />
+            </button>
+          </div>
+        </Link>
+        <Link to="https://server.156-67-218-177.sslip.io/microsoft-auth/login/">
+          <div className="mb-6 space-y-4">
+            <button className="flex items-center justify-center w-full gap-4 px-2 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+              <span className="text-[#979797] md:block text-base hidden poppins">
+                Login with Microsoft
+              </span>
+              <FaMicrosoft className="text-xl text-[#979797]" />
             </button>
           </div>
         </Link>

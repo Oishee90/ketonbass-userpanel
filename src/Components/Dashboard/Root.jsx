@@ -52,9 +52,19 @@ const Root = () => {
       {/* Sidebar */}
       <div
         className={`
-          ${isDesktop ? "fixed" : "absolute"} top-0 left-0 h-full transition-all duration-300 z-30
-          ${isDesktop ? (isSidebarOpen ? "w-64" : "w-16") : isOverlayOpen ? "w-64" : "w-16"}
-          bg-white dark:bg-[#374151] border-r border-gray-200 shadow
+          ${
+            isDesktop ? "fixed" : "absolute"
+          } top-0 left-0 h-full transition-all duration-300 z-30
+          ${
+            isDesktop
+              ? isSidebarOpen
+                ? "w-64"
+                : "w-16"
+              : isOverlayOpen
+              ? "w-64"
+              : "w-16"
+          }
+          bg-white dark:bg-white border-r border-gray-200 shadow
         `}
       >
         <UserSidebar

@@ -178,10 +178,10 @@ const UserDashboard = () => {
       {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div>
-          <h1 className="mb-2 text-xl sm:text-2xl font-bold main-color poppins">
+          <h1 className="mb-2 text-xl font-bold sm:text-2xl main-color poppins">
             Dashboard Overview
           </h1>
-          <p className="text-sm sm:text-base font-normal poppins tittle-color">
+          <p className="text-sm font-normal sm:text-base poppins tittle-color">
             Track your purchases, warranties, and upcoming reminders
           </p>
         </div>
@@ -216,18 +216,18 @@ const UserDashboard = () => {
         </h1>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 !mb-10">
-        <div>
+        <div className="w-full">
           <button
             onClick={handleAddPurchaseSuccess}
-            className="flex items-center gap-1 md:gap-2 bg-blue-100 text-[#111827] px-2 py-3 rounded-lg poppins text-sm sm:text-base font-medium"
+            className="flex items-center gap-1 md:gap-2 bg-blue-100 text-[#111827] px-2 py-3 rounded-lg poppins text-sm sm:text-base font-medium md:w-full"
           >
             <FaPlus /> Add New Purchase
           </button>
         </div>
-        <div>
+        <div className="w-full">
           <button
             onClick={handleSync}
-            className="bg-orange-100 text-[#111827] px-2 py-3 rounded-lg poppins text-sm sm:text-base font-medium flex items-center gap-2"
+            className="bg-orange-100 text-[#111827] px-2 py-3 rounded-lg poppins text-sm sm:text-base font-medium flex items-center gap-2 md:w-full"
           >
             <FaSync
               className={`text-[#EA580C] ${
@@ -239,10 +239,10 @@ const UserDashboard = () => {
               : "Refresh Purchases"}
           </button>
         </div>
-        <div>
+        <div className="w-full">
           <button
             onClick={handleFileUploadSuccess}
-            className="flex items-center gap-2 bg-green-100 text-[#111827] px-4 py-3 rounded-lg poppins text-sm sm:text-base font-medium"
+            className="flex items-center gap-2 bg-green-100 text-[#111827] px-4 py-3 rounded-lg poppins text-sm sm:text-base font-medium md:w-full"
           >
             <FaUpload className="text-[#16A34A]" /> Upload Receipt
           </button>
@@ -254,18 +254,18 @@ const UserDashboard = () => {
         {/* Recent Purchases */}
         <div className="md:col-span-2 bg-white rounded-lg shadow border border-[#E5E7EB]">
           <div className="flex justify-between md:items-center mb-4 border border-b-[#E5E7EB] p-4">
-            <h2 className="text-sm sm:text-lg font-semibold  main-color poppins">
+            <h2 className="text-sm font-semibold sm:text-lg main-color poppins">
               Recent Purchases
             </h2>
             <NavLink
               to="/dashboard/purchase"
-              className="text-sm sm:text-base font-semibold hover:underline main-color poppins whitespace-nowrap"
+              className="text-sm font-semibold sm:text-base hover:underline main-color poppins whitespace-nowrap"
             >
               View All
             </NavLink>
           </div>
 
-          <div className="sm:p-6 space-y-4 p-2">
+          <div className="p-2 space-y-4 sm:p-6">
             {recentPurchases.map((purchase) => (
               <div
                 key={purchase.id}
@@ -280,7 +280,7 @@ const UserDashboard = () => {
                   </p>
                 </div>
                 <div className="md:text-right">
-                  <p className="font-bold sm:text-base text-sm text-gray-800 poppins  mb-2">
+                  <p className="mb-2 text-sm font-bold text-gray-800 sm:text-base poppins">
                     {purchase.price}
                   </p>
                   <span
@@ -300,7 +300,7 @@ const UserDashboard = () => {
         {/* Upcoming Reminders */}
         {/* Reminders */}
         <div className="space-y-4">
-          <h3 className=" text-base sm:text-lg font-semibold">
+          <h3 className="text-base font-semibold sm:text-lg">
             Upcoming Reminders
           </h3>
           <div className="pr-2 space-y-4 overflow-y-auto h-[440px] scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
