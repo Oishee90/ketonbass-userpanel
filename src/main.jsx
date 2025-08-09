@@ -23,6 +23,9 @@ import GoogleCallback from "./Components/Pages/GoogleCallback";
 import { PersistGate } from "redux-persist/integration/react";
 import GoogleLoginSuccess from "./Components/Pages/GoogleLoginSuccess";
 import MicrosoftLoginSuccess from "./Components/Pages/MicrosoftLoginSuccess";
+import { PrivateRoute } from "./Routes/PrivateRoute";
+import GoogleLoginSuccessRoute from "./Routes/GoogleLoginSuccessRoute";
+import MicrosoftLoginSuccessRoute from "./Routes/MicrosoftLoginSuccessRoute";
 
 const router = createBrowserRouter([
   {
@@ -33,13 +36,13 @@ const router = createBrowserRouter([
     path: "/login",
     element: <SignUpPage></SignUpPage>,
   },
-    {
+  {
     path: "/success",
-    element: <GoogleLoginSuccess></GoogleLoginSuccess>,
+    element: <GoogleLoginSuccessRoute></GoogleLoginSuccessRoute>,
   },
-      {
+  {
     path: "/successlogin",
-    element: <MicrosoftLoginSuccess></MicrosoftLoginSuccess>,
+    element: <MicrosoftLoginSuccessRoute></MicrosoftLoginSuccessRoute>,
   },
   {
     path: "/google/callback",
@@ -47,35 +50,72 @@ const router = createBrowserRouter([
   },
   {
     path: "/dashboard",
-    element: <Root />,
+    element: (
+      <PrivateRoute>
+        {" "}
+        <Root />{" "}
+      </PrivateRoute>
+    ),
     children: [
       {
         index: true,
-        element: <UserDashboard/>,
+        element: (
+          <PrivateRoute>
+            <UserDashboard />
+          </PrivateRoute>
+        ),
       },
       {
         path: "adminuser",
-        element: <AdminUser />,
+        element: (
+          <PrivateRoute>
+            {" "}
+            <AdminUser />{" "}
+          </PrivateRoute>
+        ),
       },
       {
         path: "purchase",
-        element: <Purchase></Purchase>,
+        element: (
+          <PrivateRoute>
+            {" "}
+            <Purchase></Purchase>{" "}
+          </PrivateRoute>
+        ),
       },
       {
         path: "warranties",
-        element: <Warranty></Warranty>,
+        element: (
+          <PrivateRoute>
+            {" "}
+            <Warranty></Warranty>{" "}
+          </PrivateRoute>
+        ),
       },
       {
         path: "reminders",
-        element: <CalendarDashboard></CalendarDashboard>,
+        element: (
+          <PrivateRoute>
+            {" "}
+            <CalendarDashboard></CalendarDashboard>{" "}
+          </PrivateRoute>
+        ),
       },
       {
         path: "receipts",
-        element: <Reciepts></Reciepts>,
+        element: (
+          <PrivateRoute>
+            <Reciepts></Reciepts>{" "}
+          </PrivateRoute>
+        ),
       },
       {
         path: "replacement",
-        element: <Replacement></Replacement>,
+        element: (
+          <PrivateRoute>
+            <Replacement></Replacement>{" "}
+          </PrivateRoute>
+        ),
       },
     ],
   },
@@ -86,10 +126,10 @@ const client_id = clientId;
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>
-       <PersistGate loading={null} persistor={persistor}>
-      <GoogleOAuthProvider clientId={client_id}>
-        <RouterProvider router={router} />
-      </GoogleOAuthProvider>
+      <PersistGate loading={null} persistor={persistor}>
+        <GoogleOAuthProvider clientId={client_id}>
+          <RouterProvider router={router} />
+        </GoogleOAuthProvider>
       </PersistGate>
     </Provider>
   </StrictMode>

@@ -5,7 +5,7 @@ import AddPurchaseModal from "./AddPurchaseModal";
 import EditPurchaseModal from "./EditPurchaseModal";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   useGetActiveWarrantiesQuery,
   useGetEventsQuery,
@@ -22,6 +22,7 @@ import {
 } from "react-icons/fa";
 import Spinner from "../../../Shared/Spinner";
 import ErrorPage from "../../../Shared/ErrorPage";
+import { useGetMicrosoftEventsQuery } from "../../../Redux/feature/microsoftAuth/microauthapi";
 const statsData = [
   {
     title: "Total Purchases",
@@ -55,7 +56,7 @@ const statsData = [
 
 const UserDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const message = useSelector((state) => state.auth.messages);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const location = useLocation();
   const dispatch = useDispatch();
@@ -78,7 +79,37 @@ const UserDashboard = () => {
     refetch: refetchActiveWarranty,
     isLoading: isLoadingWarranty,
   } = useGetActiveWarrantiesQuery();
-  const { data, isLoading } = useGetEventsQuery();
+  // google events query
+ const {
+    data: googleData,
+    iserror: googleError,
+    isLoading: googleLoading,
+  } = useGetEventsQuery(undefined, {
+    skip: message?.toLowerCase() !== "google",
+  });
+
+  // ✅ Microsoft events query
+  const {
+    data: microsoftData,
+    iserror: microsoftError,
+    isLoading: microsoftLoading,
+  } = useGetMicrosoftEventsQuery(undefined, {
+    skip: message?.toLowerCase() !== "microsoft",
+  });
+
+  // ✅ Pick the correct data & loading/error states
+  const eventsData =
+    message?.toLowerCase() === "google"
+      ? googleData
+      : message?.toLowerCase() === "microsoft"
+      ? microsoftData
+      : null;
+
+  const isLoading =
+    message?.toLowerCase() === "google" ? googleLoading : microsoftLoading;
+
+  const iserror =
+    message?.toLowerCase() === "google" ? googleError : microsoftError;
   const {
     data: upcomingWarranty,
     refetch: refetchUpcomingWarranty,
@@ -131,7 +162,7 @@ const UserDashboard = () => {
     );
   }
   // UPCOMING REMINDERS   const now = new Date();
-  const events = data?.events || [];
+  const events = eventsData?.events || [];
   const now = new Date();
 
   const decoratedReminders = events

@@ -3,16 +3,19 @@ import React from "react";
 import banner from "../../assets/banner.png";
 import { NavLink } from "react-router-dom";
 import { Slide } from "react-awesome-reveal";
+import { u } from "framer-motion/client";
+import { useSelector } from "react-redux";
 
 const Banner = () => {
+  const user = useSelector((state) => state.auth?.user);
   return (
-    <div id="home" className="container mx-auto mt-12 lg:mt-32 p-4">
-      <div className="flex lg:flex-row flex-col items-center lg:items-center justify-between gap-10">
+    <div id="home" className="container p-4 mx-auto mt-12 lg:mt-32">
+      <div className="flex flex-col items-center justify-between gap-10 lg:flex-row lg:items-center">
         {/*  content  */}
         <Slide
           direction="left"
           triggerOnce
-          className="flex flex-col items-center lg:items-start  gap-6 lg:w-1/2 w-full"
+          className="flex flex-col items-center w-full gap-6 lg:items-start lg:w-1/2"
         >
           <div>
             <h1 className="poppins text-5xl lg:text-6xl main-color font-extrabold leading-[110%] mt-2 mb-6 text-[#828282] flex flex-col gap-3">
@@ -26,17 +29,17 @@ const Banner = () => {
               reminders for maintenance and renewals. Take control of your
               product lifecycle
             </p>
-            <NavLink to="/login">
+            <NavLink to={user ? "/dashboard" : "/login"}>
               <div className="mt-9">
-                <button className="py-4 px-6 bg-gradient-to-r from-[#1F762C] to-[#16A34A] text-white poppins  rounded-2xl font-bold">
-                  Get Started
+                <button className="py-4 px-6 bg-gradient-to-r from-[#1F762C] to-[#16A34A] text-white poppins rounded-2xl font-bold">
+                  {user ? "Go to Dashboard" : "Get Started"}
                 </button>
               </div>
             </NavLink>
           </div>
         </Slide>
         {/* img */}
-        <Slide className="lg:w-1/2 w-full " direction="right" triggerOnce>
+        <Slide className="w-full lg:w-1/2 " direction="right" triggerOnce>
           <div>
             <img src={banner} alt="banner" />
           </div>

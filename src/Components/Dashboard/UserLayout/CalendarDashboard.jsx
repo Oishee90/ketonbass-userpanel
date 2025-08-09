@@ -10,24 +10,61 @@ import {
 import "tailwindcss/tailwind.css";
 import SetReminders from "./SetReminders";
 import { useGetEventsQuery } from "../../../Redux/feature/auth/aithapi";
+import { useGetMicrosoftEventsQuery } from "../../../Redux/feature/microsoftAuth/microauthapi";
+import { useSelector } from "react-redux";
+import Spinner from "../../../Shared/Spinner";
+import ErrorPage from "../../../Shared/ErrorPage";
 
 const CalendarDashboard = () => {
   const [date, setDate] = useState(new Date());
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isYearDropdownOpen, setIsYearDropdownOpen] = useState(false);
   const [isMonthDropdownOpen, setIsMonthDropdownOpen] = useState(false);
+  const message = useSelector((state) => state.auth.messages);
+  const user = useSelector((state) => state.auth.user);
+  // ✅ Google events query
+  const {
+    data: googleData,
+    error: googleError,
+    isLoading: googleLoading,
+  } = useGetEventsQuery(undefined, {
+    skip: message?.toLowerCase() !== "google",
+  });
 
-  const { data, error, isLoading } = useGetEventsQuery();
+  // ✅ Microsoft events query
+  const {
+    data: microsoftData,
+    error: microsoftError,
+    isLoading: microsoftLoading,
+  } = useGetMicrosoftEventsQuery(undefined, {
+    skip: message?.toLowerCase() !== "microsoft",
+  });
 
-  if (isLoading) {
-    return <div>Loading events...</div>;
+  // ✅ Pick the correct data & loading/error states
+  const eventsData =
+    message?.toLowerCase() === "google"
+      ? googleData
+      : message?.toLowerCase() === "microsoft"
+      ? microsoftData
+      : null;
+
+  const isLoading =
+    message?.toLowerCase() === "google" ? googleLoading : microsoftLoading;
+
+  const error =
+    message?.toLowerCase() === "google" ? googleError : microsoftError;
+
+ if (isLoading) {
+    return <Spinner />;
   }
 
   if (error) {
-    return <div>Error loading events</div>;
+    return (
+      <ErrorPage message="Failed to load data. Please try again."></ErrorPage>
+    );
   }
 
-  const events = data?.events || [];
+  const events = eventsData?.events || [];
   const now = new Date();
 
   const decoratedReminders = events
@@ -155,10 +192,10 @@ const CalendarDashboard = () => {
       {/* Header */}
       <div className="flex flex-col justify-between mb-4 lg:items-center lg:flex-row">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold main-color poppins">
-            Oishee Khan's Reminders
+          <h1 className="text-xl font-bold sm:text-2xl main-color poppins">
+           {user?.name }'s Reminders
           </h1>
-          <p className="mb-4 text-xs text-gray-600 sm:text-sm  mt-2 sm:mb-6 poppins">
+          <p className="mt-2 mb-4 text-xs text-gray-600 sm:text-sm sm:mb-6 poppins">
             Track your warranties easily.
           </p>
         </div>

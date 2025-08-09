@@ -6,13 +6,16 @@ import {
   useGetInboxQuery,
   useGetPurchaseQuery,
 } from "../../../Redux/feature/auth/aithapi";
+import Spinner from "../../../Shared/Spinner";
+import ErrorPage from "../../../Shared/ErrorPage";
+import { useSelector } from "react-redux";
 
 const Warranty = () => {
   const itemsPerPage = 6;
   const [currentPage, setCurrentPage] = useState(1);
   const [showAllPages, setShowAllPages] = useState(false);
   const { data: purchase, error, isLoading } = useGetPurchaseQuery();
-
+  const user = useSelector((state) => state.auth.user);
   const totalItems = purchase ? purchase.length : 0;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -99,11 +102,20 @@ const Warranty = () => {
       );
     }
   };
+   if (isLoading) {
+      return <Spinner />;
+    }
+  
+    if (error) {
+      return (
+        <ErrorPage message="Failed to load data. Please try again."></ErrorPage>
+      );
+    }
 
   return (
     <div className="bg-[#f9f9f9] min-h-screen p-2 sm:p-6 font-sans">
       <h1 className="mb-1 text-xl font-bold main-color sm:text-2xl poppins">
-        Oishee Khan’s Warranties
+       {user?.name }'s Warranties
       </h1>
       <p className="mb-6 text-sm tittle-color sm:text-base">
         Track your warranties and all details

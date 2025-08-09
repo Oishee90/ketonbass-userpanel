@@ -7,6 +7,8 @@ import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useCreateEventMutation, useGetEventsQuery } from "../../../Redux/feature/auth/aithapi";
+import { useCreateMicrosoftEventMutation } from "../../../Redux/feature/microsoftAuth/microauthapi";
+import { useSelector } from "react-redux";
 const SetReminders = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
     productName: "",
@@ -27,7 +29,7 @@ const SetReminders = ({ isOpen, onClose }) => {
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [isYearDropdownOpen, setIsYearDropdownOpen] = useState(false);
   const [isMonthDropdownOpen, setIsMonthDropdownOpen] = useState(false);
-
+ const message = useSelector((state) => state.auth.messages); 
   const months = [
     "January",
     "February",
@@ -45,7 +47,8 @@ const SetReminders = ({ isOpen, onClose }) => {
 
   const currentYear = new Date().getFullYear();
   const yearRange = Array.from({ length: 11 }, (_, i) => currentYear - 5 + i);
-  const [createEvent, { isLoading }] = useCreateEventMutation();
+ const [createGoogleEvent, { isLoading: googleLoading }] = useCreateEventMutation();
+  const [createMicrosoftEvent, { isLoading: microsoftLoading }] = useCreateMicrosoftEventMutation();
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -72,7 +75,7 @@ const SetReminders = ({ isOpen, onClose }) => {
     setIsCalendarOpen(false);
   };
 
-  const handleSubmit = async (e) => {
+ const handleSubmit = async (e) => {
     e.preventDefault();
     const { productName, date } = formData;
     const newErrors = {};
@@ -91,12 +94,18 @@ const SetReminders = ({ isOpen, onClose }) => {
         event_date: date,
       };
 
-      const response = await createEvent(payload).unwrap();
-      console.log("API Response:", response);
+      if (message?.toLowerCase() === "google") {
+        await createGoogleEvent(payload).unwrap();
+        toast.success("Google reminder added successfully!");
+      } else if (message?.toLowerCase() === "microsoft") {
+        await createMicrosoftEvent(payload).unwrap();
+        toast.success("Microsoft reminder added successfully!");
+      } else {
+        toast.error("No valid provider found!");
+        return;
+      }
 
-      toast.success("Reminder added successfully!");
-      
-      setFormData({ productName: "", date: "" });
+      setFormData({ productName: "", date: "", title: "" });
       setPdfFile(null);
 
       setTimeout(() => {

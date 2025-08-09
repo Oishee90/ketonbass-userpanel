@@ -1,17 +1,32 @@
 import { FaSignOutAlt } from "react-icons/fa";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { FaRegHeart, FaRegClock, FaRegClipboard } from "react-icons/fa";
 import { BiPurchaseTag } from "react-icons/bi";
 import { TbMessages, TbReplaceFilled } from "react-icons/tb";
 import { BiArrowToLeft, BiArrowToRight } from "react-icons/bi";
 import logo from "../../../assets/logo.png";
 import { useEffect, useRef } from "react";
+import { persistor } from "../../../Redux/store";
+import { useDispatch } from "react-redux";
+import { userLoggedOut } from "../../../Redux/feature/auth/authSlice";
 
 const UserSidebar = ({ isSidebarOpen, toggleSidebar }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const dropdownRef = useRef(null);
+  const dispatch = useDispatch();
+  const handleLogOut = () => {
+    dispatch(userLoggedOut());
 
+    // Clear persisted store
+    persistor.purge();
+  localStorage.clear();
+
+  // (Optional) Clear sessionStorage too
+  sessionStorage.clear();
+    // Redirect to login page
+    navigate("/login");
+  };
   // Active states for navigation links
   const isActiveDashboard = location.pathname === "/dashboard";
   const isActivePurchase = location.pathname === "/dashboard/purchase";
@@ -44,7 +59,7 @@ const UserSidebar = ({ isSidebarOpen, toggleSidebar }) => {
       {/* Top Section: Logo and Toggle */}
       <div className="flex flex-col py-4">
         <div className="flex items-center justify-between gap-3 px-4 pb-4 mt-9">
-          {isSidebarOpen && <img src={logo} alt="Logo" />}
+          <Link to="/">{isSidebarOpen && <img src={logo} alt="Logo" />}</Link>
           <div onClick={toggleSidebar} className="cursor-pointer">
             {isSidebarOpen ? (
               <BiArrowToLeft className="w-[24px] h-[24px]" />
@@ -184,7 +199,7 @@ const UserSidebar = ({ isSidebarOpen, toggleSidebar }) => {
 
       {/* Logout */}
       <div
-        onClick={handleLogout}
+        onClick={handleLogOut}
         className={`flex items-center ${
           isSidebarOpen ? "space-x-3 pl-10" : "justify-center"
         } p-2 text-red-500 cursor-pointer rounded-lg pb-10`}

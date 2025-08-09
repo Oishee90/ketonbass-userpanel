@@ -2,16 +2,34 @@ import React, { useState } from "react";
 import { useGetMainProductsQuery } from "../../../Redux/feature/auth/aithapi";
 import Spinner from "../../../Shared/Spinner";
 import ErrorPage from "../../../Shared/ErrorPage";
+import { useSelector } from "react-redux";
+import { useGetMicrosoftMainProductsQuery } from "../../../Redux/feature/microsoftAuth/microauthapi";
 
 const ITEMS_PER_PAGE = 3;
 
 const Replacement = () => {
-  const { data, error, isLoading } = useGetMainProductsQuery();
+  const messages = useSelector((state) => state.auth.messages);
+
+  // ✅ Decide which API to call
+  const isGoogle = messages?.toLowerCase() === "google";
+  const isMicrosoft = messages?.toLowerCase() === "microsoft";
+
+  const googleQuery = useGetMainProductsQuery(undefined, {
+    skip: !isGoogle,
+  });
+  const microsoftQuery = useGetMicrosoftMainProductsQuery(undefined, {
+    skip: !isMicrosoft,
+  });
+
+  // ✅ Merge data based on provider
+  const data = isGoogle ? googleQuery.data : microsoftQuery.data;
+  const error = isGoogle ? googleQuery.error : microsoftQuery.error;
+  const isLoading = isGoogle ? googleQuery.isLoading : microsoftQuery.isLoading;
   const [showAllPages, setShowAllPages] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const orders = data?.orders || [];
   const totalPages = Math.ceil(orders.length / ITEMS_PER_PAGE);
-
+  const user = useSelector((state) => state.auth.user);
   const currentData = orders.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
@@ -113,7 +131,7 @@ const Replacement = () => {
   return (
     <div className="min-h-screen p-2 sm:p-6 bg-gray-50">
       <h1 className="mb-1 text-xl font-bold sm:text-2xl main-color poppins">
-        Oishee Khan’s Replacement Parts
+        {user?.name}'s Replacement Parts
       </h1>
       <p className="mb-4 text-xs text-gray-600 sm:text-sm sm:mb-6 poppins">
         Track replacement parts for all of your purchases

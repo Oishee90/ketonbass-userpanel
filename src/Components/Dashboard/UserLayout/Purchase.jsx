@@ -10,6 +10,8 @@ import {
 } from "../../../Redux/feature/auth/aithapi";
 import Spinner from "../../../Shared/Spinner";
 import ErrorPage from "../../../Shared/ErrorPage";
+import { useSelector } from "react-redux";
+import { useMicrosoftGetInboxQuery } from "../../../Redux/feature/microsoftAuth/microauthapi";
 
 const Purchase = () => {
   const itemsPerPage = 6;
@@ -18,6 +20,7 @@ const Purchase = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editData, setEditData] = useState(null);
+    const user = useSelector((state) => state.auth.user);
   const {
     data: purchase,
     error,
@@ -67,27 +70,43 @@ const Purchase = () => {
   };
 
   const [spinning, setSpinning] = useState(false);
-  const {
-    data: syncData,
-    error: syncError,
-    isLoading: syncLoading,
-    refetch: refetch,
-  } = useSyncGoogleDataQuery();
+  const message = useSelector((state) => state.auth.messages); // persist
 
+  // Google Sync Hook
+  const { isLoading: googleLoading, refetch: googleRefetch } =
+    useSyncGoogleDataQuery(undefined, {
+      skip: message?.toLowerCase() !== "google",
+    });
+
+  // Microsoft Sync Hook
+  const { isLoading: microsoftLoading, refetch: microsoftRefetch } =
+    useMicrosoftGetInboxQuery(undefined, {
+      skip: message?.toLowerCase() !== "microsoft",
+    });
+  const syncLoading = googleLoading || microsoftLoading;
   const handleSync = async () => {
     setSpinning(true);
     try {
-      console.log("Syncing with Google API...");
-      await refetch();
-      console.log("Sync successful!");
+      if (message?.toLowerCase() === "google") {
+        console.log("Syncing with Google API...");
+        refetchPurchase()
+        await googleRefetch();
+        console.log("Google Sync successful!");
+      } else if (message?.toLowerCase() === "microsoft") {
+        refetchPurchase()
+        console.log("Syncing with Microsoft API...");
+        await microsoftRefetch();
+        console.log("Microsoft Sync successful!");
+      } else {
+        console.warn("No valid provider found in message!");
+      }
     } catch (err) {
-      console.error("Failed to sync data:", err);
+      console.error(`Failed to sync data from ${message}:`, err);
     } finally {
       setSpinning(false);
     }
   };
-
-  if (isLoading) {
+ if (isLoading) {
     return <Spinner />;
   }
 
@@ -96,7 +115,6 @@ const Purchase = () => {
       <ErrorPage message="Failed to load data. Please try again."></ErrorPage>
     );
   }
-
   const handlePageChange = (pageNum) => {
     if (pageNum >= 1 && pageNum <= totalPages) {
       setCurrentPage(pageNum);
@@ -179,7 +197,7 @@ const Purchase = () => {
       <div className="flex flex-col items-start justify-between gap-6 mb-4 2xl:flex-row 2xl:items-center sm:mb-6">
         <div>
           <h1 className="mb-2 text-xl font-bold main-color sm:text-2xl poppins">
-            Oishee Khan’s Purchases
+            {user?.name }'s Purchases
           </h1>
           <p className="text-xs tittle-color sm:text-sm poppins">
             Track your purchases and all details

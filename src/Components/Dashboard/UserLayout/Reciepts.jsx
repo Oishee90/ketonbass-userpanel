@@ -14,6 +14,9 @@ import {
   useDeleteReciptsMutation,
   useGetRecieptsQuery,
 } from "../../../Redux/feature/auth/aithapi";
+import Spinner from "../../../Shared/Spinner";
+import ErrorPage from "../../../Shared/ErrorPage";
+import { useSelector } from "react-redux";
 
 const getIconByTitle = (title) => {
   switch (title) {
@@ -37,11 +40,19 @@ const Reciepts = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [deleteRecipts] = useDeleteReciptsMutation();
   const [selectedReceiptId, setSelectedReceiptId] = useState(null);
+    const user = useSelector((state) => state.auth.user);
   console.log("data", data);
   const receiptsPerPage = 6;
 
-  if (isLoading) return <p>Loading data...</p>;
-  if (isError) return <p>Failed to load data!</p>;
+ if (isLoading) {
+    return <Spinner />;
+  }
+
+  if (isError) {
+    return (
+      <ErrorPage message="Failed to load data. Please try again."></ErrorPage>
+    );
+  }
 
   const receipts = data?.orders || [];
   const statsData = [
@@ -177,7 +188,7 @@ const Reciepts = () => {
       <div className="flex flex-col items-start justify-between mb-6 sm:flex-row sm:items-center sm">
         <div>
           <h1 className="text-2xl font-bold main-color poppins">
-            Oishee Khan's Reminders
+             {user?.name }'s Receipts
           </h1>
           <p className="mt-2 mb-4 text-xs text-gray-600 sm:text-sm sm:mb-6 poppins">
             Track your Receipts Collection
