@@ -27,6 +27,9 @@ import { PrivateRoute } from "./Routes/PrivateRoute";
 import GoogleLoginSuccessRoute from "./Routes/GoogleLoginSuccessRoute";
 import MicrosoftLoginSuccessRoute from "./Routes/MicrosoftLoginSuccessRoute";
 import Error from "./Shared/Error";
+import TermsAndConditions from "./Components/Home/TermsAndConditions ";
+import PrivacyPolicy from "./Components/Home/PrivacyPolicy";
+import Feedback from "./Components/Home/Feedback";
 
 const router = createBrowserRouter([
   {
@@ -48,6 +51,19 @@ const router = createBrowserRouter([
   {
     path: "/google/callback",
     element: <GoogleCallback></GoogleCallback>,
+  },
+   {
+    path: "/terms",
+    element:<TermsAndConditions></TermsAndConditions>,
+  },
+   {
+    path: "/privarcy",
+    element: <PrivacyPolicy></PrivacyPolicy>,
+  },
+    
+    {
+    path: "/feedback",
+    element:<Feedback></Feedback>,
   },
   {
     path: "/dashboard",
@@ -120,6 +136,10 @@ const router = createBrowserRouter([
         ),
       },
     ],
+  },
+  {
+    path: "*",
+    element: <Error></Error>,
   },
 ]);
 
