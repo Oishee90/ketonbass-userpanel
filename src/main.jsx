@@ -26,6 +26,7 @@ import MicrosoftLoginSuccess from "./Components/Pages/MicrosoftLoginSuccess";
 import { PrivateRoute } from "./Routes/PrivateRoute";
 import GoogleLoginSuccessRoute from "./Routes/GoogleLoginSuccessRoute";
 import MicrosoftLoginSuccessRoute from "./Routes/MicrosoftLoginSuccessRoute";
+import Error from "./Shared/Error";
 
 const router = createBrowserRouter([
   {
@@ -56,6 +57,7 @@ const router = createBrowserRouter([
         <Root />{" "}
       </PrivateRoute>
     ),
+    errorElement: <Error></Error>,
     children: [
       {
         index: true,
