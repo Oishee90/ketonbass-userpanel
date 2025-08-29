@@ -54,7 +54,7 @@ export default function SignUpPage() {
         </div>
 
         <Link
-          to="https://server.156-67-218-177.sslip.io/google-auth/google/login "
+          to="https://api-server.purtrack.com/google-auth/google/login "
           onClick={() => handleLoginClick("google", "/success")}
         >
           <div className="mb-6 space-y-4">
@@ -67,7 +67,7 @@ export default function SignUpPage() {
           </div>
         </Link>
         <Link
-          to="https://server.156-67-218-177.sslip.io/microsoft-auth/login/"
+          to="https://api-server.purtrack.com/microsoft-auth/login/"
           onClick={() => handleLoginClick("microsoft", "/successlogin")}
         >
           <div className="mb-6 space-y-4">

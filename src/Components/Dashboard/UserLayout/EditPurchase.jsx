@@ -48,12 +48,13 @@ const EditPurchase = ({ isOpen, onClose, data }) => {
   //  Populate current values from API data
   useEffect(() => {
     if (data) {
+      console.log(data);
       setFormData({
         productName: data.product_name || "",
         storeName: data.shop_name || "",
         date: data.purchase_date || "",
         amount: data.price || "",
-        warranty: data.warranty_status || "",
+        warranty: data.warranty_expire_date || "",
       });
     }
   }, [data]);
@@ -116,7 +117,7 @@ const EditPurchase = ({ isOpen, onClose, data }) => {
       payload.append("shop_name", formData.storeName);
       payload.append("purchase_date", formData.date);
       payload.append("price", formData.amount);
-      payload.append("warranty_status", formData.warranty);
+      payload.append("warranty_expire_date", formData.warranty);
       if (pdfFile) {
         payload.append("invoice_pdf", pdfFile);
       }

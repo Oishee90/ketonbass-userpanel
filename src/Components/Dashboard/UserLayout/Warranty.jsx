@@ -3,9 +3,14 @@ import { FaRegFileAlt } from "react-icons/fa";
 import { format, parse } from "date-fns";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import {
+  useDeleteOrderMutation,
   useGetInboxQuery,
   useGetPurchaseQuery,
 } from "../../../Redux/feature/auth/aithapi";
+import AddPurchaseModal from "./AddPurchaseModal";
+import { FaPlus, FaSync, FaTrashAlt, FaEdit } from "react-icons/fa";
+import Swal from "sweetalert2";
+import EditPurchase from "./EditPurchase";
 import Spinner from "../../../Shared/Spinner";
 import ErrorPage from "../../../Shared/ErrorPage";
 import { useSelector } from "react-redux";
@@ -14,16 +19,26 @@ const Warranty = () => {
   const itemsPerPage = 6;
   const [currentPage, setCurrentPage] = useState(1);
   const [showAllPages, setShowAllPages] = useState(false);
-  const { data: purchase, error, isLoading } = useGetPurchaseQuery();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const {
+    data: purchase,
+    error,
+    isLoading,
+    refetch: refetchPurchase,
+  } = useGetPurchaseQuery();
   const user = useSelector((state) => state.auth.user);
   const totalItems = purchase ? purchase.length : 0;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const [editData, setEditData] = useState(null);
+  const [deleteOrder] = useDeleteOrderMutation();
+  const [editModalOpen, setEditModalOpen] = useState(false);
+
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentData = purchase
     ? purchase.slice(startIndex, startIndex + itemsPerPage)
     : [];
 
-  const frontendBaseURL = "https://server.156-67-218-177.sslip.io/";
+  const frontendBaseURL = "https://api-server.purtrack.com/";
 
   const handlePageChange = (pageNum) => {
     if (pageNum >= 1 && pageNum <= totalPages) {
@@ -35,6 +50,37 @@ const Warranty = () => {
     setShowAllPages(true);
   };
 
+  const handleEditClick = (item) => {
+    setEditData(item);
+    setEditModalOpen(true);
+  };
+
+  const handleDelete = (orderId) => {
+    console.log("Deleting order with ID:", orderId);
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await deleteOrder(orderId).unwrap();
+          refetchPurchase();
+          Swal.fire("Deleted!", "Your purchase has been deleted.", "success");
+        } catch (error) {
+          Swal.fire(
+            "Error!",
+            error?.data?.message || "Failed to delete order.",
+            "error"
+          );
+        }
+      }
+    });
+  };
   const renderPages = () => {
     if (showAllPages || totalPages <= 6) {
       return Array.from({ length: totalPages }, (_, index) => (
@@ -102,24 +148,37 @@ const Warranty = () => {
       );
     }
   };
-   if (isLoading) {
-      return <Spinner />;
-    }
-  
-    if (error) {
-      return (
-        <ErrorPage message="Failed to load data. Please try again."></ErrorPage>
-      );
-    }
+  if (isLoading) {
+    return <Spinner />;
+  }
+
+  if (error) {
+    return (
+      <ErrorPage message="Failed to load data. Please try again."></ErrorPage>
+    );
+  }
 
   return (
     <div className="bg-[#f9f9f9] min-h-screen p-2 sm:p-6 font-sans">
-      <h1 className="mb-1 text-xl font-bold main-color sm:text-2xl poppins">
-       {user?.name }'s Warranties
-      </h1>
-      <p className="mb-6 text-sm tittle-color sm:text-base">
-        Track your warranties and all details
-      </p>
+      <div className="flex flex-col items-start justify-between gap-6 mb-4 2xl:flex-row 2xl:items-center sm:mb-6">
+        <div>
+          <h1 className="mb-1 text-xl font-bold main-color sm:text-2xl poppins">
+            {user?.name}'s Warranties
+          </h1>
+          <p className="mb-6 text-sm tittle-color sm:text-base">
+            Track your warranties and all details
+          </p>
+        </div>
+
+        <div className="flex flex-col items-start 2xl:flex-row">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center gap-2 bg-blue-100 text-[#111827] px-2 py-3 rounded-lg poppins text-sm sm:text-base font-medium"
+          >
+            <FaPlus /> Add New Purchase
+          </button>
+        </div>
+      </div>
 
       <div className="p-6 bg-white rounded-lg shadow">
         <h2 className="mb-4 text-lg font-semibold main-color sm:text-xl poppins sm:mb-6">
@@ -142,8 +201,12 @@ const Warranty = () => {
                 {/* <th className="px-4 py-2 text-lg font-bold text-center text-gray-800">
                   Documents
                 </th> */}
+
                 <th className="px-4 py-2 text-lg font-bold text-gray-800">
                   Status
+                </th>
+                <th className="px-4 py-2 text-base font-bold text-gray-800 bg-gray-200 min-w-[100px]">
+                  Actions
                 </th>
               </tr>
             </thead>
@@ -190,6 +253,22 @@ const Warranty = () => {
                       {item.warranty_status}
                     </span>
                   </td>
+                  <td className="flex items-center gap-3 px-4 py-2">
+                    <button
+                      onClick={() => handleEditClick(item)}
+                      className="text-2xl main-color hover:text-green-800"
+                      title="Edit"
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(item.order_id)}
+                      className="text-2xl text-red-600 hover:text-red-800"
+                      title="Delete"
+                    >
+                      <FaTrashAlt />
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -224,6 +303,7 @@ const Warranty = () => {
                   {item.warranty_expire_date || "Not Provided"}
                 </p>
               </div>
+
               {/* <div className="flex flex-wrap py-2 border-b">
                 <p className="w-1/3 text-sm font-semibold md:text-base">
                   Doccument
@@ -240,11 +320,30 @@ const Warranty = () => {
                   {item.warranty_status || "Not Provided"}
                 </p>
               </div>
+              <div className="flex justify-start gap-3 py-2 poppins ">
+                <p className="w-1/3 font-semibold md:text-base lg:text-lg">
+                  Actions
+                </p>
+                <button
+                  onClick={() => handleEditClick(item)}
+                  className=" main-color hover:text-green-800 md:text-base lg:text-lg"
+                  title="Edit"
+                >
+                  <FaEdit />
+                </button>
+                <button
+                  onClick={() => handleDelete(item.order_id)}
+                  className="text-base text-red-600 lg:text-lg hover:text-red-800"
+                  title="Delete"
+                >
+                  <FaTrashAlt />
+                </button>
+              </div>
             </div>
           ))}
         </div>
 
-        {/* Responsive Card Layout for Tablet & Mobile */}
+        {/* Responsive Card Layout for  Mobile */}
         <div className="space-y-2 sm:hidden lg:hidden">
           {currentData.map((item) => (
             <div
@@ -306,11 +405,26 @@ const Warranty = () => {
                   {item.warranty_status || "Not Provided"}
                 </span>
               </div>
+              <div className="flex items-center gap-3 mt-3">
+                <button
+                  onClick={() => handleEditClick(item)}
+                  className="text-lg main-color hover:text-green-800"
+                  title="Edit"
+                >
+                  <FaEdit />
+                </button>
+                <button
+                  onClick={() => handleDelete(item.order_id)}
+                  className="text-lg text-red-600 hover:text-red-800"
+                  title="Delete"
+                >
+                  <FaTrashAlt />
+                </button>
+              </div>
             </div>
           ))}
         </div>
 
-      
         {/* Pagination */}
         <div className="flex justify-center mt-6">
           <ul className="flex flex-wrap justify-center gap-1 text-sm">
@@ -336,6 +450,17 @@ const Warranty = () => {
           </ul>
         </div>
       </div>
+      <AddPurchaseModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+      {editModalOpen && (
+        <EditPurchase
+          isOpen={editModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          data={editData}
+        />
+      )}
     </div>
   );
 };

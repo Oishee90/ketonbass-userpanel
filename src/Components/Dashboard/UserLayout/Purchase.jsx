@@ -20,7 +20,7 @@ const Purchase = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editData, setEditData] = useState(null);
-    const user = useSelector((state) => state.auth.user);
+  const user = useSelector((state) => state.auth.user);
   const {
     data: purchase,
     error,
@@ -44,6 +44,7 @@ const Purchase = () => {
   };
 
   const handleDelete = (orderId) => {
+    console.log("Deleting order with ID:", orderId);
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -89,11 +90,11 @@ const Purchase = () => {
     try {
       if (message?.toLowerCase() === "google") {
         console.log("Syncing with Google API...");
-        refetchPurchase()
+        refetchPurchase();
         await googleRefetch();
         console.log("Google Sync successful!");
       } else if (message?.toLowerCase() === "microsoft") {
-        refetchPurchase()
+        refetchPurchase();
         console.log("Syncing with Microsoft API...");
         await microsoftRefetch();
         console.log("Microsoft Sync successful!");
@@ -106,7 +107,7 @@ const Purchase = () => {
       setSpinning(false);
     }
   };
- if (isLoading) {
+  if (isLoading) {
     return <Spinner />;
   }
 
@@ -197,7 +198,7 @@ const Purchase = () => {
       <div className="flex flex-col items-start justify-between gap-6 mb-4 2xl:flex-row 2xl:items-center sm:mb-6">
         <div>
           <h1 className="mb-2 text-xl font-bold main-color sm:text-2xl poppins">
-            {user?.name }'s Purchases
+            {user?.name}'s Purchases
           </h1>
           <p className="text-xs tittle-color sm:text-sm poppins">
             Track your purchases and all details
